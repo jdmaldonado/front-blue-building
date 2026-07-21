@@ -1,0 +1,19 @@
+{
+  "name": "@bb/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bb/api-client": "workspace:*",
+    "@bb/core": "workspace:*",
+    "@bb/design-tokens": "workspace:*",
+    "@bb/logger": "workspace:*",
+    "@bb/logic": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
