@@ -8,6 +8,13 @@ pre-commit:
     lint:
       glob: '*.{ts,tsx,js,jsx,mjs,cjs}'
       run: pnpm exec oxlint {staged_files}
+    no-enums:
+      glob: '*.{ts,tsx}'
+      run: |
+        if grep -nE '\benum[[:space:]]+[A-Za-z_]' {staged_files}; then
+          echo 'Prohibido declarar enum. Usa `const X = {...} as const` + z.enum(X).'
+          exit 1
+        fi
 
 pre-push:
   commands:

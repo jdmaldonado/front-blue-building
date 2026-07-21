@@ -52,6 +52,34 @@ apps  ->  logic  ->  api-client  ->  core
 logica de negocio. La logica (`packages/logic`) nunca importa UI (ni toast, ni
 modal, ni router): expone estado y callbacks, y quien la usa decide la UI.
 
+## Convenciones de codigo
+
+- **Prohibido `enum`** (forzado en `pre-commit`). Usa un objeto/array `as const` y
+  validalo con `z.enum`:
+
+  ```ts
+  export const DoorType = { Public: 'PUBLIC', Private: 'PRIVATE' } as const;
+  export const DoorTypeSchema = z.enum(DoorType);
+  export type DoorType = (typeof DoorType)[keyof typeof DoorType];
+  ```
+
+  Pasa el objeto/array directo o con `as const`; si lo declaras como variable sin
+  `as const`, zod infiere `string` y pierdes los literales.
+
+- **Sin magic numbers ni magic strings.** Todo valor con significado va a una
+  constante nombrada por dominio (codigos de accion de puerta, estados, etc.). No se
+  fuerza con lint (`no-magic-numbers` es ruidoso); se cuida en revision.
+
+- **TanStack Query: query keys en constantes.** Cada dominio expone una fabrica de
+  keys reutilizable, para invalidar sin repetir strings:
+
+  ```ts
+  export const doorKeys = {
+    all: ['doors'] as const,
+    byBuilding: (buildingId: string) => [...doorKeys.all, 'building', buildingId] as const,
+  };
+  ```
+
 ## Estructura
 
 | Paquete                  | Que contiene                                                 |
