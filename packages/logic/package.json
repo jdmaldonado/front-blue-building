@@ -12,9 +12,16 @@
   "dependencies": {
     "@bb/api-client": "workspace:*",
     "@bb/core": "workspace:*",
-    "@bb/logger": "workspace:*"
+    "@bb/logger": "workspace:*",
+    "@tanstack/react-query": "^5.101.4",
+    "zustand": "^5.0.14"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
   },
   "devDependencies": {
+    "@types/react": "^19.2.17",
+    "react": "^19.2.8",
     "typescript": "^5.7.2"
   }
 }

@@ -3,11 +3,11 @@ pre-commit:
   commands:
     format:
       glob: '*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc,css,md,yaml,yml}'
-      run: pnpm exec oxfmt --write {staged_files}
+      run: node_modules/.bin/oxfmt --write {staged_files}
       stage_fixed: true
     lint:
       glob: '*.{ts,tsx,js,jsx,mjs,cjs}'
-      run: pnpm exec oxlint {staged_files}
+      run: node_modules/.bin/oxlint {staged_files}
     no-enums:
       glob: '*.{ts,tsx}'
       run: |
@@ -19,4 +19,4 @@ pre-commit:
 pre-push:
   commands:
     typecheck:
-      run: pnpm typecheck
+      run: node_modules/.bin/turbo run typecheck
