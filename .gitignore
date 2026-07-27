@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .turbo/
+apps/web/src/styles/tokens.css
 coverage/
 *.log
 .DS_Store

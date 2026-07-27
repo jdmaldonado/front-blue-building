@@ -6,7 +6,8 @@
     "suspicious": "warn"
   },
   "rules": {
-    "no-console": "error"
+    "no-console": "error",
+    "import/no-unassigned-import": "off"
   },
   "overrides": [
     {
