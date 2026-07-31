@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .turbo/
+*.tsbuildinfo
 apps/web/src/styles/tokens.css
 coverage/
 *.log

@@ -1,5 +1,19 @@
 import { componentTokens } from './components';
+import { radius } from './primitives';
 import { semanticDark, semanticLight } from './semantic';
+
+const REM_BASE = 16;
+
+// Theme-agnostic primitive dimensions the component layer can alias. The pill
+// radius stays in px; scaling it with the root font-size serves no purpose.
+function radiusVars(indent: string): string {
+  return Object.entries(radius)
+    .map(([name, value]) => {
+      const css = name === 'round' ? `${value}px` : `${value / REM_BASE}rem`;
+      return `${indent}--radius-${name}: ${css};`;
+    })
+    .join('\n');
+}
 
 function semanticVars(tokens: Record<string, string>, indent: string): string {
   return Object.entries(tokens)
@@ -18,6 +32,7 @@ function componentVars(tokens: Record<string, string>, indent: string): string {
 export function generateThemeCss(): string {
   return [
     ':root {',
+    radiusVars('  '),
     semanticVars(semanticLight, '  '),
     componentVars(componentTokens, '  '),
     '}',

@@ -39,11 +39,11 @@ export function LoginPage() {
         <button
           type="submit"
           disabled={login.isPending}
-          className="rounded bg-[var(--button-primary-bg)] p-2 text-[var(--button-primary-text)] disabled:opacity-60"
+          className="rounded bg-[var(--button-primary-bg)] p-2 text-[var(--button-primary-foreground)] disabled:opacity-60"
         >
           {login.isPending ? 'Entrando...' : 'Entrar'}
         </button>
-        {login.isError ? <p className="text-sm text-[var(--status-danger)]">Credenciales inválidas</p> : null}
+        {login.isError ? <p className="text-sm text-[var(--destructive)]">Credenciales inválidas</p> : null}
       </form>
     </main>
   );

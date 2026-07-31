@@ -1,26 +1,49 @@
 // Layer 1: raw values with no meaning. Never consumed directly by components.
+// Colors are oklch (browser-native). React Native has no oklch parser, so the
+// future RN adapter must convert oklch->rgb; web consumes these strings as-is.
 export const palette = {
-  blue: {
-    50: '#eff6ff',
-    100: '#dbeafe',
-    500: '#3b82f6',
-    600: '#2563eb',
-    700: '#1d4ed8',
-    900: '#1e3a8a',
+  cyan: {
+    100: 'oklch(0.95 0.03 215)',
+    200: 'oklch(0.89 0.06 215)',
+    300: 'oklch(0.80 0.10 213)',
+    400: 'oklch(0.72 0.13 215)',
+    500: 'oklch(0.60 0.125 224)',
+    600: 'oklch(0.50 0.105 228)',
+    700: 'oklch(0.40 0.085 232)',
   },
-  gray: {
-    0: '#ffffff',
-    50: '#f9fafb',
-    100: '#f3f4f6',
-    200: '#e5e7eb',
-    500: '#6b7280',
-    700: '#374151',
-    900: '#111827',
-    950: '#030712',
+  ink: {
+    0: 'oklch(0.99 0.003 235)',
+    50: 'oklch(0.972 0.005 235)',
+    100: 'oklch(0.93 0.008 235)',
+    200: 'oklch(0.865 0.012 235)',
+    300: 'oklch(0.72 0.015 235)',
+    400: 'oklch(0.55 0.02 236)',
+    500: 'oklch(0.45 0.025 238)',
+    600: 'oklch(0.35 0.03 240)',
+    700: 'oklch(0.29 0.032 240)',
+    800: 'oklch(0.225 0.03 242)',
+    900: 'oklch(0.175 0.025 242)',
+    950: 'oklch(0.14 0.02 244)',
+    975: 'oklch(0.11 0.017 244)',
   },
-  red: { 500: '#ef4444', 600: '#dc2626' },
-  green: { 500: '#22c55e', 600: '#16a34a' },
-  amber: { 500: '#f59e0b' },
+  red: {
+    400: 'oklch(0.68 0.16 25)',
+    500: 'oklch(0.56 0.17 25)',
+  },
+  amber: {
+    400: 'oklch(0.78 0.14 80)',
+    500: 'oklch(0.66 0.13 70)',
+  },
+  green: {
+    400: 'oklch(0.72 0.14 155)',
+    500: 'oklch(0.58 0.13 155)',
+  },
+} as const;
+
+export const font = {
+  display: "'Space Grotesk', sans-serif",
+  body: "'IBM Plex Sans', sans-serif",
+  mono: "'IBM Plex Mono', monospace",
 } as const;
 
 // Unitless base scale (a 4px/4dp grid). Platform adapters apply the unit:
@@ -31,16 +54,20 @@ export const space = {
   2: 8,
   3: 12,
   4: 16,
-  6: 24,
-  8: 32,
+  5: 24,
+  6: 32,
+  7: 48,
+  8: 64,
 } as const;
 
 export const radius = {
-  sm: 4,
-  md: 8,
-  lg: 12,
-  full: 9999,
+  1: 6,
+  2: 10,
+  3: 16,
+  round: 999,
 } as const;
+
+export type RadiusToken = keyof typeof radius;
 
 export const fontSize = {
   sm: 14,
