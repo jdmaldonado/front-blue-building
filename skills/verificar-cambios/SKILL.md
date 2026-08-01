@@ -50,6 +50,12 @@ Consistencia:
 - [ ] Sin magic strings ni magic numbers nuevos.
 - [ ] Sin código muerto ni archivos viejos que quedaron tras un rename.
 
+## Si el cambio toca UI
+
+Typecheck y lint no dicen nada sobre cómo se ve una pantalla. Cuando el cambio
+incluye un componente visual o una vista, `revisar-ui/SKILL.md` es parte de esta
+verificación, no un extra opcional. Sin eso, la tarea no está cerrada.
+
 ## Qué reportar
 
 Al cerrar, decir en una línea: qué se cambió, qué comandos se corrieron y su

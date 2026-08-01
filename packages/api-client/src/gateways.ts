@@ -6,20 +6,16 @@ import {
   InvalidCredentialsError,
   LoginMode,
   LoginResponseSchema,
+  NoSpacesAssignedError,
   UnknownAuthError,
   type Door,
   type DoorStatuses,
   type Floor,
+  type LoginInput,
   type LoginResponse,
 } from '@bb/core';
 import { z } from 'zod';
 import { HttpError, type HttpClient } from './http';
-
-export interface LoginInput {
-  cedula: string;
-  password: string;
-  mode: LoginMode;
-}
 
 function loginPath(mode: LoginMode): string {
   switch (mode) {
@@ -53,6 +49,10 @@ function toAuthError(error: unknown): Error {
     }
     if (error.status === 400 || error.status === 401) {
       return new InvalidCredentialsError('Invalid credentials');
+    }
+    // Valid user with no apartment assigned.
+    if (error.status === 403) {
+      return new NoSpacesAssignedError('User has no spaces assigned');
     }
   }
   return new UnknownAuthError('Unexpected login error', { cause: error });

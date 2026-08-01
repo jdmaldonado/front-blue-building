@@ -17,7 +17,7 @@ export const alertVariants = cva('flex gap-3 rounded-(--input-radius) border p-4
   },
 });
 
-export const alertTitleVariants = cva('text-sm font-semibold', {
+export const alertTitleVariants = cva('text-body font-semibold', {
   variants: {
     variant: {
       info: 'text-(--alert-info-title)',
@@ -31,7 +31,7 @@ export const alertTitleVariants = cva('text-sm font-semibold', {
   },
 });
 
-export const alertTextVariants = cva('text-[13px]', {
+export const alertTextVariants = cva('text-body-sm', {
   variants: {
     variant: {
       info: 'text-(--alert-info-text)',

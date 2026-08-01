@@ -11,6 +11,9 @@ export { Field, fieldLabelVariants, fieldMessageVariants, fieldVariants } from '
 export type { FieldLabelVariants, FieldMessageVariants } from './field';
 
 export { Input, inputSizes, inputVariants } from './input';
+
+export { Logo, logoMarkSize, logoSizes, logoVariants, logoWordmarkVariants } from './logo';
+export type { LogoSize, LogoVariants } from './logo';
 export type { InputSize, InputVariants } from './input';
 
 export { Spinner, spinnerSizes, spinnerVariants } from './spinner';

@@ -39,6 +39,14 @@ Reglas de la estructura:
   `bg-(--button-primary-bg)`, `rounded-(--card-radius)`. Prohibido `bg-blue-500`,
   hex o `rgb()` en un componente. Si falta el token, se agrega primero
   (`agregar-design-token`).
+- **Tipografía solo por escala.** Los tamaños salen de la escala del sistema:
+  `text-caption`, `text-label`, `text-body-sm`, `text-body`, `text-body-lg`,
+  `text-title-sm`, `text-title`, `text-title-lg`, `text-display`,
+  `text-display-lg`. Prohibido `text-[23px]` y también `text-sm` / `text-2xl`:
+  la escala de Tailwind está borrada a propósito
+  (`packages/design-tokens/src/css.ts:30-47`), esas clases ya no existen. Si
+  falta un paso, se agrega en `typeScale` (`agregar-design-token`), no en la
+  vista. El `pre-commit` rechaza tamaños arbitrarios (`lefthook.yml:11-19`).
 - **Clases literales.** Nada de `` `bg-${color}-500` ``: Tailwind escanea texto y
   no ve las clases construidas en runtime.
 - **`cn` para combinar.** Siempre `cn(variantes(...), className)`, con el
@@ -140,12 +148,14 @@ exporta una función de variantes por parte desde el mismo `-variants.ts`
 - [ ] Carpeta propia con `Componente.tsx`, `Componente-variants.ts`, `index.ts`.
 - [ ] Reexportado en `apps/web/src/ui/index.ts`.
 - [ ] Cero colores crudos: solo `var(--token)` vía `bg-(--token)`.
+- [ ] Cero tamaños de texto arbitrarios: solo roles de la escala.
 - [ ] Clases literales, sin plantillas dinámicas.
 - [ ] Tipos derivados con `VariantProps`, sin duplicar uniones.
 - [ ] `cn(variantes(), className)` con el `className` externo al final.
 - [ ] `...props` al elemento raíz y `ref` como prop.
 - [ ] Foco visible y roles/aria correctos.
 - [ ] Sin datos, sin fetch, sin dominio.
+- [ ] Checklist de `revisar-ui` pasado (fidelidad, estados, foco, responsive).
 - [ ] `pnpm typecheck && pnpm lint && pnpm format` (ver `verificar-cambios`).
 
 ## Errores comunes

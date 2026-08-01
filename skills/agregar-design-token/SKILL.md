@@ -30,6 +30,20 @@ Regla dura: un componente de UI solo consume tokens de la capa 3 (o semánticas
 cuando es layout general, como `--surface-base` o `--text-primary`). Nunca una
 primitiva, nunca un color literal.
 
+## Tipografía
+
+La escala vive en `typeScale` (`packages/design-tokens/src/primitives/index.ts`)
+y se nombra por rol, no por tamaño: `caption`, `label`, `body-sm`, `body`,
+`body-lg`, `title-sm`, `title`, `title-lg`, `display`, `display-lg`. Cada paso
+lleva su `lineHeight`.
+
+Se emite dentro de `@theme`, y ahí mismo se borra la escala por defecto de
+Tailwind con `--text-*: initial` (`packages/design-tokens/src/css.ts:30-47`). Por
+eso `text-sm`, `text-2xl` o `text-[23px]` no existen en este proyecto.
+
+Un tamaño que el diseño necesita y la escala no tiene se agrega como paso nuevo,
+con nombre de rol. Nunca se resuelve con un valor arbitrario en el componente.
+
 ## Cómo elegir capa
 
 | Situación                                            | Dónde va                                |

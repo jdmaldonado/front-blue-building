@@ -24,6 +24,15 @@ export const SpaceSchema = z.object({
 });
 export type Space = z.infer<typeof SpaceSchema>;
 
+// Input contract of the login form. Lives here so the web and the future native
+// app validate with the same rules; messages are user-facing, hence Spanish.
+export const LoginInputSchema = z.object({
+  cedula: z.string().trim().min(1, 'Ingresa tu documento.'),
+  password: z.string().min(1, 'Ingresa tu contraseña.'),
+  mode: LoginModeSchema,
+});
+export type LoginInput = z.infer<typeof LoginInputSchema>;
+
 export const LoginResponseSchema = z.object({
   token: z.string(),
   user: UserSchema,

@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const fieldVariants = cva('flex flex-col gap-1.5');
 
-export const fieldLabelVariants = cva('text-[13px] font-medium', {
+export const fieldLabelVariants = cva('text-body-sm font-medium', {
   variants: {
     invalid: {
       true: 'text-(--destructive)',
@@ -14,7 +14,7 @@ export const fieldLabelVariants = cva('text-[13px] font-medium', {
   },
 });
 
-export const fieldMessageVariants = cva('text-xs', {
+export const fieldMessageVariants = cva('text-label', {
   variants: {
     tone: {
       error: 'text-(--destructive)',

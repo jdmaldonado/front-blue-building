@@ -31,9 +31,9 @@ export const buttonVariants = cva(
         ghost: '',
       },
       size: {
-        sm: 'h-9 gap-2 px-3 text-[13px]',
-        md: 'h-11 gap-2 px-4 text-sm',
-        lg: 'h-13 gap-2.5 px-5 text-[15px]',
+        sm: 'h-9 gap-2 px-3 text-body-sm',
+        md: 'h-11 gap-2 px-4 text-body',
+        lg: 'h-13 gap-2.5 px-5 text-body-lg',
       },
     },
     compoundVariants: [

@@ -1,5 +1,4 @@
-import type { LoginInput } from '@bb/api-client';
-import type { LoginResponse } from '@bb/core';
+import type { LoginInput, LoginResponse } from '@bb/core';
 import { useMutation, type UseMutationResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
 import { useSessionStore } from '../session/store';

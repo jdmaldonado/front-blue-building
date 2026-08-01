@@ -49,6 +49,13 @@ export const semanticLight = {
   'alert-success-title': 'oklch(0.46 0.12 155)',
   'alert-success-text': 'oklch(0.40 0.10 155)',
 
+  // Brand surface: stays dark in both themes (the login panel, marketing areas).
+  'brand-surface': palette.ink[900],
+  'brand-foreground': palette.ink[50],
+  'brand-muted': 'oklch(0.86 0.03 235/.8)',
+  'brand-accent': palette.cyan[400],
+  'brand-gradient': 'linear-gradient(158deg, oklch(0.28 0.06 232/.55), oklch(0.14 0.02 244/.2))',
+
   'shadow-1': '0 1px 2px oklch(0.2 0.02 242/.06), 0 2px 8px oklch(0.2 0.02 242/.05)',
   'shadow-2': '0 4px 16px oklch(0.2 0.02 242/.12)',
   'shadow-3': '0 12px 40px oklch(0.2 0.02 242/.18), 0 4px 12px oklch(0.2 0.02 242/.08)',
@@ -100,6 +107,13 @@ export const semanticDark = {
   'alert-success-border': palette.green[400],
   'alert-success-title': palette.green[400],
   'alert-success-text': 'oklch(0.84 0.10 155)',
+
+  // Brand surface: stays dark in both themes (the login panel, marketing areas).
+  'brand-surface': palette.ink[900],
+  'brand-foreground': palette.ink[50],
+  'brand-muted': 'oklch(0.86 0.03 235/.8)',
+  'brand-accent': palette.cyan[400],
+  'brand-gradient': 'linear-gradient(158deg, oklch(0.28 0.06 232/.55), oklch(0.14 0.02 244/.2))',
 
   'shadow-1': '0 1px 2px oklch(0 0 0/.4), 0 2px 8px oklch(0 0 0/.3)',
   'shadow-2': '0 4px 16px oklch(0 0 0/.5)',

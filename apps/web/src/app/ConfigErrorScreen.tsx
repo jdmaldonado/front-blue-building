@@ -12,7 +12,7 @@ export function ConfigErrorScreen({ error }: { error: unknown }) {
         <Alert variant="error" title="La aplicación no pudo iniciar">
           Falta configuración del entorno. Revisa el archivo <code>.env</code> contra <code>.env.example</code>.
         </Alert>
-        <ul className="mt-4 flex flex-col gap-1 text-[13px] text-(--text-secondary)">
+        <ul className="mt-4 flex flex-col gap-1 text-body-sm text-(--text-secondary)">
           {issues.map((issue) => (
             <li key={issue}>{issue}</li>
           ))}

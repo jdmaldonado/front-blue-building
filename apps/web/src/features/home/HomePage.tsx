@@ -5,11 +5,9 @@ export function HomePage() {
   const space = useSessionStore(selectCurrentSpace);
 
   return (
-    <main className="min-h-screen bg-[var(--surface-base)] p-6 text-[var(--text-primary)]">
-      <h1 className="text-xl font-semibold">Hola{user ? `, ${user.name}` : ''}</h1>
-      <p className="text-[var(--text-muted)]">
-        {space ? `Edificio: ${space.building.name}` : 'Sin espacio seleccionado'}
-      </p>
+    <main className="min-h-dvh bg-(--surface-base) p-6 text-(--text-primary)">
+      <h1 className="text-title font-semibold">Hola{user ? `, ${user.name}` : ''}</h1>
+      <p className="text-(--text-muted)">{space ? `Edificio: ${space.building.name}` : 'Sin espacio seleccionado'}</p>
     </main>
   );
 }

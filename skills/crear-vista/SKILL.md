@@ -7,7 +7,8 @@ description: Crear una pantalla o feature en apps/web/src/features y su ruta en 
 
 Aplica a `apps/web/src/features/<dominio>/` y a `apps/web/src/app/router.tsx`.
 
-Lee primero `reglas-generales/SKILL.md`.
+Lee primero `reglas-generales/SKILL.md`. Al terminar, `revisar-ui/SKILL.md` es
+obligatorio: una vista no está lista solo porque compile.
 
 ## Qué es una vista
 
@@ -104,6 +105,7 @@ Referencia: `apps/web/src/app/router.tsx:14-23`. Toda ruta nueva se agrega a
 - [ ] Estados pending, error, vacío y con datos resueltos.
 - [ ] Ruta registrada en `routeTree` y con guard si requiere sesión.
 - [ ] Barrel `index.ts` de la feature actualizado.
+- [ ] Checklist de `revisar-ui` pasado, con el mock delante.
 - [ ] `pnpm typecheck && pnpm lint && pnpm format`.
 
 ## Errores comunes

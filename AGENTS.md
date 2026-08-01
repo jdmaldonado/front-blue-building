@@ -8,7 +8,8 @@ para Gemini o para cualquier otro modelo.
 1. Leer `skills/reglas-generales/SKILL.md`. Siempre, antes de escribir código.
 2. Leer la skill de la tarea concreta (índice en `skills/README.md`).
 3. Escribir el código siguiendo la plantilla y el checklist de esa skill.
-4. Cerrar con `skills/verificar-cambios/SKILL.md`.
+4. Si el cambio toca UI, pasar `skills/revisar-ui/SKILL.md` con el mock delante.
+5. Cerrar con `skills/verificar-cambios/SKILL.md`.
 
 Las skills mandan sobre cualquier costumbre traída de otro proyecto. Si algo no
 está cubierto, se sigue el patrón del código existente en la misma capa.
@@ -24,6 +25,7 @@ está cubierto, se sigue el patrón del código existente en la misma capa.
 | [crear-gateway-api](skills/crear-gateway-api/SKILL.md)       | Llamada nueva al backend en `packages/api-client`       |
 | [crear-modelo-dominio](skills/crear-modelo-dominio/SKILL.md) | Tipos, schemas, constantes o errores en `packages/core` |
 | [validar-con-zod](skills/validar-con-zod/SKILL.md)           | Duda sobre si un dato hay que validar y con qué método  |
+| [revisar-ui](skills/revisar-ui/SKILL.md)                     | Cerrar cualquier pantalla o componente visual           |
 | [agregar-design-token](skills/agregar-design-token/SKILL.md) | Color, radio, sombra o token de componente              |
 | [verificar-cambios](skills/verificar-cambios/SKILL.md)       | Al cerrar cualquier cambio                              |
 
@@ -36,7 +38,8 @@ está cubierto, se sigue el patrón del código existente en la misma capa.
 - Lógica separada de interfaz: `packages/logic` no importa UI; `apps/web` no
   hace fetch.
 - Componentes de UI en carpeta propia con barrel y `Componente-variants.ts`.
-- Colores solo por design tokens, nunca literales.
+- Colores solo por design tokens y tamaños de texto solo por la escala del
+  sistema (`text-body`, `text-title`...). Nada de `text-[23px]` ni `text-sm`.
 - `console.*` solo dentro de `packages/logger`.
 - Se cierra con `pnpm typecheck && pnpm lint && pnpm format` en verde.
 

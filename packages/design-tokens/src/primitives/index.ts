@@ -69,9 +69,53 @@ export const radius = {
 
 export type RadiusToken = keyof typeof radius;
 
-export const fontSize = {
-  sm: 14,
-  base: 16,
-  lg: 18,
-  xl: 24,
+// Type scale by role, not by raw size. A component picks the role ("this is a
+// label", "this is the page title") and the scale decides the number, so nobody
+// writes `text-[23px]` again. Sizes are px; the web adapter converts to rem.
+export const typeScale = {
+  caption: { size: 11, lineHeight: 1.45 },
+  label: { size: 12, lineHeight: 1.45 },
+  'body-sm': { size: 13, lineHeight: 1.5 },
+  body: { size: 14, lineHeight: 1.5 },
+  'body-lg': { size: 15, lineHeight: 1.5 },
+  'title-sm': { size: 17, lineHeight: 1.35 },
+  title: { size: 20, lineHeight: 1.3 },
+  'title-lg': { size: 23, lineHeight: 1.25 },
+  display: { size: 28, lineHeight: 1.15 },
+  'display-lg': { size: 36, lineHeight: 1.1 },
 } as const;
+
+export type TypeScaleToken = keyof typeof typeScale;
+
+// Families are self-hosted (@fontsource) so the PWA works offline and no request
+// leaves the origin. The web adapter registers them in Tailwind's theme; React
+// Native will load the same families through its own font loader.
+export const fontFamily = {
+  display: "'Space Grotesk Variable', sans-serif",
+  body: "'IBM Plex Sans Variable', sans-serif",
+  mono: "'IBM Plex Mono', monospace",
+} as const;
+
+export type FontFamilyToken = keyof typeof fontFamily;
+
+// Decorative honeycomb, the brand's recurring motif. The stroke is white at low
+// opacity, so it only reads on dark surfaces. Tile is 39 x 22.52.
+const HONEYCOMB_SVG =
+  "<svg xmlns='http://www.w3.org/2000/svg' width='39' height='22.52' viewBox='0 0 39 22.52'>" +
+  "<g fill='none' stroke='%23ffffff' stroke-opacity='0.08' stroke-width='1'>" +
+  "<polygon points='13.00,0.00 6.50,11.26 -6.50,11.26 -13.00,0.00 -6.50,-11.26 6.50,-11.26'/>" +
+  "<polygon points='13.00,22.52 6.50,33.77 -6.50,33.77 -13.00,22.52 -6.50,11.26 6.50,11.26'/>" +
+  "<polygon points='52.00,0.00 45.50,11.26 32.50,11.26 26.00,0.00 32.50,-11.26 45.50,-11.26'/>" +
+  "<polygon points='52.00,22.52 45.50,33.77 32.50,33.77 26.00,22.52 32.50,11.26 45.50,11.26'/>" +
+  "<polygon points='32.50,11.26 26.00,22.52 13.00,22.52 6.50,11.26 13.00,0.00 26.00,0.00'/>" +
+  "<polygon points='32.50,-11.26 26.00,0.00 13.00,0.00 6.50,-11.26 13.00,-22.52 26.00,-22.52'/>" +
+  "<polygon points='32.50,33.77 26.00,45.03 13.00,45.03 6.50,33.77 13.00,22.52 26.00,22.52'/>" +
+  '</g></svg>';
+
+export const pattern = {
+  honeycomb: `url("data:image/svg+xml,${HONEYCOMB_SVG}")`,
+} as const;
+
+export const PATTERN_TILE_SIZE = '39px 22.52px';
+
+export type PatternToken = keyof typeof pattern;

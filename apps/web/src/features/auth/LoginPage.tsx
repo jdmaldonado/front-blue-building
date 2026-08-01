@@ -1,13 +1,21 @@
-import { LoginMode } from '@bb/core';
+import { LoginInputSchema, LoginMode } from '@bb/core';
 import { useLogin } from '@bb/logic';
 import { useNavigate } from '@tanstack/react-router';
 import { useState, type FormEvent } from 'react';
-import { Alert, Button, Card, Field, Input } from '../../ui';
+import { Alert, Button, Field, Input, Logo } from '../../ui';
+import { BrandPanel } from './BrandPanel';
+import { loginErrorMessage } from './loginErrorMessage';
+
+type FieldErrors = {
+  cedula?: string;
+  password?: string;
+};
 
 export function LoginPage() {
   const navigate = useNavigate();
   const [cedula, setCedula] = useState('');
   const [password, setPassword] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const login = useLogin({
     onSuccess: () => {
@@ -17,41 +25,101 @@ export function LoginPage() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    login.mutate({ cedula, password, mode: LoginMode.Usuario });
+
+    const input = LoginInputSchema.safeParse({
+      cedula,
+      password,
+      mode: LoginMode.Usuario,
+    });
+    if (!input.success) {
+      const errors: FieldErrors = {};
+      for (const issue of input.error.issues) {
+        const field = issue.path[0];
+        if (field === 'cedula' || field === 'password') {
+          errors[field] ??= issue.message;
+        }
+      }
+      setFieldErrors(errors);
+      return;
+    }
+
+    setFieldErrors({});
+    login.mutate(input.data);
   };
 
+  const alert = login.isError ? loginErrorMessage(login.error) : null;
+  const disabled = login.isPending || login.isSuccess;
+
   return (
-    <main className="flex min-h-screen items-center justify-center bg-(--surface-base) p-6 text-(--text-primary)">
-      <Card className="w-full max-w-sm p-8">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <h1 className="text-xl font-semibold">Blue Building</h1>
-          <Field label="Cédula" htmlFor="cedula">
-            <Input
-              id="cedula"
-              value={cedula}
-              onChange={(event) => setCedula(event.target.value)}
-              placeholder="Número de cédula"
-            />
-          </Field>
-          <Field label="Contraseña" htmlFor="password">
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="Contraseña"
-            />
-          </Field>
-          {login.isError ? (
-            <Alert variant="error" title="Credenciales inválidas">
-              Revisa tu cédula y contraseña.
+    // Full-bleed split screen: brand panel from the top-left corner, form filling
+    // the rest. On mobile the panel disappears and the form owns the viewport.
+    <main className="flex min-h-dvh flex-col bg-(--surface-raised) text-(--text-primary) md:flex-row">
+      <BrandPanel />
+
+      <div className="flex flex-1 items-center justify-center px-6 py-8 sm:px-10 md:px-12">
+        <form onSubmit={handleSubmit} className="flex w-full max-w-[420px] flex-col gap-5">
+          <Logo className="md:hidden" />
+
+          <div className="flex flex-col gap-1">
+            <h1 className="font-display text-title-lg font-bold tracking-tight md:text-display">Acceso al edificio</h1>
+            <span className="text-body text-(--text-secondary)">Ingresa con tu documento y contraseña.</span>
+          </div>
+
+          {alert ? (
+            <Alert variant={alert.variant} title={alert.title}>
+              {alert.description}
             </Alert>
           ) : null}
-          <Button type="submit" loading={login.isPending}>
-            {login.isPending ? 'Entrando...' : 'Entrar'}
+
+          {login.isSuccess ? (
+            <Alert variant="success" title="Sesión iniciada">
+              Abriendo tu edificio...
+            </Alert>
+          ) : null}
+
+          <div className="flex flex-col gap-3.5">
+            <Field label="Documento" htmlFor="cedula" error={fieldErrors.cedula}>
+              <Input
+                id="cedula"
+                className="font-mono"
+                inputMode="numeric"
+                autoComplete="username"
+                placeholder="Número de documento"
+                value={cedula}
+                disabled={disabled}
+                aria-invalid={fieldErrors.cedula !== undefined}
+                aria-describedby={fieldErrors.cedula ? 'cedula-error' : undefined}
+                onChange={(event) => setCedula(event.target.value)}
+              />
+            </Field>
+
+            <Field label="Contraseña" htmlFor="password" error={fieldErrors.password}>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                placeholder="Contraseña"
+                value={password}
+                disabled={disabled}
+                aria-invalid={fieldErrors.password !== undefined}
+                aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </Field>
+          </div>
+
+          <Button
+            type="submit"
+            size="lg"
+            intent={login.isSuccess ? 'success' : 'primary'}
+            loading={login.isPending}
+            disabled={disabled}
+            className="bg-[image:var(--pattern-honeycomb)] bg-[length:39px_22.52px]"
+          >
+            {login.isSuccess ? 'Acceso concedido' : login.isPending ? 'Entrando...' : 'Entrar'}
           </Button>
         </form>
-      </Card>
+      </div>
     </main>
   );
 }

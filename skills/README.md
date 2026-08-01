@@ -24,6 +24,7 @@ de salida y los errores comunes.
 | [crear-gateway-api](crear-gateway-api/SKILL.md)       | Llamada nueva al backend en `packages/api-client`           |
 | [crear-modelo-dominio](crear-modelo-dominio/SKILL.md) | Tipos, schemas zod, constantes o errores en `packages/core` |
 | [validar-con-zod](validar-con-zod/SKILL.md)           | Duda sobre si un dato hay que validar y con qué método      |
+| [revisar-ui](revisar-ui/SKILL.md)                     | Cerrar cualquier pantalla o componente visual               |
 | [agregar-design-token](agregar-design-token/SKILL.md) | Color, radio, sombra o token de componente                  |
 | [verificar-cambios](verificar-cambios/SKILL.md)       | Al cerrar cualquier cambio                                  |
 

@@ -1,6 +1,6 @@
 import { useSessionStore } from '@bb/logic';
 import { Outlet, createRootRoute, createRoute, createRouter, redirect } from '@tanstack/react-router';
-import { LoginPage } from '../features/auth/LoginPage';
+import { LoginPage } from '../features/auth';
 import { HomePage } from '../features/home/HomePage';
 
 const rootRoute = createRootRoute({ component: Outlet });
