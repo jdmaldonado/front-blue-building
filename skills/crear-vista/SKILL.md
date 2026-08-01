@@ -1,11 +1,11 @@
 ---
 name: crear-vista
-description: Crear una pantalla o feature en apps/web/src/features y su ruta en TanStack Router (composición, estados de carga y error, sin lógica de negocio). Usar cuando la tarea pide una vista, pantalla, página o flujo de la app web.
+description: Crear una pantalla o feature en apps/web/src/features y su ruta file-based en TanStack Router (composición, estados de carga y error, guards por rol, sin lógica de negocio). Usar cuando la tarea pide una vista, pantalla, página o flujo de la app web.
 ---
 
 # Crear una vista
 
-Aplica a `apps/web/src/features/<dominio>/` y a `apps/web/src/app/router.tsx`.
+Aplica a `apps/web/src/features/<dominio>/` y a `apps/web/src/routes/`.
 
 Lee primero `reglas-generales/SKILL.md`. Al terminar, `revisar-ui/SKILL.md` es
 obligatorio: una vista no está lista solo porque compile.
@@ -61,24 +61,34 @@ return <DoorList doors={doors.data} />;
 
 ## Rutas
 
-Rutas finas: guard, params y componente. Sin lógica dentro.
+El routing es **file-based**: la URL sale del nombre del archivo dentro de
+`apps/web/src/routes`, y `@tanstack/router-plugin` genera `src/routeTree.gen.ts`
+al correr `dev` o `build`.
 
-```tsx
-const doorsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/doors',
-  beforeLoad: () => {
-    if (!useSessionStore.getState().isAuthenticated) {
-      throw redirect({ to: '/login' });
-    }
-  },
-  component: DoorsPage,
-});
-```
+| Archivo                    | URL              |
+| -------------------------- | ---------------- |
+| `routes/__root.tsx`        | layout raíz      |
+| `routes/index.tsx`         | `/`              |
+| `routes/login.tsx`         | `/login`         |
+| `routes/admin.tsx`         | `/admin`         |
+| `routes/doors.$doorId.tsx` | `/doors/:doorId` |
 
-Referencia: `apps/web/src/app/router.tsx:14-23`. Toda ruta nueva se agrega a
-`routeTree` (`router.tsx:25`).
+Reglas:
 
+- El archivo de ruta es fino: guard, params y componente. La pantalla vive en
+  `features/` y se importa desde su barrel.
+
+  ```tsx
+  export const Route = createFileRoute('/doors')({
+    beforeLoad: requireMode(LoginMode.Usuario),
+    component: DoorsPage,
+  });
+  ```
+
+  Referencia: `apps/web/src/routes/admin.tsx`.
+
+- `routeTree.gen.ts` es generado: no se edita a mano y está fuera de lint y
+  formato. Se agrega una ruta creando el archivo, no tocando un array.
 - El guard lee el store con `.getState()`, no con el hook: `beforeLoad` no es un
   componente.
 - Los guards son cosa del **router**, no de TanStack Query. Query es estado de
@@ -87,10 +97,11 @@ Referencia: `apps/web/src/app/router.tsx:14-23`. Toda ruta nueva se agrega a
 ### Rutas por rol
 
 Cuando una zona de la app es solo para cierto rol, el guard hace dos preguntas
-en este orden: ¿hay sesión? y ¿esta sesión pertenece aquí?
+en este orden: ¿hay sesión? y ¿esta sesión pertenece aquí? Vive en
+`apps/web/src/app/guards.ts:9-19`, compartido por todas las rutas:
 
 ```ts
-function requireMode(mode: LoginMode) {
+export function requireMode(mode: LoginMode) {
   return () => {
     const { session } = useSessionStore.getState();
     if (session === null) throw redirect({ to: AppRoute.Login });
@@ -98,8 +109,6 @@ function requireMode(mode: LoginMode) {
   };
 }
 ```
-
-Referencia: `apps/web/src/app/router.tsx:14-24`.
 
 Reglas:
 
@@ -135,7 +144,7 @@ Reglas:
 - [ ] Datos y acciones vienen de hooks de `@bb/logic`.
 - [ ] Interfaz construida con primitivos de `../../ui`, sin clases de color crudas.
 - [ ] Estados pending, error, vacío y con datos resueltos.
-- [ ] Ruta registrada en `routeTree` y con guard si requiere sesión.
+- [ ] Archivo de ruta creado en `src/routes` y con guard si requiere sesión.
 - [ ] Barrel `index.ts` de la feature actualizado.
 - [ ] Checklist de `revisar-ui` pasado, con el mock delante.
 - [ ] `pnpm typecheck && pnpm lint && pnpm format`.
@@ -145,4 +154,4 @@ Reglas:
 - Copiar lógica de un hook dentro de la vista "porque era más rápido".
 - `useEffect` para disparar la carga inicial: eso lo hace `useQuery`.
 - Mostrar `error.message` crudo del backend al usuario.
-- Definir el componente de ruta dentro de `router.tsx`.
+- Escribir la pantalla dentro del archivo de ruta en vez de en `features/`.

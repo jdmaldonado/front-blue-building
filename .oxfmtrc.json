@@ -7,5 +7,5 @@
   "semi": true,
   "bracketSpacing": true,
   "sortPackageJson": false,
-  "ignorePatterns": []
+  "ignorePatterns": ["**/routeTree.gen.ts"]
 }

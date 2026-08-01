@@ -106,7 +106,7 @@ para cualquier modelo o desarrollador nuevo. Lo de abajo es el resumen.
 | `packages/logic`         | Hooks de negocio (TanStack Query + Zustand), sin UI          |
 | `packages/logger`        | Logging estructurado; `console.log` prohibido fuera de aqui  |
 | `packages/design-tokens` | Tokens: primitivas -> semanticas -> componente               |
-| `apps/web`               | App web (Vite + React + TanStack Router, PWA). Se hace en F2 |
+| `apps/web`               | App web (Vite + React + TanStack Router file-based, PWA)     |
 
 `core` se divide por dominio (`auth`, `access`, `cameras`, `buildings`,
 `users`, `shared`). `api-client` y `logic` espejan esos mismos dominios.
@@ -131,8 +131,9 @@ Lo que se maneja en este repo, para saber que aprender antes de tocar codigo.
   organizacion por dominio (feature-sliced), Ports & Adapters (para I/O de
   plataforma: storage, transporte, logger), capa anticorrupcion (aislar el
   backend actual), manejo de errores con uniones discriminadas tipadas.
-- **Web**: React, Vite, PWA y service workers, TanStack Router (rutas finas:
-  guard + params -> PageComponent), TanStack Query (estado de servidor),
+- **Web**: React, Vite, PWA y service workers, TanStack Router file-based (un
+  archivo por ruta en `apps/web/src/routes`: guard + params -> PageComponent, y
+  `routeTree.gen.ts` generado), TanStack Query (estado de servidor),
   Zustand (estado de cliente).
 - **Contratos y datos**: zod (validacion en el borde), socket.io-client tipado.
 - **Design system**: design tokens en tres capas (primitivas, semanticas,
