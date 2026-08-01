@@ -54,6 +54,10 @@ modal, ni router): expone estado y callbacks, y quien la usa decide la UI.
 
 ## Convenciones de codigo
 
+Las reglas completas, con plantillas y checklists por tipo de tarea, estan en
+[`skills/`](skills/README.md); [`AGENTS.md`](AGENTS.md) es el punto de entrada
+para cualquier modelo o desarrollador nuevo. Lo de abajo es el resumen.
+
 - **Prohibido `enum`** (forzado en `pre-commit`). Usa un objeto/array `as const` y
   validalo con `z.enum`:
 
@@ -78,6 +82,14 @@ modal, ni router): expone estado y callbacks, y quien la usa decide la UI.
     all: ['doors'] as const,
     byBuilding: (buildingId: string) => [...doorKeys.all, 'building', buildingId] as const,
   };
+  ```
+
+- **Componentes de UI aislados.** Cada primitivo de `apps/web/src/ui` vive en su
+  carpeta con tres archivos: el componente, su `Componente-variants.ts` (clases y
+  variantes con `cva`) y un `index.ts`. Se importa siempre desde el barrel raiz.
+
+  ```
+  ui/button/{Button.tsx, Button-variants.ts, index.ts}
   ```
 
 ## Estructura
