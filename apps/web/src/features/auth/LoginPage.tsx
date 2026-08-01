@@ -1,6 +1,7 @@
 import { LoginInputSchema, LoginMode } from '@bb/core';
 import { useLogin } from '@bb/logic';
 import { useNavigate } from '@tanstack/react-router';
+import { landingPathFor } from '../../app/navigation';
 import { useState, type FormEvent } from 'react';
 import { Alert, Button, Field, Input, Logo, RadioGroup, type RadioOption } from '../../ui';
 import { BrandPanel } from './BrandPanel';
@@ -26,8 +27,9 @@ export function LoginPage() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const login = useLogin({
-    onSuccess: () => {
-      void navigate({ to: '/' });
+    // Where the session lands is decided in one place, not here.
+    onSuccess: (session) => {
+      void navigate({ to: landingPathFor(session) });
     },
   });
 

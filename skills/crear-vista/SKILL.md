@@ -81,6 +81,35 @@ Referencia: `apps/web/src/app/router.tsx:14-23`. Toda ruta nueva se agrega a
 
 - El guard lee el store con `.getState()`, no con el hook: `beforeLoad` no es un
   componente.
+- Los guards son cosa del **router**, no de TanStack Query. Query es estado de
+  servidor; quién eres y a dónde entras es sesión.
+
+### Rutas por rol
+
+Cuando una zona de la app es solo para cierto rol, el guard hace dos preguntas
+en este orden: ¿hay sesión? y ¿esta sesión pertenece aquí?
+
+```ts
+function requireMode(mode: LoginMode) {
+  return () => {
+    const { session } = useSessionStore.getState();
+    if (session === null) throw redirect({ to: AppRoute.Login });
+    if (session.mode !== mode) throw redirect({ to: landingPathFor(session) });
+  };
+}
+```
+
+Referencia: `apps/web/src/app/router.tsx:14-24`.
+
+Reglas:
+
+- Un rol que entra donde no le toca **no ve un error**: se le redirige a su
+  propia zona.
+- El mapa "sesión -> ruta de entrada" vive en un solo sitio
+  (`apps/web/src/app/navigation.ts:16-24`) y lo usan tanto el login como los
+  guards. Nunca se escribe `navigate({ to: '/' })` a mano después de un login.
+- La ruta de login también tiene guard: si ya hay sesión, redirige a su landing.
+- Las rutas se declaran como constantes (`AppRoute`), no como strings sueltos.
 - La navegación se hace con `useNavigate()`; `void navigate({ to: '/' })` porque
   devuelve una promesa (`apps/web/src/features/auth/LoginPage.tsx:12-16`).
 
