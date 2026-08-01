@@ -7,15 +7,23 @@ export const UserTypeSchema = z.enum(UserType);
 export const RoleTypeSchema = z.enum(RoleType);
 export const LoginModeSchema = z.enum(LoginMode);
 
+// The resident login DTO does NOT send userType
+// (api/src/controllers/users/auth/user_login_dto.ts:39-45).
 export const UserSchema = z.object({
   id: IdSchema,
   cedula: z.string(),
   name: z.string(),
   email: z.string().nullish(),
   phone: z.string().nullish(),
-  userType: UserTypeSchema,
 });
 export type User = z.infer<typeof UserSchema>;
+
+// The super admin DTO sends userType but no phone
+// (api/src/controllers/bluebuilding/auth/bb_support_login_dto.ts:5-13).
+export const AdminUserSchema = UserSchema.extend({
+  userType: UserTypeSchema,
+});
+export type AdminUser = z.infer<typeof AdminUserSchema>;
 
 export const SpaceSchema = z.object({
   role: z.object({ name: RoleTypeSchema }),
@@ -33,9 +41,21 @@ export const LoginInputSchema = z.object({
 });
 export type LoginInput = z.infer<typeof LoginInputSchema>;
 
-export const LoginResponseSchema = z.object({
+// Wire shapes: the two login endpoints answer differently. Resident login brings
+// the spaces; super admin login brings none (it picks a building later).
+export const UserLoginResponseSchema = z.object({
   token: z.string(),
   user: UserSchema,
   spaces: z.array(SpaceSchema),
 });
-export type LoginResponse = z.infer<typeof LoginResponseSchema>;
+
+export const AdminLoginResponseSchema = z.object({
+  token: z.string(),
+  user: AdminUserSchema,
+});
+
+// Domain shape: what the app carries after logging in. Discriminated by mode, so
+// `spaces` only exists where it makes sense.
+export type Session =
+  | { mode: typeof LoginMode.Usuario; token: string; user: User; spaces: Space[] }
+  | { mode: typeof LoginMode.Admin; token: string; user: AdminUser };

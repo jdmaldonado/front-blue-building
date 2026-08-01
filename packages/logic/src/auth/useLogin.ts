@@ -1,15 +1,15 @@
-import type { LoginInput, LoginResponse } from '@bb/core';
+import type { LoginInput, Session } from '@bb/core';
 import { useMutation, type UseMutationResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
 import { useSessionStore } from '../session/store';
 
 export interface UseLoginCallbacks {
-  onSuccess?: (session: LoginResponse) => void;
+  onSuccess?: (session: Session) => void;
   onError?: (error: unknown) => void;
 }
 
-export function useLogin(callbacks?: UseLoginCallbacks): UseMutationResult<LoginResponse, unknown, LoginInput> {
-  const { authGateway } = useServices();
+export function useLogin(callbacks?: UseLoginCallbacks): UseMutationResult<Session, unknown, LoginInput> {
+  const { authGateway, logger } = useServices();
   const setSession = useSessionStore((state) => state.setSession);
 
   return useMutation({
@@ -19,6 +19,7 @@ export function useLogin(callbacks?: UseLoginCallbacks): UseMutationResult<Login
       callbacks?.onSuccess?.(session);
     },
     onError: (error) => {
+      logger.error('Login failed', { error });
       callbacks?.onError?.(error);
     },
   });

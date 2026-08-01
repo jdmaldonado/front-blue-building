@@ -1,4 +1,4 @@
-import { useSessionStore } from '@bb/logic';
+import { selectIsAuthenticated, useSessionStore } from '@bb/logic';
 import { Outlet, createRootRoute, createRoute, createRouter, redirect } from '@tanstack/react-router';
 import { LoginPage } from '../features/auth';
 import { HomePage } from '../features/home/HomePage';
@@ -15,7 +15,7 @@ const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
   beforeLoad: () => {
-    if (!useSessionStore.getState().isAuthenticated) {
+    if (!selectIsAuthenticated(useSessionStore.getState())) {
       throw redirect({ to: '/login' });
     }
   },

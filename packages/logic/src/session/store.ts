@@ -1,42 +1,40 @@
-import type { LoginResponse, Space, User } from '@bb/core';
+import { LoginMode, type Session, type Space } from '@bb/core';
 import { create } from 'zustand';
 
 export interface SessionState {
-  token: string | null;
-  user: User | null;
-  spaces: Space[];
+  session: Session | null;
+  // Only meaningful for a resident session; a super admin has no spaces.
   selectedSpaceIndex: number;
-  isAuthenticated: boolean;
-  setSession: (session: LoginResponse) => void;
+  setSession: (session: Session) => void;
   selectSpace: (index: number) => void;
   clearSession: () => void;
 }
 
 export const useSessionStore = create<SessionState>()((set) => ({
-  token: null,
-  user: null,
-  spaces: [],
+  session: null,
   selectedSpaceIndex: 0,
-  isAuthenticated: false,
-  setSession: (session) =>
-    set({
-      token: session.token,
-      user: session.user,
-      spaces: session.spaces,
-      selectedSpaceIndex: 0,
-      isAuthenticated: true,
-    }),
+  setSession: (session) => set({ session, selectedSpaceIndex: 0 }),
   selectSpace: (index) => set({ selectedSpaceIndex: index }),
-  clearSession: () =>
-    set({
-      token: null,
-      user: null,
-      spaces: [],
-      selectedSpaceIndex: 0,
-      isAuthenticated: false,
-    }),
+  clearSession: () => set({ session: null, selectedSpaceIndex: 0 }),
 }));
 
+export function selectIsAuthenticated(state: SessionState): boolean {
+  return state.session !== null;
+}
+
+export function selectToken(state: SessionState): string | null {
+  return state.session?.token ?? null;
+}
+
+export function selectIsSuperAdmin(state: SessionState): boolean {
+  return state.session?.mode === LoginMode.Admin;
+}
+
+export function selectSpaces(state: SessionState): Space[] {
+  const { session } = state;
+  return session !== null && session.mode === LoginMode.Usuario ? session.spaces : [];
+}
+
 export function selectCurrentSpace(state: SessionState): Space | null {
-  return state.spaces[state.selectedSpaceIndex] ?? null;
+  return selectSpaces(state)[state.selectedSpaceIndex] ?? null;
 }

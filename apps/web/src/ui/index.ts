@@ -16,6 +16,17 @@ export { Logo, logoMarkSize, logoSizes, logoVariants, logoWordmarkVariants } fro
 export type { LogoSize, LogoVariants } from './logo';
 export type { InputSize, InputVariants } from './input';
 
+export {
+  RadioGroup,
+  radioGroupAppearances,
+  radioGroupDotVariants,
+  radioGroupIndicatorVariants,
+  radioGroupItemVariants,
+  radioGroupSizes,
+  radioGroupVariants,
+} from './radio-group';
+export type { RadioGroupAppearance, RadioGroupSize, RadioGroupVariants, RadioOption } from './radio-group';
+
 export { Spinner, spinnerSizes, spinnerVariants } from './spinner';
 export type { SpinnerSize, SpinnerVariants } from './spinner';
 

@@ -1,18 +1,19 @@
 import {
+  AdminLoginResponseSchema,
   AuthNetworkError,
   DoorSchema,
   DoorStatusesSchema,
   FloorSchema,
   InvalidCredentialsError,
   LoginMode,
-  LoginResponseSchema,
   NoSpacesAssignedError,
   UnknownAuthError,
+  UserLoginResponseSchema,
   type Door,
   type DoorStatuses,
   type Floor,
   type LoginInput,
-  type LoginResponse,
+  type Session,
 } from '@bb/core';
 import { z } from 'zod';
 import { HttpError, type HttpClient } from './http';
@@ -29,13 +30,25 @@ function loginPath(mode: LoginMode): string {
 export class AuthGateway {
   constructor(private readonly http: HttpClient) {}
 
-  async login(input: LoginInput): Promise<LoginResponse> {
+  // Each endpoint answers a different shape, so each one is parsed with its own
+  // schema and normalized into the domain Session here.
+  async login(input: LoginInput): Promise<Session> {
     try {
       const raw = await this.http.post({
         path: loginPath(input.mode),
         body: { cedula: input.cedula, password: input.password },
       });
-      return LoginResponseSchema.parse(raw);
+
+      switch (input.mode) {
+        case LoginMode.Usuario: {
+          const { token, user, spaces } = UserLoginResponseSchema.parse(raw);
+          return { mode: LoginMode.Usuario, token, user, spaces };
+        }
+        case LoginMode.Admin: {
+          const { token, user } = AdminLoginResponseSchema.parse(raw);
+          return { mode: LoginMode.Admin, token, user };
+        }
+      }
     } catch (error) {
       throw toAuthError(error);
     }

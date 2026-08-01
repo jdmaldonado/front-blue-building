@@ -11,6 +11,43 @@ en `features` (ver `crear-vista`).
 
 Lee primero `reglas-generales/SKILL.md`.
 
+## Cuándo hace falta un primitivo
+
+Regla: **si en una feature aparece un elemento interactivo con estilos propios
+(`<button>`, `<input>`, `<select>`, `<a>` de acción, un toggle, un tab), es un
+primitivo que falta.** No se resuelve con clases sueltas dentro de la vista.
+
+Señales de que hay que crear el primitivo:
+
+- El elemento tiene estados visuales (seleccionado, hover, deshabilitado, error).
+- Necesita accesibilidad más allá de lo nativo (`role`, `aria-checked`,
+  navegación con flechas, foco visible).
+- Se puede describir sin dominio: es un grupo de opciones (`RadioGroup`), no un
+  "selector de tipo de acceso".
+
+Si el elemento sí depende del dominio (un `DoorCard`, un `BuildingSelector`), va
+en la feature, pero se construye componiendo primitivos, no con markup crudo.
+
+Antes de escribir markup nuevo, mirar qué hay en `apps/web/src/ui`.
+
+## Cómo se llama el componente
+
+El equipo no es hablante nativo de inglés. El nombre tiene que entenderse sin
+buscarlo en Google.
+
+- **Se usa el nombre estándar**, el de HTML o el que usa todo el mundo:
+  `Button`, `Input`, `Checkbox`, `RadioGroup`, `Select`, `Modal`, `Tabs`,
+  `Tooltip`, `Table`, `Badge`, `Avatar`.
+- **La apariencia no va en el nombre, va en una variante.** Un grupo de opciones
+  con estilo de píldoras no es un `SegmentedControl` (nombre de Apple que casi
+  nadie reconoce): es un `RadioGroup` con `appearance="segmented"`. Un botón sin
+  fondo no es un `LinkButton`: es un `Button` con `appearance="ghost"`.
+- **Nada de nombres inventados o de marca**: ni `BBSelector`, ni `SmartInput`, ni
+  `FancyCard`.
+- Si dos ideas se parecen, la pregunta es _qué hace_, no _cómo se ve_. Si hacen
+  lo mismo (elegir una opción entre varias), es un componente con variantes, no
+  dos componentes.
+
 ## Estructura obligatoria
 
 Una carpeta por componente, tres archivos:
@@ -46,7 +83,7 @@ Reglas de la estructura:
   la escala de Tailwind está borrada a propósito
   (`packages/design-tokens/src/css.ts:30-47`), esas clases ya no existen. Si
   falta un paso, se agrega en `typeScale` (`agregar-design-token`), no en la
-  vista. El `pre-commit` rechaza tamaños arbitrarios (`lefthook.yml:11-19`).
+  vista.
 - **Clases literales.** Nada de `` `bg-${color}-500` ``: Tailwind escanea texto y
   no ve las clases construidas en runtime.
 - **`cn` para combinar.** Siempre `cn(variantes(...), className)`, con el
@@ -85,7 +122,7 @@ export const badgeTones = ['neutral', 'success', 'danger'] as const;
 export type BadgeTone = (typeof badgeTones)[number];
 
 export const badgeVariants = cva(
-  'inline-flex items-center gap-1 rounded-(--badge-radius) px-2 py-0.5 text-xs font-medium',
+  'inline-flex items-center gap-1 rounded-(--badge-radius) px-2 py-0.5 text-label font-medium',
   {
     variants: {
       tone: {
@@ -145,6 +182,7 @@ exporta una función de variantes por parte desde el mismo `-variants.ts`
 
 ## Checklist
 
+- [ ] Nombre estándar y reconocible; la apariencia es variante, no nombre.
 - [ ] Carpeta propia con `Componente.tsx`, `Componente-variants.ts`, `index.ts`.
 - [ ] Reexportado en `apps/web/src/ui/index.ts`.
 - [ ] Cero colores crudos: solo `var(--token)` vía `bg-(--token)`.

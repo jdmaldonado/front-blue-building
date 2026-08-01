@@ -33,6 +33,9 @@ apps/web/src/features/access/
 
 - Un componente de la feature puede conocer el dominio (`Door`, `Space`); un
   primitivo de `ui` no.
+- La feature no escribe `<button>`, `<input>` ni controles con estilos propios:
+  eso es un primitivo que falta en `ui/` (ver `crear-componente-ui`). La vista
+  solo compone.
 - Si el subcomponente sirve a dos features, se promueve a `ui` como primitivo
   (`crear-componente-ui`) o a un componente de dominio compartido.
 - Los textos visibles van en español, junto al componente que los muestra.

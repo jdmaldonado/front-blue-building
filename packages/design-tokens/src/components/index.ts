@@ -57,6 +57,10 @@ export const componentTokens = {
   'status-dot-online': 'success',
   'status-dot-offline': 'door-closed',
 
+  'radio-border': 'border-strong',
+  'radio-border-checked': 'accent',
+  'radio-dot': 'accent',
+
   'checkbox-border': 'border-strong',
   'checkbox-bg-checked': 'accent',
   'checkbox-foreground': 'text-on-accent',

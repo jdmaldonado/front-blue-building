@@ -110,6 +110,8 @@ Compilar no es revisar. En orden de fiabilidad:
 - [ ] Espaciados copiados del mock, con un ritmo consistente.
 - [ ] Detalles de marca presentes (patrón, gradiente, logo).
 - [ ] Colores solo por token y tamaños de texto solo por escala.
+- [ ] Ningún elemento interactivo escrito a mano en la feature: si lo hay, falta
+      un primitivo en `ui/` (ver `crear-componente-ui`).
 - [ ] Los cinco estados resueltos.
 - [ ] Foco visible, `aria-*` en campos con error, targets táctiles suficientes.
 - [ ] Verificado en navegador, o declarado como pendiente de revisión visual.

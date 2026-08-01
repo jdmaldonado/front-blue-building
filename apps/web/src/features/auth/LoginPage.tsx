@@ -2,9 +2,16 @@ import { LoginInputSchema, LoginMode } from '@bb/core';
 import { useLogin } from '@bb/logic';
 import { useNavigate } from '@tanstack/react-router';
 import { useState, type FormEvent } from 'react';
-import { Alert, Button, Field, Input, Logo } from '../../ui';
+import { Alert, Button, Field, Input, Logo, RadioGroup, type RadioOption } from '../../ui';
 import { BrandPanel } from './BrandPanel';
 import { loginErrorMessage } from './loginErrorMessage';
+
+// The two login endpoints are different (resident vs super admin), so the user
+// picks which one before submitting.
+const modeOptions: ReadonlyArray<RadioOption<LoginMode>> = [
+  { value: LoginMode.Usuario, label: 'Residente' },
+  { value: LoginMode.Admin, label: 'Administrador' },
+];
 
 type FieldErrors = {
   cedula?: string;
@@ -13,6 +20,7 @@ type FieldErrors = {
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<LoginMode>(LoginMode.Usuario);
   const [cedula, setCedula] = useState('');
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -26,11 +34,7 @@ export function LoginPage() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const input = LoginInputSchema.safeParse({
-      cedula,
-      password,
-      mode: LoginMode.Usuario,
-    });
+    const input = LoginInputSchema.safeParse({ cedula, password, mode });
     if (!input.success) {
       const errors: FieldErrors = {};
       for (const issue of input.error.issues) {
@@ -64,6 +68,15 @@ export function LoginPage() {
             <h1 className="font-display text-title-lg font-bold tracking-tight md:text-display">Acceso al edificio</h1>
             <span className="text-body text-(--text-secondary)">Ingresa con tu documento y contraseña.</span>
           </div>
+
+          <RadioGroup
+            appearance="segmented"
+            label="Tipo de acceso"
+            options={modeOptions}
+            value={mode}
+            disabled={disabled}
+            onChange={setMode}
+          />
 
           {alert ? (
             <Alert variant={alert.variant} title={alert.title}>

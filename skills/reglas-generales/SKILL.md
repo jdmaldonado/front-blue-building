@@ -96,6 +96,10 @@ o `@tanstack/react-router`, está mal ubicado.
   archivo interno: `import { Button } from '../../ui'`.
 - Código, identificadores y comentarios en inglés. Documentación y textos de UI en
   español.
+- El inglés del código es el estándar y simple: nombres que un equipo no nativo
+  reconoce sin buscarlos. `RadioGroup`, no `SegmentedControl`; `Modal`, no
+  `Overlay`. La variación visual se expresa con variantes, no inventando nombres
+  (ver `crear-componente-ui`).
 
 ## 7. React
 

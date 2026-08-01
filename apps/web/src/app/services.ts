@@ -1,5 +1,5 @@
 import { AccessGateway, AuthGateway, SocketClient, createFetchHttpClient } from '@bb/api-client';
-import { useSessionStore, type Services } from '@bb/logic';
+import { selectToken, useSessionStore, type Services } from '@bb/logic';
 import { ConsoleLogger } from '@bb/logger';
 import { getAppConfig } from '../config';
 
@@ -8,7 +8,7 @@ export function createServices(): Services {
   const logger = new ConsoleLogger({ app: 'web' });
   const http = createFetchHttpClient({
     baseUrl: config.api.baseUrl,
-    getToken: () => useSessionStore.getState().token,
+    getToken: () => selectToken(useSessionStore.getState()),
   });
 
   return {
