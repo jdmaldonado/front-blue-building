@@ -106,7 +106,23 @@ o `@tanstack/react-router`, está mal ubicado.
 - Efectos solo para sincronizar con algo externo (socket, DOM, storage). Datos del
   servidor van por TanStack Query, no por `useEffect`.
 
-## 8. Antes de escribir código nuevo
+## 8. Configuración
+
+- Toda la configuración de la app vive en un solo módulo:
+  `apps/web/src/config/app.config.ts`. Es el único archivo que conoce las
+  variables `VITE_*`.
+- Se valida con zod al arrancar, antes de crear los servicios
+  (`apps/web/src/main.tsx:15-38`). Si falta algo, la app no monta y muestra qué
+  falta en vez de fallar más tarde con un error confuso.
+- Se consume con `getAppConfig()`, que devuelve un objeto congelado. Prohibido
+  `import.meta.env` fuera de `src/config`, y prohibido exportar constantes de
+  entorno sueltas.
+- Los hooks y componentes no importan la config: reciben lo que necesitan a
+  través de `Services`.
+- Variable nueva: se agrega al schema y a `apps/web/.env.example` en el mismo
+  cambio.
+
+## 9. Antes de escribir código nuevo
 
 1. Buscar si ya existe: schema en `core`, gateway en `api-client`, hook en `logic`,
    primitivo en `ui`.

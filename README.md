@@ -26,10 +26,15 @@ El monorepo depende de `pnpm workspaces`.
 ## Puesta en marcha
 
 ```
-nvm use          # Node 22 segun .nvmrc
-pnpm install     # instala dependencias y los git hooks (lefthook, via "prepare")
-pnpm dev         # levanta la web en modo desarrollo
+nvm use                              # Node 22 segun .nvmrc
+pnpm install                         # dependencias + git hooks (lefthook, via "prepare")
+cp apps/web/.env.example apps/web/.env   # configuracion local
+pnpm dev                             # levanta la web en modo desarrollo
 ```
+
+La app valida su configuracion al arrancar: si falta o esta mal una variable, no
+monta y muestra en pantalla cual es. Toda la config vive en
+`apps/web/src/config/app.config.ts`; ningun otro archivo lee `import.meta.env`.
 
 Verificacion:
 

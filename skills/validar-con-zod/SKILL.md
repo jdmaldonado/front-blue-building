@@ -5,8 +5,8 @@ description: Cuándo validar con zod y cuándo no (bordes del sistema vs interio
 
 # Validar con zod
 
-Sí, usamos zod. Versión 4, declarada solo en `packages/core` y
-`packages/api-client`.
+Sí, usamos zod. Versión 4, en `packages/core`, `packages/api-client` y (solo para
+su configuración) `apps/web`.
 
 La regla es una sola: **se valida en el borde, una vez, y hacia adentro todo es
 TypeScript.**
@@ -16,15 +16,15 @@ TypeScript.**
 Un borde es cualquier punto donde entra un dato que el compilador no puede
 garantizar. Ahí zod es obligatorio:
 
-| Borde                                  | Dónde se valida                | Método                  |
-| -------------------------------------- | ------------------------------ | ----------------------- |
-| Respuesta HTTP                         | gateway en `api-client`        | `.parse()`              |
-| Evento de socket (stream continuo)     | `SocketClient` en `api-client` | `.safeParse()`          |
-| Payload de error de socket             | `SocketClient` en `api-client` | `.catch(fallback)`      |
-| Variables de entorno                   | `apps/web/src/config/env.ts`   | `.parse()` al arrancar  |
-| Datos persistidos (storage, PWA cache) | adaptador de storage           | `.safeParse()`          |
-| Formulario del usuario                 | schema de input en `core`      | resolver del formulario |
-| Params de URL no triviales             | ruta en `app/router.tsx`       | `.safeParse()`          |
+| Borde                                  | Dónde se valida                  | Método                     |
+| -------------------------------------- | -------------------------------- | -------------------------- |
+| Respuesta HTTP                         | gateway en `api-client`          | `.parse()`                 |
+| Evento de socket (stream continuo)     | `SocketClient` en `api-client`   | `.safeParse()`             |
+| Payload de error de socket             | `SocketClient` en `api-client`   | `.catch(fallback)`         |
+| Configuración (variables `VITE_*`)     | `config/app.config.ts` en la app | `.safeParse()` al arrancar |
+| Datos persistidos (storage, PWA cache) | adaptador de storage             | `.safeParse()`             |
+| Formulario del usuario                 | schema de input en `core`        | resolver del formulario    |
+| Params de URL no triviales             | ruta en `app/router.tsx`         | `.safeParse()`             |
 
 Todo lo que no está en esa tabla es interior del sistema y **no se valida**.
 
@@ -37,8 +37,9 @@ Todo lo que no está en esa tabla es interior del sistema y **no se valida**.
 - Valores que produce el propio front (estado local, derivados de un store).
 - El retorno de un hook.
 
-Señal de que algo está mal: un `import { z }` en `packages/logic` o en
-`apps/web/src/features`. Zod ni siquiera es dependencia de esos paquetes.
+Señal de que algo está mal: un `import { z }` en `packages/logic` (donde zod ni
+siquiera es dependencia) o en `apps/web/src/features`. En la app web zod solo
+aparece en `src/config` y, más adelante, en los formularios.
 
 ## Qué método usar
 
@@ -92,12 +93,20 @@ export type LoginInput = z.infer<typeof LoginInputSchema>;
 La vista solo conecta ese schema al resolver del formulario. Así la misma regla
 sirve para la web y para la app nativa después.
 
-Esto implica agregar `zod` a `apps/web` el día que entre `react-hook-form`. Es la
-única razón aceptada para que zod aparezca fuera de `core` y `api-client`, y solo
-para formularios: nunca para revalidar datos del servidor.
-
 Los mensajes de error de validación van en español dentro del schema, porque son
 texto que ve el usuario.
+
+## Zod fuera de `core` y `api-client`
+
+`apps/web` también declara zod, pero solo para sus propios bordes:
+
+- La configuración de la app (`apps/web/src/config/app.config.ts:15-19`), que es
+  el único sitio que conoce las variables `VITE_*`.
+- Los formularios, cuando entre `react-hook-form`, con el schema del input
+  viviendo igualmente en `core`.
+
+Fuera de eso no hay motivo válido, y en particular nunca para revalidar datos que
+ya vinieron de un gateway.
 
 ## Tipos: siempre inferidos
 
@@ -132,5 +141,9 @@ validados. Un parse por respuesta, en el gateway, y punto.
 - Definir el schema en `api-client` porque es donde se usa.
 - `as Door[]` en vez de `.parse()` cuando el schema da pereza.
 - `.safeParse()` y luego usar `parsed.data` sin comprobar `parsed.success`.
+- `z.url()` a secas para una URL de servidor: acepta `localhost:3000`, porque el
+  parser lo lee como protocolo `localhost:` y ruta `3000`. Se restringe el
+  esquema: `z.url({ protocol: /^https?$/ })`
+  (`apps/web/src/config/app.config.ts:15-17`).
 - Un schema que refleja el JSON crudo del backend en vez de la entidad del
   dominio: el trabajo de la capa anticorrupción es justamente que no se parezcan.
