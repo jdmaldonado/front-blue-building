@@ -1,6 +1,7 @@
 import {
   AdminLoginResponseSchema,
   AuthNetworkError,
+  InvalidResetTokenError,
   DoorSchema,
   DoorStatusesSchema,
   FloorSchema,
@@ -9,14 +10,22 @@ import {
   NoSpacesAssignedError,
   UnknownAuthError,
   UserLoginResponseSchema,
+  WeakPasswordError,
   type Door,
   type DoorStatuses,
   type Floor,
+  type ForgotPasswordInput,
   type LoginInput,
+  type ResetPasswordInput,
   type Session,
 } from '@bb/core';
 import { z } from 'zod';
 import { HttpError, type HttpClient } from './http';
+
+const AuthPath = {
+  ForgotPassword: '/api/user/auth/forgotPassword',
+  ResetPassword: '/api/user/auth/resetPassword',
+} as const;
 
 function loginPath(mode: LoginMode): string {
   switch (mode) {
@@ -53,6 +62,44 @@ export class AuthGateway {
       throw toAuthError(error);
     }
   }
+
+  // Always resolves, even for an unknown document: the API answers 204 on
+  // purpose so nobody can probe which documents exist
+  // (api/src/controllers/users/auth/controller.ts:97-100).
+  async forgotPassword(input: ForgotPasswordInput): Promise<void> {
+    try {
+      await this.http.post({ path: AuthPath.ForgotPassword, body: { cedula: input.cedula } });
+    } catch (error) {
+      throw toAuthError(error);
+    }
+  }
+
+  async resetPassword(input: ResetPasswordInput): Promise<void> {
+    try {
+      await this.http.post({
+        path: AuthPath.ResetPassword,
+        body: { token: input.token, password: input.password },
+      });
+    } catch (error) {
+      throw toResetPasswordError(error);
+    }
+  }
+}
+
+function toResetPasswordError(error: unknown): Error {
+  if (error instanceof HttpError) {
+    if (error.status === null) {
+      return new AuthNetworkError('Network error during password reset', { cause: error });
+    }
+    // The API answers 403 when the reset token is unknown, expired or used.
+    if (error.status === 403) {
+      return new InvalidResetTokenError('Reset token is no longer valid');
+    }
+    if (error.status === 422 || error.status === 400) {
+      return new WeakPasswordError('Password does not meet the minimum length');
+    }
+  }
+  return new UnknownAuthError('Unexpected password reset error', { cause: error });
 }
 
 function toAuthError(error: unknown): Error {

@@ -17,3 +17,12 @@ export function requireMode(mode: LoginMode) {
     }
   };
 }
+
+// Public auth screens (login, recovery): with a session there is nothing to do
+// here, so the user goes to their own area.
+export function redirectIfAuthenticated(): void {
+  const { session } = useSessionStore.getState();
+  if (session !== null) {
+    throw redirect({ to: landingPathFor(session) });
+  }
+}

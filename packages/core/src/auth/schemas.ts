@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { ApartmentSchema, BuildingSchema } from '../buildings';
 import { IdSchema } from '../shared';
-import { LoginMode, RoleType, UserType } from './constants';
+import { LoginMode, PASSWORD_MIN_LENGTH, RoleType, UserType } from './constants';
 
 export const UserTypeSchema = z.enum(UserType);
 export const RoleTypeSchema = z.enum(RoleType);
@@ -40,6 +40,30 @@ export const LoginInputSchema = z.object({
   mode: LoginModeSchema,
 });
 export type LoginInput = z.infer<typeof LoginInputSchema>;
+
+// Step 1 of the recovery: ask for a link. Only resident accounts can recover a
+// password; the API filters by userType = USER
+// (api/src/controllers/users/auth/controller.ts:100-107).
+export const ForgotPasswordInputSchema = z.object({
+  cedula: z.string().trim().min(1, 'Ingresa tu documento.'),
+});
+export type ForgotPasswordInput = z.infer<typeof ForgotPasswordInputSchema>;
+
+// Step 2: the token travels in the email link.
+export const ResetPasswordInputSchema = z.object({
+  token: z.string().min(1),
+  password: z.string().min(PASSWORD_MIN_LENGTH, `La contraseña debe tener al menos ${PASSWORD_MIN_LENGTH} caracteres.`),
+});
+export type ResetPasswordInput = z.infer<typeof ResetPasswordInputSchema>;
+
+// The confirmation field only exists in the form, never travels to the API.
+export const ResetPasswordFormSchema = ResetPasswordInputSchema.extend({
+  passwordConfirm: z.string(),
+}).refine((form) => form.password === form.passwordConfirm, {
+  path: ['passwordConfirm'],
+  message: 'Las contraseñas no coinciden.',
+});
+export type ResetPasswordForm = z.infer<typeof ResetPasswordFormSchema>;
 
 // Wire shapes: the two login endpoints answer differently. Resident login brings
 // the spaces; super admin login brings none (it picks a building later).

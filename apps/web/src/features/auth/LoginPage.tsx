@@ -1,11 +1,11 @@
 import { LoginInputSchema, LoginMode } from '@bb/core';
 import { useLogin } from '@bb/logic';
-import { useNavigate } from '@tanstack/react-router';
-import { landingPathFor } from '../../app/navigation';
-import { useState, type FormEvent } from 'react';
-import { Alert, Button, Field, Input, Logo, RadioGroup, type RadioOption } from '../../ui';
-import { BrandPanel } from './BrandPanel';
-import { loginErrorMessage } from './loginErrorMessage';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { useState, type SubmitEvent } from 'react';
+import { AppRoute, landingPathFor } from '../../app/navigation';
+import { Alert, Button, Field, Input, RadioGroup, linkVariants, type RadioOption } from '../../ui';
+import { AuthHeading } from './components';
+import { loginErrorMessage } from './lib';
 
 // The two login endpoints are different (resident vs super admin), so the user
 // picks which one before submitting.
@@ -33,7 +33,7 @@ export function LoginPage() {
     },
   });
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const input = LoginInputSchema.safeParse({ cedula, password, mode });
@@ -57,84 +57,81 @@ export function LoginPage() {
   const disabled = login.isPending || login.isSuccess;
 
   return (
-    // Full-bleed split screen: brand panel from the top-left corner, form filling
-    // the rest. On mobile the panel disappears and the form owns the viewport.
-    <main className="flex min-h-dvh flex-col bg-(--surface-raised) text-(--text-primary) md:flex-row">
-      <BrandPanel />
+    <>
+      <AuthHeading title="Acceso al edificio" description="Ingresa con tu documento y contraseña." />
 
-      <div className="flex flex-1 items-center justify-center px-6 py-8 sm:px-10 md:px-12">
-        <form onSubmit={handleSubmit} className="flex w-full max-w-[420px] flex-col gap-5">
-          <Logo className="md:hidden" />
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <RadioGroup
+          appearance="segmented"
+          label="Tipo de acceso"
+          options={modeOptions}
+          value={mode}
+          disabled={disabled}
+          onChange={setMode}
+        />
 
-          <div className="flex flex-col gap-1">
-            <h1 className="font-display text-title-lg font-bold tracking-tight md:text-display">Acceso al edificio</h1>
-            <span className="text-body text-(--text-secondary)">Ingresa con tu documento y contraseña.</span>
-          </div>
+        {alert ? (
+          <Alert variant={alert.variant} title={alert.title}>
+            {alert.description}
+          </Alert>
+        ) : null}
 
-          <RadioGroup
-            appearance="segmented"
-            label="Tipo de acceso"
-            options={modeOptions}
-            value={mode}
-            disabled={disabled}
-            onChange={setMode}
-          />
+        {login.isSuccess ? (
+          <Alert variant="success" title="Sesión iniciada">
+            Abriendo tu edificio...
+          </Alert>
+        ) : null}
 
-          {alert ? (
-            <Alert variant={alert.variant} title={alert.title}>
-              {alert.description}
-            </Alert>
-          ) : null}
+        <div className="flex flex-col gap-3.5">
+          <Field label="Documento" htmlFor="cedula" error={fieldErrors.cedula}>
+            <Input
+              id="cedula"
+              className="font-mono"
+              inputMode="numeric"
+              autoComplete="username"
+              placeholder="Número de documento"
+              value={cedula}
+              disabled={disabled}
+              aria-invalid={fieldErrors.cedula !== undefined}
+              aria-describedby={fieldErrors.cedula ? 'cedula-error' : undefined}
+              onChange={(event) => setCedula(event.target.value)}
+            />
+          </Field>
 
-          {login.isSuccess ? (
-            <Alert variant="success" title="Sesión iniciada">
-              Abriendo tu edificio...
-            </Alert>
-          ) : null}
+          <Field label="Contraseña" htmlFor="password" error={fieldErrors.password}>
+            <Input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              placeholder="Contraseña"
+              value={password}
+              disabled={disabled}
+              aria-invalid={fieldErrors.password !== undefined}
+              aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </Field>
+        </div>
 
-          <div className="flex flex-col gap-3.5">
-            <Field label="Documento" htmlFor="cedula" error={fieldErrors.cedula}>
-              <Input
-                id="cedula"
-                className="font-mono"
-                inputMode="numeric"
-                autoComplete="username"
-                placeholder="Número de documento"
-                value={cedula}
-                disabled={disabled}
-                aria-invalid={fieldErrors.cedula !== undefined}
-                aria-describedby={fieldErrors.cedula ? 'cedula-error' : undefined}
-                onChange={(event) => setCedula(event.target.value)}
-              />
-            </Field>
+        {/* Recovery exists only for resident accounts: the API filters by
+            userType = USER, so it is hidden in admin mode. */}
+        {mode === LoginMode.Usuario ? (
+          <Link to={AppRoute.ForgotPassword} className={linkVariants({ className: 'self-end' })}>
+            ¿Olvidaste tu contraseña?
+          </Link>
+        ) : null}
 
-            <Field label="Contraseña" htmlFor="password" error={fieldErrors.password}>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="Contraseña"
-                value={password}
-                disabled={disabled}
-                aria-invalid={fieldErrors.password !== undefined}
-                aria-describedby={fieldErrors.password ? 'password-error' : undefined}
-                onChange={(event) => setPassword(event.target.value)}
-              />
-            </Field>
-          </div>
-
-          <Button
-            type="submit"
-            size="lg"
-            intent={login.isSuccess ? 'success' : 'primary'}
-            loading={login.isPending}
-            disabled={disabled}
-            className="bg-[image:var(--pattern-honeycomb)] bg-[length:39px_22.52px]"
-          >
-            {login.isSuccess ? 'Acceso concedido' : login.isPending ? 'Entrando...' : 'Entrar'}
-          </Button>
-        </form>
-      </div>
-    </main>
+        <Button
+          type="submit"
+          size="lg"
+          intent={login.isSuccess ? 'success' : 'primary'}
+          loading={login.isPending}
+          disabled={disabled}
+          className="bg-[image:var(--pattern-honeycomb)] bg-[length:39px_22.52px]"
+        >
+          {login.isSuccess ? 'Acceso concedido' : login.isPending ? 'Entrando...' : 'Entrar'}
+        </Button>
+      </form>
+    </>
   );
 }

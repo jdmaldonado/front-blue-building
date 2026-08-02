@@ -2,6 +2,13 @@ import { LoginMode, type Session } from '@bb/core';
 
 export const AppRoute = {
   Login: '/login',
+  ForgotPassword: '/forgot-password',
+  ResetPassword: '/reset-password',
+  // The API email template still points here
+  // (api/src/services/EmailService.ts:181): SITE_URL/reset_password?token=...
+  // The route only forwards to ResetPassword keeping the token. It can be
+  // deleted once the template is updated AND the old links have expired.
+  LegacyResetPassword: '/reset_password',
   Home: '/',
   Admin: '/admin',
 } as const;

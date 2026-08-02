@@ -21,23 +21,62 @@ Compone tres cosas y nada más:
 Lo que **no** hace: llamar `fetch`, construir URLs, parsear respuestas, mapear
 códigos HTTP, guardar caché propia. Todo eso vive en `api-client` y `logic`.
 
-## Estructura
+## Dónde va cada cosa
+
+Tres carpetas en `apps/web/src`, con responsabilidades que no se mezclan:
+
+| Carpeta     | Qué contiene                                             | Conoce el dominio |
+| ----------- | -------------------------------------------------------- | ----------------- |
+| `ui/`       | Primitivos reutilizables (`Button`, `RadioGroup`)        | No                |
+| `layouts/`  | Marcos de ruta: el armazón que envuelve varias pantallas | No                |
+| `features/` | Pantallas y sus piezas                                   | Sí                |
+
+El layout **no vive dentro de la feature**: es de la ruta. Lo renderiza un layout
+route (`routes/_auth.tsx`) y las pantallas solo llenan el hueco del `Outlet`.
+Ejemplo: `apps/web/src/layouts/auth/AuthLayout.tsx`.
+
+## Estructura de una feature
 
 ```
 apps/web/src/features/access/
-  DoorsPage.tsx          # vista de ruta
-  DoorList.tsx           # subcomponente de la feature
-  DoorList-variants.ts   # opcional, si tiene clases propias no triviales
-  index.ts               # barrel: export { DoorsPage }
+  index.ts                    # barrel público: SOLO las pantallas
+  DoorsPage.tsx               # una pantalla por archivo, en la raíz
+  DoorDetailPage.tsx
+  components/                 # piezas visuales de la feature (con dominio)
+    DoorList.tsx
+    index.ts                  # barrel interno
+  hooks/                      # hooks de interfaz propios de la feature
+    useDoorFilters.ts
+    index.ts
+  lib/                        # helpers puros de presentación
+    doorErrorMessages.ts
+    index.ts
 ```
 
+Reglas:
+
+- **`index.ts` de la feature exporta solo pantallas.** Es lo único que el router
+  necesita. Los `components/`, `hooks/` y `lib/` son internos: nadie los importa
+  desde fuera de la feature.
+- **`components/`** existe desde la primera pieza. Un componente por archivo; si
+  además necesita variantes o subpartes, pasa a carpeta propia:
+  `components/DoorList/{DoorList.tsx, DoorList-variants.ts, index.ts}`, igual que
+  en `ui/`.
+- **Componentes anidados**: si solo lo usa un componente y no llega a 30 líneas,
+  se queda en el mismo archivo. En cuanto se reutiliza o crece, sale a
+  `components/`. No se anidan carpetas más de un nivel.
+- **`hooks/`** es para estado de interfaz (filtros, panel abierto, paginación
+  visual). La lógica de negocio nunca vive aquí: va a `packages/logic`.
+- **`lib/`** es para funciones puras de presentación: mapear un error de dominio
+  a un mensaje, formatear una etiqueta. Nada de `utils.ts` genérico; el archivo
+  se llama por lo que hace (`doorErrorMessages.ts`).
 - Un componente de la feature puede conocer el dominio (`Door`, `Space`); un
   primitivo de `ui` no.
 - La feature no escribe `<button>`, `<input>` ni controles con estilos propios:
   eso es un primitivo que falta en `ui/` (ver `crear-componente-ui`). La vista
   solo compone.
-- Si el subcomponente sirve a dos features, se promueve a `ui` como primitivo
-  (`crear-componente-ui`) o a un componente de dominio compartido.
+- Si una pieza sirve a dos features, se promueve: a `ui/` si no tiene dominio, a
+  `layouts/` si es armazón, o a una feature compartida si sí lo tiene.
 - Los textos visibles van en español, junto al componente que los muestra.
 
 ## Estados obligatorios
@@ -69,9 +108,30 @@ al correr `dev` o `build`.
 | -------------------------- | ---------------- |
 | `routes/__root.tsx`        | layout raíz      |
 | `routes/index.tsx`         | `/`              |
-| `routes/login.tsx`         | `/login`         |
 | `routes/admin.tsx`         | `/admin`         |
 | `routes/doors.$doorId.tsx` | `/doors/:doorId` |
+| `routes/_auth.tsx`         | layout sin URL   |
+| `routes/_auth/login.tsx`   | `/login`         |
+
+### Agrupar rutas sin ensuciar la URL
+
+Un archivo que empieza con `_` es un **layout sin path**: agrupa rutas
+relacionadas sin agregar segmento a la URL. `routes/_auth/login.tsx` sigue
+siendo `/login`.
+
+Sirve para declarar una sola vez lo que comparten:
+
+```tsx
+// routes/_auth.tsx
+export const Route = createFileRoute('/_auth')({
+  beforeLoad: redirectIfAuthenticated,
+  component: AuthLayout, // de layouts/, y adentro lleva el <Outlet />
+});
+```
+
+Las hijas (`login`, `forgot-password`, `reset-password`) quedan sin
+guard propio ni marco propio: solo su contenido. Si el grupo no comparte
+interfaz, el componente del layout es `Outlet` pelado.
 
 Reglas:
 
@@ -89,6 +149,13 @@ Reglas:
 
 - `routeTree.gen.ts` es generado: no se edita a mano y está fuera de lint y
   formato. Se agrega una ruta creando el archivo, no tocando un array.
+- **Las URLs van siempre en inglés y en kebab-case**: `/forgot-password`,
+  `/reset-password`, `/door-access`. Nunca en español, aunque la interfaz sí lo
+  esté. El nombre del archivo es la URL, así que la regla aplica al archivo.
+- Si un sistema externo impone otra ruta (el enlace de un correo, por ejemplo),
+  se crea una ruta de compatibilidad que solo redirige, conservando los search
+  params (`apps/web/src/routes/reset_password.tsx`). Esa ruta impuesta se queda
+  encerrada en ese archivo y no se propaga al resto del código.
 - El guard lee el store con `.getState()`, no con el hook: `beforeLoad` no es un
   componente.
 - Los guards son cosa del **router**, no de TanStack Query. Query es estado de
@@ -124,6 +191,10 @@ Reglas:
 
 ## Formularios
 
+- El handler del `onSubmit` se tipa con `SubmitEvent<HTMLFormElement>`.
+  `FormEvent` y `FormEventHandler` están deprecados en los tipos de React 19
+  (no existían como evento del DOM). Igual: `ChangeEvent` para inputs,
+  `SyntheticEvent` como último recurso.
 - El estado del formulario es local (`useState`) o de `react-hook-form`; nunca del
   store global.
 - Cada control va dentro de `<Field>` con `htmlFor` igual al `id` del control
@@ -145,7 +216,8 @@ Reglas:
 - [ ] Interfaz construida con primitivos de `../../ui`, sin clases de color crudas.
 - [ ] Estados pending, error, vacío y con datos resueltos.
 - [ ] Archivo de ruta creado en `src/routes` y con guard si requiere sesión.
-- [ ] Barrel `index.ts` de la feature actualizado.
+- [ ] Barrel de la feature exporta solo pantallas; piezas en `components/`,
+      `hooks/` o `lib/` según corresponda.
 - [ ] Checklist de `revisar-ui` pasado, con el mock delante.
 - [ ] `pnpm typecheck && pnpm lint && pnpm format`.
 
@@ -155,3 +227,6 @@ Reglas:
 - `useEffect` para disparar la carga inicial: eso lo hace `useQuery`.
 - Mostrar `error.message` crudo del backend al usuario.
 - Escribir la pantalla dentro del archivo de ruta en vez de en `features/`.
+- Meter el layout de la ruta dentro de la feature: el marco es de la ruta.
+- Un `utils.ts` cajón de sastre dentro de la feature.
+- Exportar componentes internos desde el barrel de la feature.

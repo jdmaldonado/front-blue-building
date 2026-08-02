@@ -1,0 +1,1 @@
+export { AuthHeading } from './AuthHeading';

@@ -38,6 +38,8 @@ está cubierto, se sigue el patrón del código existente en la misma capa.
 - Lógica separada de interfaz: `packages/logic` no importa UI; `apps/web` no
   hace fetch.
 - Componentes de UI en carpeta propia con barrel y `Componente-variants.ts`.
+- `ui/` primitivos sin dominio, `layouts/` marcos de ruta, `features/` pantallas
+  con `components/`, `hooks/` y `lib/` internos.
 - Colores solo por design tokens y tamaños de texto solo por la escala del
   sistema (`text-body`, `text-title`...). Nada de `text-[23px]` ni `text-sm`.
 - `console.*` solo dentro de `packages/logger`.

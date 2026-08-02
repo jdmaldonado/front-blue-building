@@ -94,8 +94,9 @@ o `@tanstack/react-router`, está mal ubicado.
   se usa o en el paquete que le corresponde.
 - Barrel (`index.ts`) por dominio y por componente. Se importa del barrel, no del
   archivo interno: `import { Button } from '../../ui'`.
-- Código, identificadores y comentarios en inglés. Documentación y textos de UI en
-  español.
+- Código, identificadores, comentarios **y rutas (URLs)** en inglés.
+  Documentación y textos de UI en español. Una URL nunca lleva español:
+  `/forgot-password`, no `/recuperar-contrasena`.
 - El inglés del código es el estándar y simple: nombres que un equipo no nativo
   reconoce sin buscarlos. `RadioGroup`, no `SegmentedControl`; `Modal`, no
   `Overlay`. La variación visual se expresa con variantes, no inventando nombres

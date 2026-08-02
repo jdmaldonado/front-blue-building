@@ -31,3 +31,7 @@ export const LoginMode = {
   Admin: 'ADMIN',
 } as const;
 export type LoginMode = (typeof LoginMode)[keyof typeof LoginMode];
+
+// The API validates `MinLength(4)` on the reset form
+// (api/src/controllers/users/auth/reset_password_form.ts:7).
+export const PASSWORD_MIN_LENGTH = 4;

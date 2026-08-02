@@ -11,10 +11,13 @@ export { Field, fieldLabelVariants, fieldMessageVariants, fieldVariants } from '
 export type { FieldLabelVariants, FieldMessageVariants } from './field';
 
 export { Input, inputSizes, inputVariants } from './input';
+export type { InputSize, InputVariants } from './input';
+
+export { Link, linkVariants } from './link';
+export type { LinkVariants } from './link';
 
 export { Logo, logoMarkSize, logoSizes, logoVariants, logoWordmarkVariants } from './logo';
 export type { LogoSize, LogoVariants } from './logo';
-export type { InputSize, InputVariants } from './input';
 
 export {
   RadioGroup,
