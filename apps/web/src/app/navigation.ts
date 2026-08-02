@@ -8,7 +8,9 @@ export const AppRoute = {
   // The route only forwards to ResetPassword with the token.
   LegacyResetPassword: '/reset_password',
   Home: '/',
+  Dashboard: '/dashboard',
   Admin: '/admin',
+  AdminBuilding: '/admin/buildings/$buildingId',
 } as const;
 export type AppRoute = (typeof AppRoute)[keyof typeof AppRoute];
 
@@ -19,6 +21,6 @@ export function landingPathFor(session: Session): AppRoute {
     case LoginMode.Admin:
       return AppRoute.Admin;
     case LoginMode.Usuario:
-      return AppRoute.Home;
+      return AppRoute.Dashboard;
   }
 }

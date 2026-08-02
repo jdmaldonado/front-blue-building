@@ -1,5 +1,7 @@
 import { LoginMode, type Session, type Space } from '@bb/core';
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
+import { getSessionStorage } from './storage';
 
 export interface SessionState {
   session: Session | null;
@@ -10,13 +12,27 @@ export interface SessionState {
   clearSession: () => void;
 }
 
-export const useSessionStore = create<SessionState>()((set) => ({
-  session: null,
-  selectedSpaceIndex: 0,
-  setSession: (session) => set({ session, selectedSpaceIndex: 0 }),
-  selectSpace: (index) => set({ selectedSpaceIndex: index }),
-  clearSession: () => set({ session: null, selectedSpaceIndex: 0 }),
-}));
+// The key is versioned: if the Session shape changes, old data is dropped
+// instead of loading a session the app can no longer read.
+const STORAGE_KEY = 'bb.session.v1';
+
+export const useSessionStore = create<SessionState>()(
+  persist(
+    (set) => ({
+      session: null,
+      selectedSpaceIndex: 0,
+      setSession: (session) => set({ session, selectedSpaceIndex: 0 }),
+      selectSpace: (index) => set({ selectedSpaceIndex: index }),
+      clearSession: () => set({ session: null, selectedSpaceIndex: 0 }),
+    }),
+    {
+      name: STORAGE_KEY,
+      storage: createJSONStorage(getSessionStorage),
+      // Only data is stored, never the actions.
+      partialize: (state) => ({ session: state.session, selectedSpaceIndex: state.selectedSpaceIndex }),
+    },
+  ),
+);
 
 export function selectIsAuthenticated(state: SessionState): boolean {
   return state.session !== null;

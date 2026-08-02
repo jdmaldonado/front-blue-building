@@ -1,11 +1,16 @@
 import { DoorStatus, type Door, type Floor } from '@bb/core';
 import { selectDoorStatus, useAccessibleDoors, useDoorControl, useDoorStatuses, useTowerFloors } from '@bb/logic';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { useBuilding } from '../../app/BuildingContext';
-import { Alert, Loading, Logo, RadioGroup, type RadioOption } from '../../ui';
+import { Alert, Loading, Logo, Select, type SelectOption } from '../../ui';
 import { DoorDialog, FloorPlan } from './components';
 
-export function DoorsDashboardPage() {
+type DoorsDashboardPageProps = {
+  // The admin panel puts a back link here; the resident has nowhere to go back to.
+  headerAction?: ReactNode;
+};
+
+export function DoorsDashboardPage({ headerAction }: DoorsDashboardPageProps) {
   const building = useBuilding();
   const [floorId, setFloorId] = useState<string | null>(null);
   const [selectedDoorId, setSelectedDoorId] = useState<string | null>(null);
@@ -18,7 +23,10 @@ export function DoorsDashboardPage() {
 
   const { openDoor } = useDoorControl(building.id);
 
-  const currentFloorId = floorId ?? floors.data?.[0]?.id ?? null;
+  // Default to the floor of the first door the user can reach: starting on a
+  // floor with no doors looks like the plan is broken.
+  const defaultFloorId = doors.data?.[0]?.floor?.id ?? floors.data?.[0]?.id ?? null;
+  const currentFloorId = floorId ?? defaultFloorId;
   const currentFloor: Floor | null = floors.data?.find((floor) => floor.id === currentFloorId) ?? null;
 
   const floorDoors = useMemo(
@@ -26,9 +34,14 @@ export function DoorsDashboardPage() {
     [doors.data, currentFloorId],
   );
 
-  const floorOptions: ReadonlyArray<RadioOption<string>> = useMemo(
-    () => (floors.data ?? []).map((floor) => ({ value: floor.id, label: floor.name ?? `Piso ${floor.id}` })),
-    [floors.data],
+  const floorOptions: ReadonlyArray<SelectOption<string>> = useMemo(
+    () =>
+      (floors.data ?? []).map((floor) => {
+        const count = (doors.data ?? []).filter((door) => door.floor?.id === floor.id).length;
+        const name = floor.name ?? `Piso ${floor.id}`;
+        return { value: floor.id, label: count > 0 ? `${name} (${count})` : name };
+      }),
+    [floors.data, doors.data],
   );
 
   const selectedDoor: Door | null = floorDoors.find((door) => door.id === selectedDoorId) ?? null;
@@ -53,8 +66,9 @@ export function DoorsDashboardPage() {
   }
 
   return (
-    <main className="flex min-h-dvh flex-col gap-4 bg-(--surface-base) p-4 text-(--text-primary) sm:p-6">
-      <header className="flex flex-wrap items-center gap-3">
+    <main className="flex h-dvh flex-col gap-4 overflow-hidden bg-(--surface-base) p-4 text-(--text-primary) sm:p-6">
+      <header className="flex flex-none flex-wrap items-center gap-3">
+        {headerAction}
         <Logo size="sm" />
         <div className="flex flex-col">
           <span className="font-display text-title-sm font-bold tracking-tight">{building.name}</span>
@@ -65,13 +79,12 @@ export function DoorsDashboardPage() {
       </header>
 
       {floorOptions.length > 1 && currentFloorId !== null ? (
-        <RadioGroup
-          appearance="segmented"
-          label="Piso"
+        <Select
+          aria-label="Piso"
           options={floorOptions}
           value={currentFloorId}
           onChange={setFloorId}
-          className="sm:max-w-md"
+          className="w-full flex-none sm:max-w-xs"
         />
       ) : null}
 
@@ -86,7 +99,7 @@ export function DoorsDashboardPage() {
           statusOf={statusOf}
           selectedDoorId={selectedDoorId}
           onSelect={(door) => setSelectedDoorId(door.id)}
-          className="min-h-[320px] flex-1"
+          className="min-h-0 flex-1"
         />
       )}
 

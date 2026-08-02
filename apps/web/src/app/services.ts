@@ -1,4 +1,4 @@
-import { AccessGateway, AuthGateway, SocketClient, createFetchHttpClient } from '@bb/api-client';
+import { AccessGateway, AuthGateway, BuildingsGateway, SocketClient, createFetchHttpClient } from '@bb/api-client';
 import { selectToken, useSessionStore, type Services } from '@bb/logic';
 import { ConsoleLogger } from '@bb/logger';
 import { getAppConfig } from '../config';
@@ -15,6 +15,7 @@ export function createServices(): Services {
     logger,
     authGateway: new AuthGateway(http),
     accessGateway: new AccessGateway(http),
+    buildingsGateway: new BuildingsGateway(http),
     socketClient: new SocketClient({ url: config.socket.url, logger }),
   };
 }

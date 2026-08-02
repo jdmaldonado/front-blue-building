@@ -3,12 +3,13 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const dialogSizes = ['sm', 'md', 'lg'] as const;
 export type DialogSize = (typeof dialogSizes)[number];
 
-// Uses the native <dialog>, so backdrop, ESC and focus trap are free. Bottom
-// sheet on mobile, centered from sm up.
+// Uses the native <dialog>, so backdrop, ESC and focus trap are free.
 export const dialogVariants = cva(
   [
     'w-full max-h-[85dvh] p-0 backdrop:bg-black/60',
-    'mt-auto mb-0 rounded-t-(--card-radius) rounded-b-none',
+    // Bottom sheet on mobile, centered from sm up. `mx-auto` is explicit
+    // because the vertical margins override the browser default.
+    'mx-auto mt-auto mb-0 rounded-t-(--card-radius) rounded-b-none',
     'sm:my-auto sm:rounded-(--card-radius)',
     'border border-(--card-border) bg-(--card-bg) text-(--text-primary) shadow-(--shadow-3)',
   ],

@@ -1,6 +1,7 @@
 import {
   AdminLoginResponseSchema,
   AuthNetworkError,
+  BuildingSchema,
   InvalidResetTokenError,
   DoorSchema,
   DoorStatusesSchema,
@@ -11,6 +12,7 @@ import {
   UnknownAuthError,
   UserLoginResponseSchema,
   WeakPasswordError,
+  type Building,
   type Door,
   type DoorStatuses,
   type Floor,
@@ -115,6 +117,15 @@ function toAuthError(error: unknown): Error {
     }
   }
   return new UnknownAuthError('Unexpected login error', { cause: error });
+}
+
+export class BuildingsGateway {
+  constructor(private readonly http: HttpClient) {}
+
+  async listBuildings(): Promise<Building[]> {
+    const raw = await this.http.get({ path: '/api/buildings' });
+    return z.object({ buildings: z.array(BuildingSchema) }).parse(raw).buildings;
+  }
 }
 
 export class AccessGateway {

@@ -49,6 +49,9 @@ export {
 } from './radio-group';
 export type { RadioGroupAppearance, RadioGroupSize, RadioGroupVariants, RadioOption } from './radio-group';
 
+export { Select, selectSizes, selectVariants } from './select';
+export type { SelectOption, SelectSize, SelectVariants } from './select';
+
 export { Spinner, spinnerSizes, spinnerVariants } from './spinner';
 export type { SpinnerSize, SpinnerVariants } from './spinner';
 
