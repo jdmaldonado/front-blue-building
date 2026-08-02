@@ -13,6 +13,9 @@ type DoorPinProps = {
 // them: the label hangs to the side, so a door near the edge is still in place.
 export function DoorPin({ door, status, selected, onSelect }: DoorPinProps) {
   const meta = doorStatusMeta(status);
+  // A pin on the right half hangs its label to the left, so the text does not
+  // run past the edge of the plan.
+  const labelOnLeft = (door.left ?? 50) > 60;
 
   return (
     <button
@@ -41,8 +44,10 @@ export function DoorPin({ door, status, selected, onSelect }: DoorPinProps) {
 
       <span
         className={cn(
-          'absolute top-1/2 left-full ml-2 hidden -translate-y-1/2 items-center rounded-(--radius-round) border px-2.5 py-1',
-          'bg-black/60 font-mono text-caption whitespace-nowrap text-white sm:inline-flex',
+          'absolute top-1/2 inline-flex -translate-y-1/2 items-center rounded-(--radius-round) border',
+          'px-1.5 py-0.5 sm:px-2.5 sm:py-1',
+          'bg-black/60 font-mono text-caption whitespace-nowrap text-white',
+          labelOnLeft ? 'right-full mr-1.5 sm:mr-2' : 'left-full ml-1.5 sm:ml-2',
           selected ? 'border-(--accent)' : 'border-white/15',
         )}
       >

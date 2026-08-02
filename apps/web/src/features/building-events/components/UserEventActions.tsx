@@ -1,122 +1,69 @@
 import { UserEvent } from '@bb/core';
-import { useUserEvents } from '@bb/logic';
 import { BellOff, TriangleAlert, Users } from 'lucide-react';
-import { useState, type ReactNode } from 'react';
-import { Alert, Button, Dialog, cn } from '../../../ui';
-
-// Shared on purpose: these actions appear in several screens, so the rule about
-// which ones need confirmation lives only here.
-
-type ConfirmSpec = {
-  title: string;
-  description: string;
-  cta: string;
-  intent: 'destructive' | 'warning';
-};
-
-const CONFIRM: Partial<Record<UserEvent, ConfirmSpec>> = {
-  [UserEvent.Emergency]: {
-    title: '¿Confirmar emergencia?',
-    description: 'Se dispara la alarma del edificio y se notifica al staff. Queda registrado a tu nombre.',
-    cta: 'Disparar',
-    intent: 'destructive',
-  },
-  [UserEvent.Mute]: {
-    title: '¿Silenciar la alarma?',
-    description: 'Se silencia la alarma en todo el edificio. La acción queda registrada.',
-    cta: 'Silenciar',
-    intent: 'warning',
-  },
-};
-
-const SENT_MESSAGE: Record<UserEvent, string> = {
-  [UserEvent.Intrusion]: 'Alerta de intrusión enviada.',
-  [UserEvent.Emergency]: 'Emergencia reportada, alarma activada.',
-  [UserEvent.Mute]: 'Alarma silenciada en el edificio.',
-};
+import { Button, Dialog, cn } from '../../../ui';
+import type { UserEventActionsController } from '../hooks/useUserEventActions';
 
 type UserEventActionsProps = {
-  buildingId: string;
+  controller: UserEventActionsController;
   className?: string;
 };
 
-export function UserEventActions({ buildingId, className }: UserEventActionsProps) {
-  const [pending, setPending] = useState<UserEvent | null>(null);
-  const [feedback, setFeedback] = useState<ReactNode | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const { sendUserEvent } = useUserEvents(buildingId, {
-    onError: () => setError('El servidor rechazó la acción. Revisa tus permisos e intenta de nuevo.'),
-  });
-
-  const emit = (event: UserEvent) => {
-    setError(null);
-    sendUserEvent(event);
-    setFeedback(SENT_MESSAGE[event]);
-  };
-
-  const request = (event: UserEvent) => {
-    if (CONFIRM[event] === undefined) {
-      emit(event);
-      return;
-    }
-    setPending(event);
-  };
-
-  const confirm = pending === null ? undefined : CONFIRM[pending];
+// Buttons only: the feedback is rendered apart by `UserEventFeedback`, so the
+// row can share a line with the primary action of the screen.
+export function UserEventActions({ controller, className }: UserEventActionsProps) {
+  const { confirmSpec } = controller;
 
   return (
     <>
-      <div className={cn('flex flex-wrap gap-2', className)}>
-        <Button intent="warning" appearance="outline" onClick={() => request(UserEvent.Intrusion)}>
-          <Users size={17} />
-          Intruso
+      <div className={cn('flex min-w-0 gap-2', className)}>
+        <Button
+          intent="warning"
+          appearance="outline"
+          size="sm"
+          onClick={() => controller.request(UserEvent.Intrusion)}
+          className="min-w-0 flex-1 px-2 sm:px-3"
+        >
+          <Users size={17} className="shrink-0" />
+          <span className="truncate">Intruso</span>
         </Button>
-        <Button intent="destructive" onClick={() => request(UserEvent.Emergency)}>
-          <TriangleAlert size={17} />
-          Emergencia
+        <Button
+          intent="destructive"
+          size="sm"
+          onClick={() => controller.request(UserEvent.Emergency)}
+          className="min-w-0 flex-1 px-2 sm:px-3"
+        >
+          <TriangleAlert size={17} className="shrink-0" />
+          <span className="truncate">Emergencia</span>
         </Button>
-        <Button intent="neutral" appearance="outline" onClick={() => request(UserEvent.Mute)}>
-          <BellOff size={17} />
-          Silenciar
+        <Button
+          intent="neutral"
+          appearance="outline"
+          size="sm"
+          onClick={() => controller.request(UserEvent.Mute)}
+          className="min-w-0 flex-1 px-2 sm:px-3"
+        >
+          <BellOff size={17} className="shrink-0" />
+          <span className="truncate">Silenciar</span>
         </Button>
       </div>
 
-      {error !== null ? (
-        <Alert variant="error" title="No pudimos enviar el evento">
-          {error}
-        </Alert>
-      ) : feedback !== null ? (
-        <Alert variant="success" title="Listo">
-          {feedback}
-        </Alert>
-      ) : null}
-
       <Dialog
-        open={confirm !== undefined}
-        onClose={() => setPending(null)}
+        open={confirmSpec !== null}
+        onClose={controller.cancel}
         size="sm"
-        title={confirm?.title ?? ''}
+        title={confirmSpec?.title ?? ''}
         footer={
           <>
-            <Button intent="neutral" appearance="outline" onClick={() => setPending(null)}>
+            <Button intent="neutral" appearance="outline" onClick={controller.cancel}>
               Cancelar
             </Button>
-            <Button
-              intent={confirm?.intent ?? 'destructive'}
-              onClick={() => {
-                if (pending !== null) {
-                  emit(pending);
-                }
-                setPending(null);
-              }}
-            >
-              {confirm?.cta ?? 'Confirmar'}
+            <Button intent={confirmSpec?.intent ?? 'destructive'} onClick={controller.confirm}>
+              {confirmSpec?.cta ?? 'Confirmar'}
             </Button>
           </>
         }
       >
-        <p className="text-body text-(--text-secondary)">{confirm?.description}</p>
+        <p className="text-body text-(--text-secondary)">{confirmSpec?.description}</p>
       </Dialog>
     </>
   );

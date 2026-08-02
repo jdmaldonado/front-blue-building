@@ -2,6 +2,7 @@ import {
   AdminLoginResponseSchema,
   AuthNetworkError,
   BuildingSchema,
+  BuildingsNetworkError,
   InvalidResetTokenError,
   DoorSchema,
   DoorStatusesSchema,
@@ -9,7 +10,9 @@ import {
   InvalidCredentialsError,
   LoginMode,
   NoSpacesAssignedError,
+  SessionExpiredError,
   UnknownAuthError,
+  UnknownBuildingsError,
   UserLoginResponseSchema,
   WeakPasswordError,
   type Building,
@@ -119,13 +122,39 @@ function toAuthError(error: unknown): Error {
   return new UnknownAuthError('Unexpected login error', { cause: error });
 }
 
+// `/api/buildings` has no auth at all (api/src/routes/api.ts:83) and the legacy
+// registration forms still use it. The admin panel uses the guarded route:
+// JWT + SUPER_USER (api/src/routes/BlueBuildingRoutes.ts:137-142).
+const BuildingsPath = {
+  List: '/api/bluebuilding/buildings',
+} as const;
+
 export class BuildingsGateway {
   constructor(private readonly http: HttpClient) {}
 
   async listBuildings(): Promise<Building[]> {
-    const raw = await this.http.get({ path: '/api/buildings' });
-    return z.object({ buildings: z.array(BuildingSchema) }).parse(raw).buildings;
+    try {
+      // This route answers the array directly, without a `buildings` wrapper.
+      const raw = await this.http.get({ path: BuildingsPath.List });
+      return z.array(BuildingSchema).parse(raw);
+    } catch (error) {
+      throw toBuildingsError(error);
+    }
   }
+}
+
+function toBuildingsError(error: unknown): Error {
+  if (error instanceof HttpError) {
+    if (error.status === null) {
+      return new BuildingsNetworkError('Network error while listing buildings', { cause: error });
+    }
+    // The API answers 401 both for a dead token and for a user who is not
+    // SUPER_USER (api/src/services/AuthService.ts:71-78).
+    if (error.status === 401) {
+      return new SessionExpiredError('Session is no longer valid', { cause: error });
+    }
+  }
+  return new UnknownBuildingsError('Unexpected error while listing buildings', { cause: error });
 }
 
 export class AccessGateway {
