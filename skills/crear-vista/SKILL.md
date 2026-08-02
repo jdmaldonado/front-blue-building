@@ -86,12 +86,14 @@ Toda vista que lee datos resuelve los cuatro casos de forma explícita:
 ```tsx
 const doors = useAccessibleDoors(buildingId);
 
-if (doors.isPending) return <DoorsSkeleton />;
+if (doors.isPending) return <Loading label="Cargando puertas..." />;
 if (doors.isError) return <Alert variant="error" title="No pudimos cargar las puertas" />;
 if (doors.data.length === 0) return <EmptyState />;
 return <DoorList doors={doors.data} />;
 ```
 
+- El estado de carga se pinta con el primitivo `Loading`, nunca con un spinner
+  suelto: así un cambio de animación entra en un solo sitio (`ui/loading/`).
 - Nunca `doors.data!` ni `doors.data?.map` para tapar el estado de carga.
 - El mensaje de error se decide en la vista a partir del error de dominio, no del
   `status` HTTP.

@@ -1,7 +1,6 @@
 import { Logo } from '../../ui';
 
-// Left column of the login screen, full height from the top-left corner. Dark in
-// both themes (brand-* tokens do not flip), with the honeycomb over a gradient.
+// Stays dark in both themes: the brand-* tokens do not flip.
 export function BrandPanel() {
   return (
     <div

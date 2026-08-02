@@ -39,8 +39,8 @@ function loginPath(mode: LoginMode): string {
 export class AuthGateway {
   constructor(private readonly http: HttpClient) {}
 
-  // Each endpoint answers a different shape, so each one is parsed with its own
-  // schema and normalized into the domain Session here.
+  // Each endpoint answers a different shape. We parse each one and return the
+  // same Session.
   async login(input: LoginInput): Promise<Session> {
     try {
       const raw = await this.http.post({
@@ -63,9 +63,8 @@ export class AuthGateway {
     }
   }
 
-  // Always resolves, even for an unknown document: the API answers 204 on
-  // purpose so nobody can probe which documents exist
-  // (api/src/controllers/users/auth/controller.ts:97-100).
+  // The API answers 204 even for unknown documents, so nobody can guess which
+  // ones exist (api/src/controllers/users/auth/controller.ts:97-100).
   async forgotPassword(input: ForgotPasswordInput): Promise<void> {
     try {
       await this.http.post({ path: AuthPath.ForgotPassword, body: { cedula: input.cedula } });
@@ -91,7 +90,7 @@ function toResetPasswordError(error: unknown): Error {
     if (error.status === null) {
       return new AuthNetworkError('Network error during password reset', { cause: error });
     }
-    // The API answers 403 when the reset token is unknown, expired or used.
+    // 403 means the token is unknown, expired or already used.
     if (error.status === 403) {
       return new InvalidResetTokenError('Reset token is no longer valid');
     }
@@ -110,7 +109,7 @@ function toAuthError(error: unknown): Error {
     if (error.status === 400 || error.status === 401) {
       return new InvalidCredentialsError('Invalid credentials');
     }
-    // Valid user with no apartment assigned.
+    // Valid user, but no apartment assigned.
     if (error.status === 403) {
       return new NoSpacesAssignedError('User has no spaces assigned');
     }
@@ -126,6 +125,8 @@ export class AccessGateway {
     return z.object({ doors: z.array(DoorSchema) }).parse(raw).doors;
   }
 
+  // Empty after an API restart: this state lives in memory. A missing door
+  // means no report, not closed.
   async getDoorStatuses(buildingId: string): Promise<DoorStatuses> {
     const raw = await this.http.get({ path: `/api/buildings/${buildingId}/doors/statuses` });
     return DoorStatusesSchema.parse(raw);

@@ -2,9 +2,8 @@ import { Outlet } from '@tanstack/react-router';
 import { Logo } from '../../ui';
 import { BrandPanel } from './BrandPanel';
 
-// Route-level layout for the public auth screens. Full-bleed split: brand panel
-// on the left from md up, content column filling the rest. On mobile the panel
-// disappears and the content owns the viewport.
+// Split screen from md up. On mobile the brand panel is hidden and the content
+// takes the whole viewport.
 export function AuthLayout() {
   return (
     <main className="flex min-h-dvh flex-col bg-(--surface-raised) text-(--text-primary) md:flex-row">

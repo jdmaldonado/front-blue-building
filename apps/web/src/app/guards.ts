@@ -3,9 +3,8 @@ import { useSessionStore } from '@bb/logic';
 import { redirect } from '@tanstack/react-router';
 import { AppRoute, landingPathFor } from './navigation';
 
-// Guards live outside the route files so every route reuses the same rule.
-// `beforeLoad` is not a component, hence `getState()` instead of the hook.
-// A session in the wrong area is not an error: it gets sent to its own landing.
+// `beforeLoad` is not a component, so we use `getState()` and not the hook.
+// A session in the wrong area is not an error: we send it to its own landing.
 export function requireMode(mode: LoginMode) {
   return () => {
     const { session } = useSessionStore.getState();
@@ -18,8 +17,7 @@ export function requireMode(mode: LoginMode) {
   };
 }
 
-// Public auth screens (login, recovery): with a session there is nothing to do
-// here, so the user goes to their own area.
+// With a session there is nothing to do on login or recovery screens.
 export function redirectIfAuthenticated(): void {
   const { session } = useSessionStore.getState();
   if (session !== null) {

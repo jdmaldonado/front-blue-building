@@ -1,8 +1,8 @@
 import { AppConfigError } from '../config';
 import { Alert, Card } from '../ui';
 
-// Rendered instead of the app when the environment is misconfigured. It has to
-// work without any service, so it only uses primitives and tokens.
+// Shown instead of the app when the config is wrong. It must work without any
+// service, so it only uses primitives.
 export function ConfigErrorScreen({ error }: { error: unknown }) {
   const issues = error instanceof AppConfigError ? error.issues : [String(error)];
 

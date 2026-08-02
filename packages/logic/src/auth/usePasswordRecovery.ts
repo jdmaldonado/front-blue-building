@@ -7,8 +7,8 @@ export interface PasswordRecoveryCallbacks {
   onError?: (error: unknown) => void;
 }
 
-// Step 1: ask for the email with the reset link. A success here does not mean the
-// document exists; the API answers the same either way.
+// Success here does not mean the document exists: the API answers the same
+// either way.
 export function useForgotPassword(
   callbacks?: PasswordRecoveryCallbacks,
 ): UseMutationResult<void, unknown, ForgotPasswordInput> {
@@ -24,7 +24,7 @@ export function useForgotPassword(
   });
 }
 
-// Step 2: set the new password with the token from the email link.
+// Uses the token from the email link.
 export function useResetPassword(
   callbacks?: PasswordRecoveryCallbacks,
 ): UseMutationResult<void, unknown, ResetPasswordInput> {

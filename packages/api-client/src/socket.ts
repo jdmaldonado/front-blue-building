@@ -1,4 +1,4 @@
-import { DoorAction, DoorUpdateSchema, OutOfScheduleError, UnauthorizedDoorError } from '@bb/core';
+import { DoorAction, DoorUpdateSchema, OutOfScheduleError, UnauthorizedDoorError, type UserEvent } from '@bb/core';
 import type { DomainError, DoorUpdate } from '@bb/core';
 import type { Logger } from '@bb/logger';
 import { io, type Socket } from 'socket.io-client';
@@ -31,6 +31,21 @@ export class SocketClient {
     this.socket.disconnect();
   }
 
+  // The API sends these to the whole building, not to one door.
+  sendUserEvent(input: { buildingId: string; event: UserEvent }): void {
+    this.socket.emit('user_event', { buildingId: input.buildingId, event: input.event });
+  }
+
+  onUserEventError(callback: (error: DomainError) => void): Unsubscribe {
+    const handler = (payload: unknown): void => {
+      callback(mapDoorActionError(payload));
+    };
+    this.socket.on('user_event:error', handler);
+    return () => {
+      this.socket.off('user_event:error', handler);
+    };
+  }
+
   openDoor(input: { buildingId: string; localId: string }): void {
     this.emitDoorAction(input.buildingId, input.localId, DoorAction.Open);
   }
@@ -53,8 +68,7 @@ export class SocketClient {
     this.socket.emit('subscribe:door_status', { buildingId });
   }
 
-  // Hides the dynamic event name `door_update_${buildingId}` and returns an
-  // unsubscribe, so listeners never accumulate (a known leak in the legacy front).
+  // Returns an unsubscribe so listeners do not pile up (a leak in the old front).
   onDoorUpdate(buildingId: string, callback: (update: DoorUpdate) => void): Unsubscribe {
     const event = `door_update_${buildingId}`;
     const handler = (payload: unknown): void => {
@@ -79,8 +93,8 @@ export class SocketClient {
     this.socket.emit('leave:cam_stream', input);
   }
 
-  // Forwards raw JPEG bytes from the dynamic `cam_streaming_${camId}` event.
-  // Turning bytes into an image is platform-specific, so it stays in the UI layer.
+  // Sends raw JPEG bytes. Making an image out of them depends on the platform,
+  // so that happens in the UI layer.
   onCamFrame(camId: string, callback: (frame: ArrayBuffer) => void): Unsubscribe {
     const event = `cam_streaming_${camId}`;
     const handler = (frame: ArrayBuffer): void => {
@@ -97,8 +111,8 @@ export class SocketClient {
   }
 }
 
-// The API answers `AuthorizationError` for both missing permission and an
-// unreachable RPI, so the two cannot be told apart here yet.
+// The API sends `AuthorizationError` both when the user has no permission and
+// when the RPI is down. We cannot tell them apart yet.
 function mapDoorActionError(payload: unknown): DomainError {
   const { error } = doorActionErrorSchema.parse(payload);
   if (error === 'OutOfScheduleError') {

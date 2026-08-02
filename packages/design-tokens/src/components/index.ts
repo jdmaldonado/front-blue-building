@@ -39,6 +39,13 @@ export const componentTokens = {
   'button-success-border': 'success',
   'button-success-soft': 'success-subtle',
 
+  'button-warning-bg': 'warning',
+  'button-warning-bg-hover': 'warning',
+  'button-warning-foreground': 'text-on-accent',
+  'button-warning-text': 'warning',
+  'button-warning-border': 'warning',
+  'button-warning-soft': 'warning-subtle',
+
   'button-radius': 'radius-2',
 
   'badge-live-foreground': 'destructive',

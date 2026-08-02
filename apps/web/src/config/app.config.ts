@@ -7,19 +7,18 @@ export const AppMode = {
 } as const;
 export type AppMode = (typeof AppMode)[keyof typeof AppMode];
 
-// Shape of the raw environment. Keys are the VITE_* names; nothing outside this
-// file knows them. Vite inlines `import.meta.env` at build time, so a missing
-// variable is a build/deploy mistake and must fail loudly at startup.
 const REQUIRED_URL = 'requerida, debe ser una URL http(s) con esquema (ej: http://localhost:3000)';
 
-// `protocol` is not optional here: bare `z.url()` accepts 'localhost:3000',
-// because the URL parser reads it as protocol 'localhost:' + path '3000'.
+// `protocol` is needed: plain `z.url()` accepts 'localhost:3000', because it
+// reads 'localhost:' as the protocol.
 const httpUrl = z.url({ protocol: /^https?$/, error: REQUIRED_URL });
 
+// The VITE_* names live only in this file. A missing one is a deploy mistake,
+// so we fail at startup.
 const EnvSchema = z.object({
   VITE_API_BASE_URL: httpUrl,
-  // socket.io handshakes over HTTP and upgrades to WebSocket by itself, so this
-  // is an http(s) URL, not ws(s). It points at the same origin as the API.
+  // socket.io starts over HTTP and upgrades on its own, so this is http(s),
+  // not ws(s).
   VITE_SOCKET_URL: httpUrl,
   MODE: z.enum(AppMode).catch(AppMode.Production),
 });
@@ -38,8 +37,7 @@ export class AppConfigError extends Error {
   }
 }
 
-// Pure: takes the raw source and returns the config. Testable without touching
-// `import.meta`.
+// Pure, so it can be tested without `import.meta`.
 export function loadAppConfig(source: unknown): AppConfig {
   const parsed = EnvSchema.safeParse(source);
 
@@ -59,7 +57,7 @@ export function loadAppConfig(source: unknown): AppConfig {
 
 let current: AppConfig | null = null;
 
-// Called once from the bootstrap, before anything else runs.
+// Called once at startup.
 export function initAppConfig(source: unknown = import.meta.env): AppConfig {
   current = loadAppConfig(source);
   return current;

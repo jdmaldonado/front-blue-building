@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
-export const buttonIntents = ['primary', 'neutral', 'destructive', 'success'] as const;
+export const buttonIntents = ['primary', 'neutral', 'destructive', 'success', 'warning'] as const;
 export const buttonAppearances = ['solid', 'outline', 'ghost'] as const;
 export const buttonSizes = ['sm', 'md', 'lg'] as const;
 
@@ -8,9 +8,8 @@ export type ButtonIntent = (typeof buttonIntents)[number];
 export type ButtonAppearance = (typeof buttonAppearances)[number];
 export type ButtonSize = (typeof buttonSizes)[number];
 
-// Two orthogonal axes: intent picks the token family, appearance picks how it is
-// applied (filled / bordered / transparent), so the combination lives in
-// compoundVariants. Class strings stay literal so Tailwind can see them at build time.
+// intent picks the color, appearance picks how it is applied, so the pairs live
+// in compoundVariants. Classes stay literal so Tailwind can find them.
 export const buttonVariants = cva(
   [
     'inline-flex select-none items-center justify-center rounded-(--button-radius) font-semibold transition-colors',
@@ -24,6 +23,7 @@ export const buttonVariants = cva(
         neutral: '',
         destructive: '',
         success: '',
+        warning: '',
       },
       appearance: {
         solid: '',
@@ -57,6 +57,21 @@ export const buttonVariants = cva(
         appearance: 'solid',
         intent: 'success',
         class: 'bg-(--button-success-bg) text-(--button-success-foreground) hover:bg-(--button-success-bg-hover)',
+      },
+      {
+        appearance: 'solid',
+        intent: 'warning',
+        class: 'bg-(--button-warning-bg) text-(--button-warning-foreground) hover:bg-(--button-warning-bg-hover)',
+      },
+      {
+        appearance: 'outline',
+        intent: 'warning',
+        class: 'border-(--button-warning-border) text-(--button-warning-text) hover:bg-(--button-warning-soft)',
+      },
+      {
+        appearance: 'ghost',
+        intent: 'warning',
+        class: 'text-(--button-warning-text) hover:bg-(--button-warning-soft)',
       },
       {
         appearance: 'outline',
