@@ -75,4 +75,10 @@ export type { SidebarVariants } from './sidebar';
 export { Spinner, spinnerSizes, spinnerVariants } from './spinner';
 export type { SpinnerSize, SpinnerVariants } from './spinner';
 
+export { Text, textSizes, textTones, textVariants, textWeights } from './text';
+export type { TextElement, TextSize, TextTone, TextVariants, TextWeight } from './text';
+
+export { Toast, toastRegionVariants, toastTextVariants, toastTitleVariants, toastTones, toastVariants } from './toast';
+export type { ToastTone, ToastVariants } from './toast';
+
 export { cn } from './cn';

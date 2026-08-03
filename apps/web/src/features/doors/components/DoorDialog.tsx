@@ -1,7 +1,7 @@
 import type { Door, DoorStatus } from '@bb/core';
 import { DoorOpen } from 'lucide-react';
-import { UserEventActions, UserEventFeedback, useUserEventActions } from '../../building-events';
-import { Badge, Button, Dialog } from '../../../ui';
+import { UserEventActions, useUserEventActions } from '../../building-events';
+import { Badge, Button, Dialog, Text } from '../../../ui';
 import { doorStatusMeta } from '../lib';
 import { CameraTile } from './CameraTile';
 
@@ -31,17 +31,14 @@ export function DoorDialog({ door, status, buildingId, onClose, onOpenDoor }: Do
       }
       footer={
         door === null ? null : (
-          <div className="flex w-full flex-col gap-2">
-            <UserEventFeedback controller={events} />
-            {/* Reversed on mobile so the events sit above the primary action,
-                while the DOM keeps "Abrir puerta" first for keyboard order. */}
-            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
-              <Button size="lg" onClick={() => onOpenDoor(door)} className="w-full sm:w-auto sm:flex-[2]">
-                <DoorOpen size={18} />
-                Abrir puerta
-              </Button>
-              <UserEventActions controller={events} className="sm:flex-[3]" />
-            </div>
+          // Reversed on mobile so the events sit above the primary action,
+          // while the DOM keeps "Abrir puerta" first for keyboard order.
+          <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:items-center">
+            <Button size="lg" onClick={() => onOpenDoor(door)} className="w-full sm:w-auto sm:flex-[2]">
+              <DoorOpen size={18} />
+              Abrir puerta
+            </Button>
+            <UserEventActions controller={events} className="sm:flex-[3]" />
           </div>
         )
       }
@@ -49,7 +46,7 @@ export function DoorDialog({ door, status, buildingId, onClose, onOpenDoor }: Do
       {door === null ? null : (
         <div className="flex flex-col gap-4">
           {door.cameras.length === 0 ? (
-            <p className="text-body text-(--text-secondary)">Esta puerta no tiene cámaras asociadas.</p>
+            <Text tone="secondary">Esta puerta no tiene cámaras asociadas.</Text>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {door.cameras.map((camera) => (

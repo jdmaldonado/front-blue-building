@@ -2,6 +2,7 @@ import { LoginMode } from '@bb/core';
 import { createFileRoute } from '@tanstack/react-router';
 import { BuildingProvider, useSessionBuilding } from '../app/BuildingContext';
 import { requireMode } from '../app/guards';
+import { BuildingEventsButton } from '../features/building-events';
 import { DoorsDashboardPage } from '../features/doors';
 import { AppShell, AppTitle } from '../layouts/app';
 import { Alert } from '../ui';
@@ -28,7 +29,10 @@ function RouteComponent() {
 
   return (
     <BuildingProvider building={building}>
-      <AppShell header={<AppTitle title={building.name} />}>
+      <AppShell
+        header={<AppTitle title={building.name} />}
+        headerActions={<BuildingEventsButton buildingId={building.id} />}
+      >
         <DoorsDashboardPage />
       </AppShell>
     </BuildingProvider>

@@ -17,7 +17,7 @@ export function UserEventActions({ controller, className }: UserEventActionsProp
         intent="warning"
         appearance="outline"
         size="sm"
-        onClick={() => controller.request(UserEvent.Intrusion)}
+        onClick={() => void controller.request(UserEvent.Intrusion)}
         className="min-w-0 flex-1 px-2 sm:px-3"
       >
         <Users size={17} className="shrink-0" />
@@ -26,7 +26,7 @@ export function UserEventActions({ controller, className }: UserEventActionsProp
       <Button
         intent="destructive"
         size="sm"
-        onClick={() => controller.request(UserEvent.Emergency)}
+        onClick={() => void controller.request(UserEvent.Emergency)}
         className="min-w-0 flex-1 px-2 sm:px-3"
       >
         <TriangleAlert size={17} className="shrink-0" />
@@ -36,7 +36,7 @@ export function UserEventActions({ controller, className }: UserEventActionsProp
         intent="neutral"
         appearance="outline"
         size="sm"
-        onClick={() => controller.request(UserEvent.Mute)}
+        onClick={() => void controller.request(UserEvent.Mute)}
         className="min-w-0 flex-1 px-2 sm:px-3"
       >
         <BellOff size={17} className="shrink-0" />

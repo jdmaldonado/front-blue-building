@@ -1,6 +1,6 @@
 import type { Door, DoorStatus, Floor } from '@bb/core';
 import { useEffect, useRef, useState } from 'react';
-import { cn } from '../../../ui';
+import { Text, cn } from '../../../ui';
 import { DoorPin } from './DoorPin';
 
 type FloorPlanProps = {
@@ -70,10 +70,10 @@ export function FloorPlan({ floor, doors, statusOf, selectedDoorId, onSelect, cl
           )}
         </>
       ) : (
-        <p className="p-6 text-center text-body-sm text-(--text-muted)">
+        <Text size="body-sm" tone="muted" className="p-6 text-center">
           Este piso no tiene plano cargado.
           {doors.length > 0 ? ` Tiene ${doors.length} puerta(s) registradas.` : ''}
-        </p>
+        </Text>
       )}
     </div>
   );

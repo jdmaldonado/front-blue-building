@@ -3,6 +3,7 @@ import { Link, createFileRoute } from '@tanstack/react-router';
 import { ArrowLeft } from 'lucide-react';
 import { BuildingProvider } from '../../app/BuildingContext';
 import { AppRoute } from '../../app/navigation';
+import { BuildingEventsButton } from '../../features/building-events';
 import { DoorsDashboardPage } from '../../features/doors';
 import { AppShell, AppTitle } from '../../layouts/app';
 import { Alert, IconButton, Loading } from '../../ui';
@@ -43,6 +44,7 @@ function RouteComponent() {
             <AppTitle title={building.data.name} />
           </>
         }
+        headerActions={<BuildingEventsButton buildingId={building.data.id} />}
       >
         <DoorsDashboardPage />
       </AppShell>

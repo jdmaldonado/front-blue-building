@@ -3,7 +3,7 @@ import { useSessionStore } from '@bb/logic';
 import { LogOut } from 'lucide-react';
 import { useConfirm } from '../../app/ConfirmProvider';
 import { endSession } from '../../app/session';
-import { Avatar, IconButton } from '../../ui';
+import { Avatar, IconButton, Text } from '../../ui';
 
 type AppUserCardProps = {
   collapsed: boolean;
@@ -51,8 +51,12 @@ export function AppUserCard({ collapsed }: AppUserCardProps) {
     <div className="flex items-center gap-2.5 px-1">
       <Avatar name={session.user.name} size="sm" />
       <div className="flex min-w-0 flex-col">
-        <span className="truncate text-body-sm font-medium">{session.user.name}</span>
-        <span className="truncate text-caption text-(--text-muted)">{caption}</span>
+        <Text as="span" size="body-sm" weight="medium" truncate>
+          {session.user.name}
+        </Text>
+        <Text as="span" size="caption" tone="muted" truncate>
+          {caption}
+        </Text>
       </div>
       <div className="ml-auto shrink-0">{signOutButton}</div>
     </div>

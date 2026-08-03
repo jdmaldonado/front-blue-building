@@ -2,7 +2,7 @@ import { useBuildings } from '@bb/logic';
 import { Link } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import { AppRoute } from '../../app/navigation';
-import { Alert, Card, Loading } from '../../ui';
+import { Alert, Card, Loading, Text } from '../../ui';
 
 // Temporary list so an admin can reach a building. It will be replaced by the
 // real admin panel.
@@ -34,10 +34,12 @@ export function AdminBuildingsPage() {
         >
           <Card padding="sm" className="flex items-center gap-3 hover:border-(--border-strong)">
             <div className="flex min-w-0 flex-col">
-              <span className="truncate text-body font-medium">{building.name}</span>
-              <span className="truncate text-label text-(--text-muted)">
+              <Text as="span" weight="medium" truncate>
+                {building.name}
+              </Text>
+              <Text as="span" size="label" tone="muted" truncate>
                 {[building.city, building.address1].filter(Boolean).join(' · ') || building.id}
-              </span>
+              </Text>
             </div>
             <ChevronRight size={18} className="ml-auto shrink-0 text-(--text-muted)" />
           </Card>

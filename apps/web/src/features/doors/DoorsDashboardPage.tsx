@@ -1,6 +1,6 @@
 import { DoorStatus } from '@bb/core';
 import { useBuilding } from '../../app/BuildingContext';
-import { Alert, Loading, Select } from '../../ui';
+import { Alert, Loading, Select, Text } from '../../ui';
 import { DoorDialog, FloorPlan } from './components';
 import { useDoorsDashboard } from './hooks';
 
@@ -34,9 +34,9 @@ export function DoorsDashboardPage() {
             className="w-full sm:max-w-xs"
           />
         ) : null}
-        <span className="text-label text-(--text-muted)">
+        <Text as="span" size="label" tone="muted">
           {doorCount} {doorCount === 1 ? 'puerta' : 'puertas'} en este piso
-        </span>
+        </Text>
       </div>
 
       {dashboard.hasDoors ? (

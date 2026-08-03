@@ -8,12 +8,14 @@ import { useSidebarCollapsed } from './useSidebarCollapsed';
 type AppShellProps = {
   // Context of the current screen: title and its controls.
   header: ReactNode;
+  // Pinned to the right of the header, for actions that must stay reachable.
+  headerActions?: ReactNode;
   children: ReactNode;
 };
 
 // Frame for every screen behind a session. It knows nothing about buildings:
 // that context is added by the screens themselves.
-export function AppShell({ header, children }: AppShellProps) {
+export function AppShell({ header, headerActions, children }: AppShellProps) {
   const sidebar = useSidebarCollapsed();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -57,6 +59,7 @@ export function AppShell({ header, children }: AppShellProps) {
             {sidebar.collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
           </IconButton>
           {header}
+          {headerActions === undefined ? null : <div className="ml-auto flex items-center gap-2">{headerActions}</div>}
         </header>
 
         <main className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 sm:p-6">{children}</main>

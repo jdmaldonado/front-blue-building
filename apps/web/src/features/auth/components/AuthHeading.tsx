@@ -1,3 +1,5 @@
+import { Text } from '../../../ui';
+
 type AuthHeadingProps = {
   title: string;
   description: string;
@@ -8,7 +10,9 @@ export function AuthHeading({ title, description }: AuthHeadingProps) {
   return (
     <div className="flex flex-col gap-1">
       <h1 className="font-display text-title-lg font-bold tracking-tight md:text-display">{title}</h1>
-      <span className="text-body text-(--text-secondary)">{description}</span>
+      <Text as="span" tone="secondary">
+        {description}
+      </Text>
     </div>
   );
 }
