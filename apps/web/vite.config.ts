@@ -17,10 +17,16 @@ export default defineConfig({
         name: 'Blue Building',
         short_name: 'BlueBuilding',
         description: 'Administración y monitoreo de edificios',
-        theme_color: '#2563eb',
-        background_color: '#ffffff',
+        // Brand colors, taken from the logo files of the current app.
+        theme_color: '#00BCDC',
+        background_color: '#16232C',
         display: 'standalone',
         start_url: '/',
+        icons: [
+          { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
       },
     }),
   ],

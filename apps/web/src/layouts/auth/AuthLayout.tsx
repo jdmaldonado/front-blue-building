@@ -11,7 +11,7 @@ export function AuthLayout() {
 
       <div className="flex flex-1 items-center justify-center px-6 py-8 sm:px-10 md:px-12">
         <div className="flex w-full max-w-[420px] flex-col gap-5">
-          <Logo className="md:hidden" />
+          <Logo size="xl" className="md:hidden" />
           <Outlet />
         </div>
       </div>

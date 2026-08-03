@@ -11,7 +11,7 @@ export function BrandPanel() {
         'md:flex',
       ].join(' ')}
     >
-      <Logo size="lg" markClassName="text-(--brand-accent)" />
+      <Logo size="xl" className="text-(--brand-accent)" />
 
       <div className="flex max-w-[380px] flex-col gap-3">
         <h2 className="font-display text-display leading-tight font-bold tracking-tight lg:text-display-lg">

@@ -1,6 +1,9 @@
 export { Alert, alertTextVariants, alertTitleVariants, alertVariantNames, alertVariants } from './alert';
 export type { AlertVariant, AlertVariants } from './alert';
 
+export { Avatar, avatarSizes, avatarVariants } from './avatar';
+export type { AvatarSize, AvatarVariants } from './avatar';
+
 export { Badge, badgeDotVariants, badgeTones, badgeVariants } from './badge';
 export type { BadgeTone, BadgeVariants } from './badge';
 
@@ -35,8 +38,8 @@ export type { LinkVariants } from './link';
 export { Loading, loadingLayouts, loadingSizes, loadingVariants } from './loading';
 export type { LoadingLayout, LoadingSize, LoadingVariants } from './loading';
 
-export { Logo, logoMarkSize, logoSizes, logoVariants, logoWordmarkVariants } from './logo';
-export type { LogoSize, LogoVariants } from './logo';
+export { Logo, logoMarkVariants, logoParts, logoSizes, logoVariants, logoWordmarkVariants } from './logo';
+export type { LogoPart, LogoSize, LogoVariants } from './logo';
 
 export {
   RadioGroup,
@@ -51,6 +54,18 @@ export type { RadioGroupAppearance, RadioGroupSize, RadioGroupVariants, RadioOpt
 
 export { Select, selectSizes, selectVariants } from './select';
 export type { SelectOption, SelectSize, SelectVariants } from './select';
+
+export {
+  Sidebar,
+  sidebarFooterVariants,
+  sidebarHeaderVariants,
+  sidebarItemVariants,
+  sidebarLabelVariants,
+  sidebarNavVariants,
+  sidebarSectionVariants,
+  sidebarVariants,
+} from './sidebar';
+export type { SidebarVariants } from './sidebar';
 
 export { Spinner, spinnerSizes, spinnerVariants } from './spinner';
 export type { SpinnerSize, SpinnerVariants } from './spinner';

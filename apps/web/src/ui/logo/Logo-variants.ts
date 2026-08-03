@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
-export const logoSizes = ['sm', 'md', 'lg'] as const;
+export const logoSizes = ['sm', 'md', 'lg', 'xl'] as const;
 export type LogoSize = (typeof logoSizes)[number];
 
 export const logoVariants = cva('flex items-center', {
@@ -9,6 +9,7 @@ export const logoVariants = cva('flex items-center', {
       sm: 'gap-2',
       md: 'gap-2.5',
       lg: 'gap-3',
+      xl: 'gap-4',
     },
   },
   defaultVariants: {
@@ -16,12 +17,14 @@ export const logoVariants = cva('flex items-center', {
   },
 });
 
-export const logoWordmarkVariants = cva('font-display font-bold tracking-tight', {
+// The mark is square.
+export const logoMarkVariants = cva('shrink-0', {
   variants: {
     size: {
-      sm: 'text-body-lg',
-      md: 'text-title-sm',
-      lg: 'text-title',
+      sm: 'size-6',
+      md: 'size-8',
+      lg: 'size-10',
+      xl: 'size-14',
     },
   },
   defaultVariants: {
@@ -29,11 +32,19 @@ export const logoWordmarkVariants = cva('font-display font-bold tracking-tight',
   },
 });
 
-// The mark keeps the hexagon ratio (28 x 32) at every size.
-export const logoMarkSize: Record<LogoSize, { width: number; height: number }> = {
-  sm: { width: 21, height: 24 },
-  md: { width: 26, height: 30 },
-  lg: { width: 32, height: 37 },
-};
+// The lettering keeps its own ratio, so only the height is set.
+export const logoWordmarkVariants = cva('w-auto shrink-0', {
+  variants: {
+    size: {
+      sm: 'h-2.5',
+      md: 'h-3',
+      lg: 'h-4',
+      xl: 'h-5',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
 export type LogoVariants = VariantProps<typeof logoVariants>;

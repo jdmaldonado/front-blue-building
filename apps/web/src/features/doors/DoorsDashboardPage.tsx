@@ -69,7 +69,7 @@ export function DoorsDashboardPage({ headerAction }: DoorsDashboardPageProps) {
     <main className="flex h-dvh flex-col gap-4 overflow-hidden bg-(--surface-base) p-4 text-(--text-primary) sm:p-6">
       <header className="flex flex-none flex-wrap items-center gap-3">
         {headerAction}
-        <Logo size="sm" />
+        <Logo size="md" parts="wordmark" />
         <div className="flex flex-col">
           <span className="font-display text-title-sm font-bold tracking-tight">{building.name}</span>
           <span className="text-label text-(--text-muted)">

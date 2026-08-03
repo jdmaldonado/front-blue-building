@@ -12,7 +12,7 @@ export function AdminBuildingsPage() {
   return (
     <main className="min-h-dvh bg-(--surface-base) p-4 text-(--text-primary) sm:p-6">
       <header className="mx-auto flex max-w-3xl items-center gap-3 pb-4">
-        <Logo size="sm" />
+        <Logo size="md" parts="wordmark" />
         <div className="flex flex-col">
           <span className="font-display text-title-sm font-bold tracking-tight">Edificios</span>
           <span className="text-label text-(--text-muted)">Elige uno para ver su dashboard</span>
