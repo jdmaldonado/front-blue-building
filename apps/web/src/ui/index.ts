@@ -13,6 +13,8 @@ export type { ButtonAppearance, ButtonIntent, ButtonSize, ButtonVariants } from 
 export { Card, cardPaddings, cardVariants } from './card';
 export type { CardPadding, CardVariants } from './card';
 
+export { ConfirmDialog, confirmDialogFooterVariants, confirmDialogTextVariants } from './confirm-dialog';
+
 export {
   Dialog,
   dialogBodyVariants,

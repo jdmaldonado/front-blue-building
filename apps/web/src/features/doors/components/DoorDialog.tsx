@@ -36,11 +36,7 @@ export function DoorDialog({ door, status, buildingId, onClose, onOpenDoor }: Do
             {/* Reversed on mobile so the events sit above the primary action,
                 while the DOM keeps "Abrir puerta" first for keyboard order. */}
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
-              <Button
-                size="lg"
-                onClick={() => onOpenDoor(door)}
-                className="w-full bg-[image:var(--pattern-honeycomb)] bg-[length:39px_22.52px] sm:w-auto sm:flex-[2]"
-              >
+              <Button size="lg" onClick={() => onOpenDoor(door)} className="w-full sm:w-auto sm:flex-[2]">
                 <DoorOpen size={18} />
                 Abrir puerta
               </Button>

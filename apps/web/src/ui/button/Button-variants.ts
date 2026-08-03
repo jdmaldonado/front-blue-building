@@ -26,7 +26,9 @@ export const buttonVariants = cva(
         warning: '',
       },
       appearance: {
-        solid: '',
+        // Filled buttons carry the honeycomb texture of the brand. The pattern
+        // is drawn in white at low opacity, so it only shows on the fill.
+        solid: 'bg-[image:var(--pattern-honeycomb)] bg-[length:39px_22.52px]',
         outline: 'border',
         ghost: '',
       },

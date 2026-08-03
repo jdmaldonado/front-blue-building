@@ -127,7 +127,6 @@ export function LoginPage() {
           intent={login.isSuccess ? 'success' : 'primary'}
           loading={login.isPending}
           disabled={disabled}
-          className="bg-[image:var(--pattern-honeycomb)] bg-[length:39px_22.52px]"
         >
           {login.isSuccess ? 'Acceso concedido' : login.isPending ? 'Entrando...' : 'Entrar'}
         </Button>
