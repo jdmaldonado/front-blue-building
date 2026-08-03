@@ -35,7 +35,7 @@ export const radioGroupItemVariants = cva(
   [
     'flex items-center gap-2 font-medium transition-colors',
     'focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none',
-    'disabled:cursor-not-allowed disabled:opacity-60',
+    'cursor-pointer disabled:cursor-not-allowed disabled:opacity-60',
   ],
   {
     variants: {

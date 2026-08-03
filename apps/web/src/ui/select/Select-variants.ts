@@ -8,7 +8,7 @@ export const selectVariants = cva(
     'w-full appearance-none rounded-(--input-radius) border border-(--input-border) bg-(--input-bg) text-(--input-foreground)',
     'pr-9',
     'focus:border-(--input-border-focus) focus:ring-[3px] focus:ring-(--accent-subtle) focus:outline-none',
-    'disabled:cursor-not-allowed disabled:opacity-60',
+    'cursor-pointer disabled:cursor-not-allowed disabled:opacity-60',
   ],
   {
     variants: {

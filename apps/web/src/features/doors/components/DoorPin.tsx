@@ -24,7 +24,7 @@ export function DoorPin({ door, status, selected, onSelect }: DoorPinProps) {
       onClick={() => onSelect(door)}
       style={{ left: `${door.left ?? 50}%`, top: `${door.top ?? 50}%` }}
       className={cn(
-        'absolute size-5 -translate-x-1/2 -translate-y-1/2 rounded-full transition-transform',
+        'absolute size-5 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full transition-transform',
         'focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none',
         selected ? 'z-20 scale-110' : 'z-10',
       )}

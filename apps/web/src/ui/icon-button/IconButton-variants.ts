@@ -10,7 +10,7 @@ export const iconButtonVariants = cva(
   [
     'inline-flex shrink-0 items-center justify-center rounded-(--radius-round) border transition-colors',
     'focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none',
-    'disabled:cursor-not-allowed disabled:opacity-60',
+    'cursor-pointer disabled:cursor-not-allowed disabled:opacity-60',
   ],
   {
     variants: {

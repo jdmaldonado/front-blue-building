@@ -14,7 +14,7 @@ export const buttonVariants = cva(
   [
     'inline-flex select-none items-center justify-center rounded-(--button-radius) font-semibold transition-colors',
     'focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none',
-    'disabled:cursor-not-allowed disabled:opacity-60',
+    'cursor-pointer disabled:cursor-not-allowed disabled:opacity-60',
   ],
   {
     variants: {
