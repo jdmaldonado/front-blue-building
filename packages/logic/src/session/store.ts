@@ -46,9 +46,13 @@ export function selectIsSuperAdmin(state: SessionState): boolean {
   return state.session?.mode === LoginMode.Admin;
 }
 
+// Same reference every time: a selector that builds a new array on each call
+// makes the store think the state changed and re-renders forever.
+const NO_SPACES: Space[] = [];
+
 export function selectSpaces(state: SessionState): Space[] {
   const { session } = state;
-  return session !== null && session.mode === LoginMode.Usuario ? session.spaces : [];
+  return session !== null && session.mode === LoginMode.Usuario ? session.spaces : NO_SPACES;
 }
 
 export function selectCurrentSpace(state: SessionState): Space | null {

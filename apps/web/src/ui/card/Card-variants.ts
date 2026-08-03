@@ -19,7 +19,8 @@ export const cardVariants = cva('rounded-(--card-radius) border border-(--card-b
   },
   defaultVariants: {
     elevation: 'raised',
-    padding: 'none',
+    // A card with no padding is the exception, so it has to be asked for.
+    padding: 'md',
   },
 });
 

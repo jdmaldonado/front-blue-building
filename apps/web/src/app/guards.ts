@@ -17,6 +17,14 @@ export function requireMode(mode: LoginMode) {
   };
 }
 
+// For screens that any signed in user can open, whatever their mode.
+export function requireSession(): void {
+  const { session } = useSessionStore.getState();
+  if (session === null) {
+    throw redirect({ to: AppRoute.Login });
+  }
+}
+
 // With a session there is nothing to do on login or recovery screens.
 export function redirectIfAuthenticated(): void {
   const { session } = useSessionStore.getState();

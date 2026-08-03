@@ -8,7 +8,7 @@ export function ConfigErrorScreen({ error }: { error: unknown }) {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-(--surface-base) p-6 text-(--text-primary)">
-      <Card className="w-full max-w-md p-8">
+      <Card padding="lg" className="w-full max-w-md">
         <Alert variant="error" title="La aplicación no pudo iniciar">
           Falta configuración del entorno. Revisa el archivo <code>.env</code> contra <code>.env.example</code>.
         </Alert>

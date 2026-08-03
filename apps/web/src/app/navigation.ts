@@ -8,6 +8,9 @@ export const AppRoute = {
   // The route only forwards to ResetPassword with the token.
   LegacyResetPassword: '/reset_password',
   Home: '/',
+  // The profile belongs to the person, not to a building, so it hangs from the
+  // root and works the same for a resident and for an admin.
+  Account: '/account',
   Dashboard: '/dashboard',
   Admin: '/admin',
   AdminBuilding: '/admin/buildings/$buildingId',
