@@ -8,12 +8,14 @@ type AppNavigationItemProps = {
   icon: LucideIcon;
   label: string;
   collapsed: boolean;
+  onNavigate?: () => void;
 };
 
-export function AppNavigationItem({ link, icon: Icon, label, collapsed }: AppNavigationItemProps) {
+export function AppNavigationItem({ link, icon: Icon, label, collapsed, onNavigate }: AppNavigationItemProps) {
   return (
     <Link
       {...link}
+      onClick={onNavigate}
       title={collapsed ? label : undefined}
       activeProps={{ className: sidebarItemVariants({ collapsed, selected: true }) }}
       inactiveProps={{ className: sidebarItemVariants({ collapsed, selected: false }) }}

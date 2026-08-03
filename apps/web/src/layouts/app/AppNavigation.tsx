@@ -6,11 +6,13 @@ import { AppNavigationItem } from './AppNavigationItem';
 
 type AppNavigationProps = {
   collapsed: boolean;
+  // Lets the mobile panel close itself once the user picks a destination.
+  onNavigate?: () => void;
 };
 
 // Top level destinations. Sections that belong to a building live in the header
 // of the building screens, not here.
-export function AppNavigation({ collapsed }: AppNavigationProps) {
+export function AppNavigation({ collapsed, onNavigate }: AppNavigationProps) {
   const session = useSessionStore((state) => state.session);
   const space = useSessionStore(selectCurrentSpace);
 
@@ -19,7 +21,15 @@ export function AppNavigation({ collapsed }: AppNavigationProps) {
   }
 
   if (session.mode === LoginMode.Admin) {
-    return <AppNavigationItem link={{ to: AppRoute.Admin }} icon={Building2} label="Edificios" collapsed={collapsed} />;
+    return (
+      <AppNavigationItem
+        link={{ to: AppRoute.Admin }}
+        icon={Building2}
+        label="Edificios"
+        collapsed={collapsed}
+        onNavigate={onNavigate}
+      />
+    );
   }
 
   return (
@@ -28,6 +38,7 @@ export function AppNavigation({ collapsed }: AppNavigationProps) {
       icon={Building2}
       label={space?.building.name ?? 'Mi edificio'}
       collapsed={collapsed}
+      onNavigate={onNavigate}
     />
   );
 }

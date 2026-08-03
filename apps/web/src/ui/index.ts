@@ -25,6 +25,9 @@ export {
 } from './dialog';
 export type { DialogSize, DialogVariants } from './dialog';
 
+export { Drawer, drawerSides, drawerVariants } from './drawer';
+export type { DrawerSide, DrawerVariants } from './drawer';
+
 export { Field, fieldLabelVariants, fieldMessageVariants, fieldVariants } from './field';
 export type { FieldLabelVariants, FieldMessageVariants } from './field';
 

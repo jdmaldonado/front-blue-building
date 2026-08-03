@@ -12,6 +12,13 @@ export const dialogVariants = cva(
     'mx-auto mt-auto mb-0 rounded-t-(--card-radius) rounded-b-none',
     'sm:my-auto sm:rounded-(--card-radius)',
     'border border-(--card-border) bg-(--card-bg) text-(--text-primary) shadow-(--shadow-3)',
+    // Closed state first, `open:` the visible one and `starting:` where it comes
+    // from. `transition-discrete` is what lets an element that appears and
+    // disappears from the page animate at all.
+    'translate-y-4 opacity-0 transition-[opacity,transform,display,overlay] duration-200 ease-out transition-discrete',
+    'open:translate-y-0 open:opacity-100 starting:open:translate-y-4 starting:open:opacity-0',
+    'backdrop:opacity-0 backdrop:transition-[opacity,display,overlay] backdrop:duration-200 backdrop:ease-out',
+    'backdrop:transition-discrete open:backdrop:opacity-100 starting:open:backdrop:opacity-0',
   ],
   {
     variants: {

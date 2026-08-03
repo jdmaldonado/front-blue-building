@@ -1,6 +1,6 @@
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { IconButton, Logo, Sidebar } from '../../ui';
+import { Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
+import { Drawer, IconButton, Logo, Sidebar } from '../../ui';
 import { AppNavigation } from './AppNavigation';
 import { AppUserCard } from './AppUserCard';
 import { useSidebarCollapsed } from './useSidebarCollapsed';
@@ -15,6 +15,9 @@ type AppShellProps = {
 // that context is added by the screens themselves.
 export function AppShell({ header, children }: AppShellProps) {
   const sidebar = useSidebarCollapsed();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <div className="flex h-dvh overflow-hidden bg-(--surface-base) text-(--text-primary)">
@@ -28,8 +31,24 @@ export function AppShell({ header, children }: AppShellProps) {
         <AppNavigation collapsed={sidebar.collapsed} />
       </Sidebar>
 
+      {/* Same sidebar, in a panel, because it does not fit next to the content
+          on a phone. */}
+      <Drawer open={menuOpen} onClose={closeMenu} label="Menú" className="sm:hidden">
+        <Sidebar
+          navLabel="Navegación principal"
+          className="h-full w-full border-r-0"
+          header={<Logo size="sm" />}
+          footer={<AppUserCard collapsed={false} />}
+        >
+          <AppNavigation collapsed={false} onNavigate={closeMenu} />
+        </Sidebar>
+      </Drawer>
+
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 flex-none items-center gap-3 border-(--card-border) border-b px-4 sm:px-6">
+          <IconButton label="Abrir menú" onClick={() => setMenuOpen(true)} className="sm:hidden">
+            <Menu size={18} />
+          </IconButton>
           <IconButton
             label={sidebar.collapsed ? 'Expandir menú' : 'Contraer menú'}
             onClick={sidebar.toggle}
