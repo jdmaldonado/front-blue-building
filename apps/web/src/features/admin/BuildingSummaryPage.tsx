@@ -1,6 +1,6 @@
 import type { Building } from '@bb/core';
 import { Link } from '@tanstack/react-router';
-import { ChevronRight, DoorOpen } from 'lucide-react';
+import { ChevronRight, DoorOpen, Home, Settings, type LucideIcon } from 'lucide-react';
 import { AppRoute } from '../../app/navigation';
 import { Card, Text } from '../../ui';
 import { BuildingStatusBadge } from './components';
@@ -12,6 +12,27 @@ type BuildingSummaryPageProps = {
 // Landing of a building: what is going on, then where to go. The doors and
 // cameras screen is the same one a resident sees, one click away.
 export function BuildingSummaryPage({ building }: BuildingSummaryPageProps) {
+  const sections: Array<{ to: AppRoute; icon: LucideIcon; title: string; description: string }> = [
+    {
+      to: AppRoute.AdminBuildingLive,
+      icon: DoorOpen,
+      title: 'Puertas y cámaras',
+      description: 'Abrir puertas y ver las cámaras en vivo',
+    },
+    {
+      to: AppRoute.AdminBuildingApartments,
+      icon: Home,
+      title: 'Apartamentos',
+      description: 'Ver los apartamentos y darlos de baja',
+    },
+    {
+      to: AppRoute.AdminBuildingSettings,
+      icon: Settings,
+      title: 'Ajustes',
+      description: 'Mantenimiento, alarma y reinicio del equipo',
+    },
+  ];
+
   const details = [
     { label: 'Ciudad', value: building.city },
     { label: 'Dirección', value: building.address1 },
@@ -46,24 +67,29 @@ export function BuildingSummaryPage({ building }: BuildingSummaryPageProps) {
         </Card>
       )}
 
-      <Link
-        to={AppRoute.AdminBuildingLive}
-        params={{ buildingId: building.id }}
-        className="rounded-(--card-radius) focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none"
-      >
-        <Card padding="sm" className="flex items-center gap-3 hover:border-(--border-strong)">
-          <DoorOpen size={18} aria-hidden className="shrink-0 text-(--text-secondary)" />
-          <div className="flex min-w-0 flex-col">
-            <Text as="span" weight="medium">
-              Puertas y cámaras
-            </Text>
-            <Text as="span" size="label" tone="muted">
-              Abrir puertas y ver las cámaras en vivo
-            </Text>
-          </div>
-          <ChevronRight size={18} aria-hidden className="ml-auto shrink-0 text-(--text-muted)" />
-        </Card>
-      </Link>
+      <div className="flex flex-col gap-2">
+        {sections.map((section) => (
+          <Link
+            key={section.to}
+            to={section.to}
+            params={{ buildingId: building.id }}
+            className="rounded-(--card-radius) focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none"
+          >
+            <Card padding="sm" className="flex items-center gap-3 hover:border-(--border-strong)">
+              <section.icon size={18} aria-hidden className="shrink-0 text-(--text-secondary)" />
+              <div className="flex min-w-0 flex-col">
+                <Text as="span" weight="medium">
+                  {section.title}
+                </Text>
+                <Text as="span" size="label" tone="muted">
+                  {section.description}
+                </Text>
+              </div>
+              <ChevronRight size={18} aria-hidden className="ml-auto shrink-0 text-(--text-muted)" />
+            </Card>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

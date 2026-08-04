@@ -1,5 +1,6 @@
 import {
   AdminLoginResponseSchema,
+  ApartmentSchema,
   AuthNetworkError,
   BuildingSchema,
   BuildingsNetworkError,
@@ -15,6 +16,7 @@ import {
   UnknownBuildingsError,
   UserLoginResponseSchema,
   WeakPasswordError,
+  type Apartment,
   type Building,
   type Door,
   type DoorStatuses,
@@ -134,6 +136,10 @@ function maintenancePath(buildingId: string): string {
   return `/api/bluebuilding/buildings/${buildingId}/maintenance`;
 }
 
+function apartmentsPath(buildingId: string): string {
+  return `/api/bluebuilding/buildings/${buildingId}/apartments`;
+}
+
 export class BuildingsGateway {
   constructor(private readonly http: HttpClient) {}
 
@@ -165,6 +171,28 @@ export class BuildingsGateway {
     try {
       const raw = await this.http.delete({ path: maintenancePath(buildingId) });
       return BuildingSchema.parse(raw);
+    } catch (error) {
+      throw toBuildingsError(error);
+    }
+  }
+
+  // Visitor apartments never come back: the API filters them out
+  // (api/src/2.0/apartaments/services/ApartmentServiceV2.ts:50).
+  async listApartments(buildingId: string): Promise<Apartment[]> {
+    try {
+      const raw = await this.http.get({ path: apartmentsPath(buildingId) });
+      return z.array(ApartmentSchema).parse(raw);
+    } catch (error) {
+      throw toBuildingsError(error);
+    }
+  }
+
+  // Named after what it does, not after the HTTP verb: it deletes the cards,
+  // marks the residents as EX_RESIDENTE and leaves an empty apartment behind
+  // (api/src/2.0/apartaments/controllers/ApartmentControllerV2.ts:9).
+  async retireApartment(input: { buildingId: string; apartmentId: string }): Promise<void> {
+    try {
+      await this.http.delete({ path: `${apartmentsPath(input.buildingId)}/${input.apartmentId}` });
     } catch (error) {
       throw toBuildingsError(error);
     }

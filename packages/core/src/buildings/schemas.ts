@@ -48,6 +48,10 @@ export const ApartmentSchema = z.object({
   name: z.string().nullish(),
   address: z.string().nullish(),
   apartmentType: ApartmentTypeSchema.nullish(),
+  // Turned on when the owner request is approved
+  // (api/src/controllers/buildings/access/controller.ts:64). Only active
+  // apartments can be called from the lobby (api/src/controllers/calls/controller.ts:115).
+  active: z.boolean().nullish(),
 });
 export type Apartment = z.infer<typeof ApartmentSchema>;
 

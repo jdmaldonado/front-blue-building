@@ -21,7 +21,9 @@ import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-pass
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminBuildingsBuildingIdRouteImport } from './routes/admin/buildings.$buildingId'
 import { Route as AdminBuildingsBuildingIdIndexRouteImport } from './routes/admin/buildings.$buildingId/index'
+import { Route as AdminBuildingsBuildingIdApartmentsRouteImport } from './routes/admin/buildings.$buildingId/apartments'
 import { Route as AdminBuildingsBuildingIdLiveRouteImport } from './routes/admin/buildings.$buildingId/live'
+import { Route as AdminBuildingsBuildingIdSettingsRouteImport } from './routes/admin/buildings.$buildingId/settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -84,10 +86,22 @@ const AdminBuildingsBuildingIdIndexRoute =
     path: '/',
     getParentRoute: () => AdminBuildingsBuildingIdRoute,
   } as any)
+const AdminBuildingsBuildingIdApartmentsRoute =
+  AdminBuildingsBuildingIdApartmentsRouteImport.update({
+    id: '/apartments',
+    path: '/apartments',
+    getParentRoute: () => AdminBuildingsBuildingIdRoute,
+  } as any)
 const AdminBuildingsBuildingIdLiveRoute =
   AdminBuildingsBuildingIdLiveRouteImport.update({
     id: '/live',
     path: '/live',
+    getParentRoute: () => AdminBuildingsBuildingIdRoute,
+  } as any)
+const AdminBuildingsBuildingIdSettingsRoute =
+  AdminBuildingsBuildingIdSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AdminBuildingsBuildingIdRoute,
   } as any)
 
@@ -102,7 +116,9 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof AuthResetPasswordRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
+  '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRoute
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
+  '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
   '/admin/buildings/$buildingId/': typeof AdminBuildingsBuildingIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -114,7 +130,9 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRoute
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
+  '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdIndexRoute
 }
 export interface FileRoutesById {
@@ -130,7 +148,9 @@ export interface FileRoutesById {
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
+  '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRoute
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
+  '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
   '/admin/buildings/$buildingId/': typeof AdminBuildingsBuildingIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -146,7 +166,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/admin/'
     | '/admin/buildings/$buildingId'
+    | '/admin/buildings/$buildingId/apartments'
     | '/admin/buildings/$buildingId/live'
+    | '/admin/buildings/$buildingId/settings'
     | '/admin/buildings/$buildingId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -158,7 +180,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/admin'
+    | '/admin/buildings/$buildingId/apartments'
     | '/admin/buildings/$buildingId/live'
+    | '/admin/buildings/$buildingId/settings'
     | '/admin/buildings/$buildingId'
   id:
     | '__root__'
@@ -173,7 +197,9 @@ export interface FileRouteTypes {
     | '/_auth/reset-password'
     | '/admin/'
     | '/admin/buildings/$buildingId'
+    | '/admin/buildings/$buildingId/apartments'
     | '/admin/buildings/$buildingId/live'
+    | '/admin/buildings/$buildingId/settings'
     | '/admin/buildings/$buildingId/'
   fileRoutesById: FileRoutesById
 }
@@ -272,11 +298,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBuildingsBuildingIdIndexRouteImport
       parentRoute: typeof AdminBuildingsBuildingIdRoute
     }
+    '/admin/buildings/$buildingId/apartments': {
+      id: '/admin/buildings/$buildingId/apartments'
+      path: '/apartments'
+      fullPath: '/admin/buildings/$buildingId/apartments'
+      preLoaderRoute: typeof AdminBuildingsBuildingIdApartmentsRouteImport
+      parentRoute: typeof AdminBuildingsBuildingIdRoute
+    }
     '/admin/buildings/$buildingId/live': {
       id: '/admin/buildings/$buildingId/live'
       path: '/live'
       fullPath: '/admin/buildings/$buildingId/live'
       preLoaderRoute: typeof AdminBuildingsBuildingIdLiveRouteImport
+      parentRoute: typeof AdminBuildingsBuildingIdRoute
+    }
+    '/admin/buildings/$buildingId/settings': {
+      id: '/admin/buildings/$buildingId/settings'
+      path: '/settings'
+      fullPath: '/admin/buildings/$buildingId/settings'
+      preLoaderRoute: typeof AdminBuildingsBuildingIdSettingsRouteImport
       parentRoute: typeof AdminBuildingsBuildingIdRoute
     }
   }
@@ -297,13 +337,19 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface AdminBuildingsBuildingIdRouteChildren {
+  AdminBuildingsBuildingIdApartmentsRoute: typeof AdminBuildingsBuildingIdApartmentsRoute
   AdminBuildingsBuildingIdLiveRoute: typeof AdminBuildingsBuildingIdLiveRoute
+  AdminBuildingsBuildingIdSettingsRoute: typeof AdminBuildingsBuildingIdSettingsRoute
   AdminBuildingsBuildingIdIndexRoute: typeof AdminBuildingsBuildingIdIndexRoute
 }
 
 const AdminBuildingsBuildingIdRouteChildren: AdminBuildingsBuildingIdRouteChildren =
   {
+    AdminBuildingsBuildingIdApartmentsRoute:
+      AdminBuildingsBuildingIdApartmentsRoute,
     AdminBuildingsBuildingIdLiveRoute: AdminBuildingsBuildingIdLiveRoute,
+    AdminBuildingsBuildingIdSettingsRoute:
+      AdminBuildingsBuildingIdSettingsRoute,
     AdminBuildingsBuildingIdIndexRoute: AdminBuildingsBuildingIdIndexRoute,
   }
 

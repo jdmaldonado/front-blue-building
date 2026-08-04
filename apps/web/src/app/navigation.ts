@@ -16,6 +16,8 @@ export const AppRoute = {
   AdminBuilding: '/admin/buildings/$buildingId',
   // The doors and cameras screen, the same one a resident sees.
   AdminBuildingLive: '/admin/buildings/$buildingId/live',
+  AdminBuildingApartments: '/admin/buildings/$buildingId/apartments',
+  AdminBuildingSettings: '/admin/buildings/$buildingId/settings',
 } as const;
 export type AppRoute = (typeof AppRoute)[keyof typeof AppRoute];
 
