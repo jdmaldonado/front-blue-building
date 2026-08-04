@@ -11,3 +11,16 @@
 body {
   font-family: var(--font-body);
 }
+
+/* One rule for the whole app: if the person asked their system for less motion,
+   nothing loops and nothing slides. Components never repeat this check. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

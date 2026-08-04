@@ -33,6 +33,15 @@ export function CameraTile({ camera, buildingId, className }: CameraTileProps) {
         />
       )}
 
+      {/* A line travelling over the frame: it makes a live feed look alive even
+          when the scene does not move. */}
+      {frame.isLive ? (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-12 animate-scan bg-[linear-gradient(180deg,transparent,var(--scan-line))] opacity-25"
+        />
+      ) : null}
+
       <div className="absolute top-2 left-2">
         {frame.isLive ? (
           <Badge tone="success" size="sm" dot pulse>

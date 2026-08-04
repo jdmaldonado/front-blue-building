@@ -1,7 +1,8 @@
 import type { Door, DoorStatus } from '@bb/core';
-import { DoorOpen } from 'lucide-react';
+import { DoorOpen, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
 import { UserEventActions, useUserEventActions } from '../../building-events';
-import { Badge, Button, Dialog, Text } from '../../../ui';
+import { Badge, Button, Dialog, IconButton, Text } from '../../../ui';
 import { doorStatusMeta } from '../lib';
 import { CameraTile } from './CameraTile';
 
@@ -16,6 +17,10 @@ type DoorDialogProps = {
 export function DoorDialog({ door, status, buildingId, onClose, onOpenDoor }: DoorDialogProps) {
   const meta = doorStatusMeta(status);
   const events = useUserEventActions(buildingId);
+  // A stream can freeze without anyone telling us. Changing this number gives
+  // every tile a new key, so React unmounts them: they leave the stream and
+  // subscribe again from zero.
+  const [reloadToken, setReloadToken] = useState(0);
 
   return (
     <Dialog
@@ -25,9 +30,16 @@ export function DoorDialog({ door, status, buildingId, onClose, onOpenDoor }: Do
       title={door?.name ?? 'Puerta'}
       description={door?.floor?.name ?? undefined}
       headerAside={
-        <Badge tone={meta.tone} dot pulse={meta.pulse}>
-          {meta.label}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge tone={meta.tone} dot pulse={meta.pulse}>
+            {meta.label}
+          </Badge>
+          {door !== null && door.cameras.length > 0 ? (
+            <IconButton label="Recargar cámaras" onClick={() => setReloadToken((current) => current + 1)}>
+              <RefreshCw size={16} />
+            </IconButton>
+          ) : null}
+        </div>
       }
       footer={
         door === null ? null : (
@@ -50,7 +62,7 @@ export function DoorDialog({ door, status, buildingId, onClose, onOpenDoor }: Do
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {door.cameras.map((camera) => (
-                <CameraTile key={camera.id} camera={camera} buildingId={buildingId} />
+                <CameraTile key={`${camera.id}-${reloadToken}`} camera={camera} buildingId={buildingId} />
               ))}
             </div>
           )}

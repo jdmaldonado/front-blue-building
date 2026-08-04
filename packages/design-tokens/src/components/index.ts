@@ -63,6 +63,9 @@ export const componentTokens = {
 
   'status-dot-online': 'success',
   'status-dot-offline': 'door-closed',
+  'status-dot-alert': 'destructive',
+  'status-dot-warning': 'warning',
+  'status-dot-unknown': 'text-muted',
 
   'radio-border': 'border-strong',
   'radio-border-checked': 'accent',
@@ -86,11 +89,26 @@ export const componentTokens = {
   'menu-hover': 'surface-sunken',
   'menu-selected-bg': 'accent-subtle',
   'menu-selected-foreground': 'accent',
+  'menu-radius': 'radius-2',
+  'menu-danger-foreground': 'destructive',
+  'menu-danger-hover': 'destructive-subtle',
 
   'table-header-bg': 'surface-sunken',
   'table-row-hover': 'surface-sunken',
   'table-row-selected': 'accent-subtle',
   'table-border': 'border-default',
+  'table-radius': 'radius-3',
+
+  // Skeletons: a flat base with a lighter band travelling across it.
+  'skeleton-bg': 'surface-sunken',
+  'skeleton-shine': 'surface-raised',
+
+  'tooltip-bg': 'surface-inverse',
+  'tooltip-foreground': 'text-inverse',
+  'tooltip-radius': 'radius-1',
+
+  // The line that travels over a live camera frame.
+  'scan-line': 'accent',
 
   'avatar-bg': 'accent-subtle',
   'avatar-foreground': 'accent',

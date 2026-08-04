@@ -69,6 +69,31 @@ export const radius = {
 
 export type RadiusToken = keyof typeof radius;
 
+// Motion, by role. Durations are milliseconds on every platform.
+// `instant` is for state that must feel immediate (hover, focus). `slow` and
+// `slower` are for things that repeat by themselves (scan lines, breathing
+// dots): fast loops read as noise.
+export const duration = {
+  instant: 90,
+  fast: 150,
+  base: 220,
+  slow: 380,
+  slower: 700,
+} as const;
+
+export type DurationToken = keyof typeof duration;
+
+export const easing = {
+  // Everything that stays on screen and just moves or resizes.
+  standard: 'cubic-bezier(0.2, 0, 0, 1)',
+  // Things coming in: slow start, soft landing.
+  enter: 'cubic-bezier(0.05, 0.7, 0.1, 1)',
+  // Things leaving: quick exit, nobody waits for them.
+  exit: 'cubic-bezier(0.3, 0, 0.8, 0.15)',
+} as const;
+
+export type EasingToken = keyof typeof easing;
+
 // Type scale by role, not by raw size. A component picks the role ("this is a
 // label", "this is the page title") and the scale decides the number, so nobody
 // writes `text-[23px]` again. Sizes are px; the web adapter converts to rem.
@@ -114,6 +139,47 @@ const HONEYCOMB_SVG =
 
 export const pattern = {
   honeycomb: `url("data:image/svg+xml,${HONEYCOMB_SVG}")`,
+} as const;
+
+// Named loops the interface can reuse. Each one has a meaning:
+// scan   -> a live feed is running (camera tiles)
+// sweep  -> a device is busy and we cannot see inside (reboot, config sent)
+// shimmer-> content is loading (skeletons)
+// breathe-> something is alive but idle (online dot)
+// The keyframes live next to the names so both travel together.
+export const animation = {
+  // Runs once, when a panel appears (menus, popovers).
+  'fade-in': { value: 'fade-in 150ms cubic-bezier(0.05, 0.7, 0.1, 1)' },
+  scan: { value: 'scan 3.2s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
+  sweep: { value: 'sweep 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
+  shimmer: { value: 'shimmer 1.6s linear infinite' },
+  breathe: { value: 'breathe 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
+} as const;
+
+export type AnimationToken = keyof typeof animation;
+
+export const keyframes = {
+  'fade-in': {
+    from: 'opacity: 0; transform: translateY(-4px) scale(0.98);',
+    to: 'opacity: 1; transform: translateY(0) scale(1);',
+  },
+  scan: {
+    '0%': 'transform: translateY(-100%); opacity: 0;',
+    '10%, 90%': 'opacity: 1;',
+    '100%': 'transform: translateY(400%); opacity: 0;',
+  },
+  sweep: {
+    '0%': 'transform: translateX(-100%);',
+    '100%': 'transform: translateX(200%);',
+  },
+  shimmer: {
+    '0%': 'background-position: 100% 0;',
+    '100%': 'background-position: -100% 0;',
+  },
+  breathe: {
+    '0%, 100%': 'opacity: 1; transform: scale(1);',
+    '50%': 'opacity: 0.55; transform: scale(0.88);',
+  },
 } as const;
 
 export const PATTERN_TILE_SIZE = '39px 22.52px';

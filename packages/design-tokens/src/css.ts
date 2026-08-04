@@ -1,5 +1,5 @@
 import { componentTokens } from './components';
-import { fontFamily, pattern, radius, typeScale } from './primitives';
+import { animation, duration, easing, fontFamily, keyframes, pattern, radius, typeScale } from './primitives';
 import { semanticDark, semanticLight } from './semantic';
 
 const REM_BASE = 16;
@@ -13,6 +13,25 @@ function radiusVars(indent: string): string {
       return `${indent}--radius-${name}: ${css};`;
     })
     .join('\n');
+}
+
+// Durations are plain vars: Tailwind v4 has no `--duration-*` namespace, so they
+// are consumed as `duration-(--duration-fast)`.
+function durationVars(indent: string): string {
+  return Object.entries(duration)
+    .map(([name, value]) => `${indent}--duration-${name}: ${value}ms;`)
+    .join('\n');
+}
+
+function keyframeBlocks(): string {
+  return Object.entries(keyframes)
+    .map(([name, steps]) => {
+      const body = Object.entries(steps)
+        .map(([stop, declarations]) => `  ${stop} { ${declarations} }`)
+        .join('\n');
+      return `@keyframes ${name} {\n${body}\n}`;
+    })
+    .join('\n\n');
 }
 
 function semanticVars(tokens: Record<string, string>, indent: string): string {
@@ -43,7 +62,23 @@ function themeBlock(): string {
 
   const patterns = Object.entries(pattern).map(([name, value]) => `  --pattern-${name}: ${value};`);
 
-  return ['@theme {', '  --text-*: initial;', ...type, '', ...families, ...patterns, '}'].join('\n');
+  // `--ease-*` and `--animate-*` are Tailwind v4 namespaces: they become the
+  // `ease-standard` and `animate-scan` utilities.
+  const eases = Object.entries(easing).map(([name, value]) => `  --ease-${name}: ${value};`);
+  const animations = Object.entries(animation).map(([name, { value }]) => `  --animate-${name}: ${value};`);
+
+  return [
+    '@theme {',
+    '  --text-*: initial;',
+    ...type,
+    '',
+    ...families,
+    ...patterns,
+    '',
+    ...eases,
+    ...animations,
+    '}',
+  ].join('\n');
 }
 
 // Emits CSS custom properties for both themes. The web app writes this to a .css
@@ -52,8 +87,11 @@ export function generateThemeCss(): string {
   return [
     themeBlock(),
     '',
+    keyframeBlocks(),
+    '',
     ':root {',
     radiusVars('  '),
+    durationVars('  '),
     semanticVars(semanticLight, '  '),
     componentVars(componentTokens, '  '),
     '}',

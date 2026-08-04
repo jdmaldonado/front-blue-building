@@ -1,0 +1,225 @@
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type RowData,
+  type SortingState,
+} from '@tanstack/react-table';
+import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
+import { cn } from '../cn';
+import { Pagination } from '../pagination';
+import { Skeleton } from '../skeleton';
+import {
+  dataTableCardLabelVariants,
+  dataTableCardRowVariants,
+  dataTableCardValueVariants,
+  dataTableCardVariants,
+  dataTableCellVariants,
+  dataTableFrameVariants,
+  dataTableHeadCellVariants,
+  dataTableRowVariants,
+  dataTableScrollVariants,
+  dataTableVariants,
+  type DataTableDensity,
+} from './DataTable-variants';
+
+// Extra information a column can carry, read only by this component.
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    // Shown as the card title on phones, without its header label.
+    primary?: boolean;
+    // Left out of the card on phones. For secondary data only.
+    hideOnMobile?: boolean;
+    // Actions column: no label on the card, pinned to the bottom.
+    actions?: boolean;
+  }
+}
+
+type DataTableProps<TData> = {
+  columns: Array<ColumnDef<TData, unknown>>;
+  data: TData[];
+  // Stable row id. Without it, selection breaks when the list reorders.
+  getRowId?: (row: TData) => string;
+  onRowClick?: (row: TData) => void;
+  isRowSelected?: (row: TData) => boolean;
+  isPending?: boolean;
+  // Shown when there is nothing to list. Usually an EmptyState.
+  empty?: ReactNode;
+  density?: DataTableDensity;
+  // Text typed in a search field outside the table.
+  globalFilter?: string;
+  pageSize?: number;
+  // Counter next to the pager, for example "120 usuarios".
+  total?: string;
+  className?: string;
+};
+
+const SKELETON_ROWS = 5;
+
+export function DataTable<TData>({
+  columns,
+  data,
+  getRowId,
+  onRowClick,
+  isRowSelected,
+  isPending = false,
+  empty,
+  density = 'comfortable',
+  globalFilter,
+  pageSize,
+  total,
+  className,
+}: DataTableProps<TData>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const paginated = pageSize !== undefined;
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting, globalFilter },
+    onSortingChange: setSorting,
+    getRowId: getRowId === undefined ? undefined : (row) => getRowId(row),
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: paginated ? getPaginationRowModel() : undefined,
+    initialState: paginated ? { pagination: { pageIndex: 0, pageSize } } : undefined,
+  });
+
+  const rows = table.getRowModel().rows;
+
+  if (isPending) {
+    return (
+      <div className={cn(dataTableFrameVariants(), 'flex flex-col gap-3 p-4', className)}>
+        {Array.from({ length: SKELETON_ROWS }, (_, index) => (
+          <Skeleton key={index} className="h-9" />
+        ))}
+      </div>
+    );
+  }
+
+  if (rows.length === 0) {
+    return <div className={cn(dataTableFrameVariants(), className)}>{empty}</div>;
+  }
+
+  return (
+    <div className={cn('flex flex-col gap-3', className)}>
+      {/* Phones: one card per row. */}
+      <div className="flex flex-col gap-2 md:hidden">
+        {rows.map((row) => (
+          <div
+            key={row.id}
+            onClick={onRowClick === undefined ? undefined : () => onRowClick(row.original)}
+            className={dataTableCardVariants({
+              clickable: onRowClick !== undefined,
+              selected: isRowSelected?.(row.original) ?? false,
+            })}
+          >
+            {row
+              .getVisibleCells()
+              .filter((cell) => cell.column.columnDef.meta?.hideOnMobile !== true)
+              .map((cell) => {
+                const meta = cell.column.columnDef.meta;
+                const content = flexRender(cell.column.columnDef.cell, cell.getContext());
+
+                if (meta?.primary === true || meta?.actions === true) {
+                  return (
+                    <div key={cell.id} className={meta.actions === true ? 'mt-1 flex justify-end' : ''}>
+                      {content}
+                    </div>
+                  );
+                }
+
+                // The card label needs plain text. A header built with JSX has
+                // no place here, so the column id is the fallback.
+                const header = cell.column.columnDef.header;
+
+                return (
+                  <div key={cell.id} className={dataTableCardRowVariants()}>
+                    <span className={dataTableCardLabelVariants()}>
+                      {typeof header === 'string' ? header : cell.column.id}
+                    </span>
+                    <span className={dataTableCardValueVariants()}>{content}</span>
+                  </div>
+                );
+              })}
+          </div>
+        ))}
+      </div>
+
+      {/* Tablet and up: the real table. */}
+      <div className={cn(dataTableFrameVariants(), 'hidden md:block')}>
+        <div className={dataTableScrollVariants()}>
+          <table className={dataTableVariants()}>
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    const sortable = header.column.getCanSort();
+                    const direction = header.column.getIsSorted();
+
+                    return (
+                      <th
+                        key={header.id}
+                        scope="col"
+                        aria-sort={direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : undefined}
+                        onClick={sortable ? header.column.getToggleSortingHandler() : undefined}
+                        className={dataTableHeadCellVariants({ density, sortable })}
+                      >
+                        <span className="inline-flex items-center gap-1.5">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {sortable ? (
+                            direction === 'asc' ? (
+                              <ArrowUp size={13} aria-hidden />
+                            ) : direction === 'desc' ? (
+                              <ArrowDown size={13} aria-hidden />
+                            ) : (
+                              <ChevronsUpDown size={13} aria-hidden className="opacity-40" />
+                            )
+                          ) : null}
+                        </span>
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+
+            <tbody>
+              {rows.map((row) => (
+                <tr
+                  key={row.id}
+                  onClick={onRowClick === undefined ? undefined : () => onRowClick(row.original)}
+                  className={dataTableRowVariants({
+                    clickable: onRowClick !== undefined,
+                    selected: isRowSelected?.(row.original) ?? false,
+                  })}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className={dataTableCellVariants({ density })}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {paginated ? (
+        <Pagination
+          pageIndex={table.getState().pagination.pageIndex}
+          pageCount={table.getPageCount()}
+          onPageChange={(pageIndex) => table.setPageIndex(pageIndex)}
+          total={total}
+        />
+      ) : null}
+    </div>
+  );
+}
