@@ -1,4 +1,4 @@
-import { LoginMode, type Session, type Space } from '@bb/core';
+import { LoginMode, UserType, type Session, type Space } from '@bb/core';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { getSessionStorage } from './storage';
@@ -44,6 +44,14 @@ export function selectToken(state: SessionState): string | null {
 
 export function selectIsSuperAdmin(state: SessionState): boolean {
   return state.session?.mode === LoginMode.Admin;
+}
+
+// The admin login only says which endpoint answered. What opens the panel is
+// `userType`, and the API checks it on every request
+// (api/src/services/AuthService.ts:66).
+export function selectIsSuperUser(state: SessionState): boolean {
+  const { session } = state;
+  return session !== null && session.mode === LoginMode.Admin && session.user.userType === UserType.SuperUser;
 }
 
 // Same reference every time: a selector that builds a new array on each call

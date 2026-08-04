@@ -20,6 +20,8 @@ import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminBuildingsBuildingIdRouteImport } from './routes/admin/buildings.$buildingId'
+import { Route as AdminBuildingsBuildingIdIndexRouteImport } from './routes/admin/buildings.$buildingId/index'
+import { Route as AdminBuildingsBuildingIdLiveRouteImport } from './routes/admin/buildings.$buildingId/live'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +78,18 @@ const AdminBuildingsBuildingIdRoute =
     path: '/buildings/$buildingId',
     getParentRoute: () => AdminRoute,
   } as any)
+const AdminBuildingsBuildingIdIndexRoute =
+  AdminBuildingsBuildingIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AdminBuildingsBuildingIdRoute,
+  } as any)
+const AdminBuildingsBuildingIdLiveRoute =
+  AdminBuildingsBuildingIdLiveRouteImport.update({
+    id: '/live',
+    path: '/live',
+    getParentRoute: () => AdminBuildingsBuildingIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,7 +101,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/admin/': typeof AdminIndexRoute
-  '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRoute
+  '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
+  '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
+  '/admin/buildings/$buildingId/': typeof AdminBuildingsBuildingIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -98,7 +114,8 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/admin': typeof AdminIndexRoute
-  '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRoute
+  '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
+  '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -112,7 +129,9 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/admin/': typeof AdminIndexRoute
-  '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRoute
+  '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
+  '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
+  '/admin/buildings/$buildingId/': typeof AdminBuildingsBuildingIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -127,6 +146,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/admin/'
     | '/admin/buildings/$buildingId'
+    | '/admin/buildings/$buildingId/live'
+    | '/admin/buildings/$buildingId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -137,6 +158,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/admin'
+    | '/admin/buildings/$buildingId/live'
     | '/admin/buildings/$buildingId'
   id:
     | '__root__'
@@ -151,6 +173,8 @@ export interface FileRouteTypes {
     | '/_auth/reset-password'
     | '/admin/'
     | '/admin/buildings/$buildingId'
+    | '/admin/buildings/$buildingId/live'
+    | '/admin/buildings/$buildingId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -241,6 +265,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBuildingsBuildingIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/buildings/$buildingId/': {
+      id: '/admin/buildings/$buildingId/'
+      path: '/'
+      fullPath: '/admin/buildings/$buildingId/'
+      preLoaderRoute: typeof AdminBuildingsBuildingIdIndexRouteImport
+      parentRoute: typeof AdminBuildingsBuildingIdRoute
+    }
+    '/admin/buildings/$buildingId/live': {
+      id: '/admin/buildings/$buildingId/live'
+      path: '/live'
+      fullPath: '/admin/buildings/$buildingId/live'
+      preLoaderRoute: typeof AdminBuildingsBuildingIdLiveRouteImport
+      parentRoute: typeof AdminBuildingsBuildingIdRoute
+    }
   }
 }
 
@@ -258,14 +296,30 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface AdminBuildingsBuildingIdRouteChildren {
+  AdminBuildingsBuildingIdLiveRoute: typeof AdminBuildingsBuildingIdLiveRoute
+  AdminBuildingsBuildingIdIndexRoute: typeof AdminBuildingsBuildingIdIndexRoute
+}
+
+const AdminBuildingsBuildingIdRouteChildren: AdminBuildingsBuildingIdRouteChildren =
+  {
+    AdminBuildingsBuildingIdLiveRoute: AdminBuildingsBuildingIdLiveRoute,
+    AdminBuildingsBuildingIdIndexRoute: AdminBuildingsBuildingIdIndexRoute,
+  }
+
+const AdminBuildingsBuildingIdRouteWithChildren =
+  AdminBuildingsBuildingIdRoute._addFileChildren(
+    AdminBuildingsBuildingIdRouteChildren,
+  )
+
 interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
-  AdminBuildingsBuildingIdRoute: typeof AdminBuildingsBuildingIdRoute
+  AdminBuildingsBuildingIdRoute: typeof AdminBuildingsBuildingIdRouteWithChildren
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
-  AdminBuildingsBuildingIdRoute: AdminBuildingsBuildingIdRoute,
+  AdminBuildingsBuildingIdRoute: AdminBuildingsBuildingIdRouteWithChildren,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

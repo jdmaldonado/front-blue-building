@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { AdminBuildingsPage } from '../../features/admin';
+import { BuildingsOverviewPage } from '../../features/admin';
 import { AppShell, AppTitle } from '../../layouts/app';
 
 export const Route = createFileRoute('/admin/')({
@@ -8,8 +8,8 @@ export const Route = createFileRoute('/admin/')({
 
 function RouteComponent() {
   return (
-    <AppShell header={<AppTitle title="Edificios" subtitle="Elige uno para ver su dashboard" />}>
-      <AdminBuildingsPage />
+    <AppShell header={<AppTitle title="Edificios" subtitle="Estado de todos los edificios" />}>
+      <BuildingsOverviewPage />
     </AppShell>
   );
 }

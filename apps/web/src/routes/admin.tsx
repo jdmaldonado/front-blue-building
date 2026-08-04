@@ -1,8 +1,18 @@
-import { LoginMode } from '@bb/core';
 import { Outlet, createFileRoute } from '@tanstack/react-router';
-import { requireMode } from '../app/guards';
+import { requireSuperUser } from '../app/guards';
+import { AdminQuickSearch } from '../features/admin';
 
+// One guard for the whole panel: any screen added under /admin inherits it.
 export const Route = createFileRoute('/admin')({
-  beforeLoad: requireMode(LoginMode.Admin),
-  component: Outlet,
+  beforeLoad: requireSuperUser,
+  component: RouteComponent,
 });
+
+function RouteComponent() {
+  return (
+    <>
+      <Outlet />
+      <AdminQuickSearch />
+    </>
+  );
+}

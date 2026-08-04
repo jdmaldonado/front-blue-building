@@ -1,14 +1,12 @@
 import { useBuildingById } from '@bb/logic';
-import { Link, createFileRoute } from '@tanstack/react-router';
-import { ArrowLeft } from 'lucide-react';
+import { Outlet, createFileRoute } from '@tanstack/react-router';
 import { BuildingProvider } from '../../app/BuildingContext';
-import { AppRoute } from '../../app/navigation';
-import { BuildingEventsButton } from '../../features/building-events';
-import { DoorsDashboardPage } from '../../features/doors';
+import { BuildingHeader, BuildingSectionNav } from '../../features/admin';
 import { AppShell, AppTitle } from '../../layouts/app';
-import { Alert, IconButton, Loading } from '../../ui';
+import { Alert, Loading } from '../../ui';
 
-// Same dashboard as the resident one. Here the building comes from the route.
+// Frame shared by every screen of one building: it loads it once and puts it in
+// context, so the sections below only read it.
 export const Route = createFileRoute('/admin/buildings/$buildingId')({
   component: RouteComponent,
 });
@@ -34,19 +32,12 @@ function RouteComponent() {
   return (
     <BuildingProvider building={building.data}>
       <AppShell
-        header={
-          <>
-            <Link to={AppRoute.Admin}>
-              <IconButton label="Volver a edificios">
-                <ArrowLeft size={18} />
-              </IconButton>
-            </Link>
-            <AppTitle title={building.data.name} />
-          </>
-        }
-        headerActions={<BuildingEventsButton buildingId={building.data.id} />}
+        header={<BuildingHeader building={building.data} />}
+        sectionNav={({ collapsed, onNavigate }) => (
+          <BuildingSectionNav buildingId={buildingId} collapsed={collapsed} onNavigate={onNavigate} />
+        )}
       >
-        <DoorsDashboardPage />
+        <Outlet />
       </AppShell>
     </BuildingProvider>
   );

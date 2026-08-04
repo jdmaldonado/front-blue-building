@@ -7,6 +7,8 @@ export interface HttpRequest {
 export interface HttpClient {
   get(request: HttpRequest): Promise<unknown>;
   post(request: HttpRequest): Promise<unknown>;
+  put(request: HttpRequest): Promise<unknown>;
+  delete(request: HttpRequest): Promise<unknown>;
 }
 
 export class HttpError extends Error {
@@ -67,6 +69,8 @@ export function createFetchHttpClient(config: FetchHttpClientConfig): HttpClient
   return {
     get: (req) => request('GET', req),
     post: (req) => request('POST', req),
+    put: (req) => request('PUT', req),
+    delete: (req) => request('DELETE', req),
   };
 }
 

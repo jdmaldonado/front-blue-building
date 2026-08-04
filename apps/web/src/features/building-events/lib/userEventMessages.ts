@@ -1,5 +1,5 @@
 import { UserEvent } from '@bb/core';
-import { BellOff, ShieldAlert, TriangleAlert, type LucideIcon } from 'lucide-react';
+import { BellOff, Power, ShieldAlert, TriangleAlert, type LucideIcon } from 'lucide-react';
 import type { ButtonIntent } from '../../../ui';
 
 export type UserEventMeta = {
@@ -30,9 +30,16 @@ export const USER_EVENT_META: Record<UserEvent, UserEventMeta> = {
     icon: BellOff,
     intent: 'success',
   },
+  [UserEvent.RestartRpi]: {
+    title: 'Reiniciar equipo',
+    description: 'Reinicia la Raspberry Pi del edificio.',
+    icon: Power,
+    intent: 'destructive',
+  },
 };
 
-// Same order as the current app, from most urgent to least.
+// What a resident sees, from most urgent to least. Restarting is staff only, so
+// it is not here.
 export const USER_EVENT_ORDER: UserEvent[] = [UserEvent.Intrusion, UserEvent.Emergency, UserEvent.Mute];
 
 export type ConfirmSpec = {
@@ -57,12 +64,19 @@ export const USER_EVENT_CONFIRM: Partial<Record<UserEvent, ConfirmSpec>> = {
     cta: 'Silenciar',
     intent: 'success',
   },
+  [UserEvent.RestartRpi]: {
+    title: '¿Reiniciar el equipo del edificio?',
+    description: 'Mientras reinicia, el edificio queda sin conexión con el servidor.',
+    cta: 'Reiniciar',
+    intent: 'destructive',
+  },
 };
 
 export const USER_EVENT_SENT_MESSAGE: Record<UserEvent, string> = {
   [UserEvent.Intrusion]: 'Alerta de intrusión enviada.',
   [UserEvent.Emergency]: 'Emergencia reportada, alarma activada.',
   [UserEvent.Mute]: 'Alarma silenciada en el edificio.',
+  [UserEvent.RestartRpi]: 'Orden de reinicio enviada al edificio.',
 };
 
 export const USER_EVENT_ERROR_MESSAGE = 'El servidor rechazó la acción. Revisa tus permisos e intenta de nuevo.';

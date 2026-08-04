@@ -12,7 +12,9 @@ import {
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { cn } from '../cn';
+import { IconButton } from '../icon-button';
 import { Pagination } from '../pagination';
+import { Select } from '../select';
 import { Skeleton } from '../skeleton';
 import {
   dataTableCardLabelVariants,
@@ -107,8 +109,42 @@ export function DataTable<TData>({
     return <div className={cn(dataTableFrameVariants(), className)}>{empty}</div>;
   }
 
+  // On a phone there is no header row to click, so sorting needs its own
+  // control. Only columns with a plain text header can be offered here.
+  const sortableColumns = table
+    .getAllLeafColumns()
+    .filter((column) => column.getCanSort() && typeof column.columnDef.header === 'string');
+  const sortedBy = sorting[0];
+
   return (
     <div className={cn('flex flex-col gap-3', className)}>
+      {sortableColumns.length === 0 ? null : (
+        <div className="flex items-center gap-2 md:hidden">
+          <Select
+            selectSize="sm"
+            aria-label="Ordenar por"
+            value={sortedBy?.id ?? ''}
+            onChange={(columnId) => setSorting(columnId === '' ? [] : [{ id: columnId, desc: false }])}
+            options={[
+              { value: '', label: 'Sin orden' },
+              ...sortableColumns.map((column) => ({
+                value: column.id,
+                label: String(column.columnDef.header),
+              })),
+            ]}
+          />
+
+          {sortedBy === undefined ? null : (
+            <IconButton
+              label={sortedBy.desc ? 'Orden descendente' : 'Orden ascendente'}
+              onClick={() => setSorting([{ id: sortedBy.id, desc: !sortedBy.desc }])}
+            >
+              {sortedBy.desc ? <ArrowDown size={18} /> : <ArrowUp size={18} />}
+            </IconButton>
+          )}
+        </div>
+      )}
+
       {/* Phones: one card per row. */}
       <div className="flex flex-col gap-2 md:hidden">
         {rows.map((row) => (

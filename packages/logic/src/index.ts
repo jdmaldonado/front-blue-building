@@ -6,6 +6,7 @@ export * from './auth/usePasswordRecovery';
 export * from './buildings/keys';
 export * from './buildings/useBuildings';
 export * from './buildings/useBuildingById';
+export * from './buildings/useBuildingMaintenance';
 export * from './access/keys';
 export * from './access/useAccessibleDoors';
 export * from './access/useDoorStatuses';

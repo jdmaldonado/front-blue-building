@@ -21,6 +21,7 @@ import {
   type Floor,
   type ForgotPasswordInput,
   type LoginInput,
+  type MaintenanceInput,
   type ResetPasswordInput,
   type Session,
 } from '@bb/core';
@@ -129,6 +130,10 @@ const BuildingsPath = {
   List: '/api/bluebuilding/buildings',
 } as const;
 
+function maintenancePath(buildingId: string): string {
+  return `/api/bluebuilding/buildings/${buildingId}/maintenance`;
+}
+
 export class BuildingsGateway {
   constructor(private readonly http: HttpClient) {}
 
@@ -137,6 +142,29 @@ export class BuildingsGateway {
       // This route answers the array directly, without a `buildings` wrapper.
       const raw = await this.http.get({ path: BuildingsPath.List });
       return z.array(BuildingSchema).parse(raw);
+    } catch (error) {
+      throw toBuildingsError(error);
+    }
+  }
+
+  // Maintenance does not turn anything off: it stops the SMS and calls for the
+  // building until the date it returns.
+  async enableMaintenance(input: MaintenanceInput): Promise<Building> {
+    try {
+      const raw = await this.http.put({
+        path: maintenancePath(input.buildingId),
+        body: { durationMinutes: input.durationMinutes },
+      });
+      return BuildingSchema.parse(raw);
+    } catch (error) {
+      throw toBuildingsError(error);
+    }
+  }
+
+  async disableMaintenance(buildingId: string): Promise<Building> {
+    try {
+      const raw = await this.http.delete({ path: maintenancePath(buildingId) });
+      return BuildingSchema.parse(raw);
     } catch (error) {
       throw toBuildingsError(error);
     }

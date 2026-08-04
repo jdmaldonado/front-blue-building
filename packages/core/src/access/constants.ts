@@ -13,11 +13,12 @@ export const DoorAction = {
 export type DoorAction = (typeof DoorAction)[keyof typeof DoorAction];
 
 // Sent to the whole building, not to one door (api/src/hardware/index.ts:835).
-// The API also accepts RESTART_RPI; we do not expose it.
+// RESTART_RPI is only offered to staff.
 export const UserEvent = {
   Mute: 'MUTE',
   Intrusion: 'INTRUSION',
   Emergency: 'EMERGENCY',
+  RestartRpi: 'RESTART_RPI',
 } as const;
 
 export type UserEvent = (typeof UserEvent)[keyof typeof UserEvent];

@@ -10,12 +10,15 @@ type AppShellProps = {
   header: ReactNode;
   // Pinned to the right of the header, for actions that must stay reachable.
   headerActions?: ReactNode;
+  // Links of the section the screen belongs to, under the main navigation. It
+  // is a function because only the shell knows if the sidebar is collapsed.
+  sectionNav?: (state: { collapsed: boolean; onNavigate?: () => void }) => ReactNode;
   children: ReactNode;
 };
 
 // Frame for every screen behind a session. It knows nothing about buildings:
 // that context is added by the screens themselves.
-export function AppShell({ header, headerActions, children }: AppShellProps) {
+export function AppShell({ header, headerActions, sectionNav, children }: AppShellProps) {
   const sidebar = useSidebarCollapsed();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -31,6 +34,12 @@ export function AppShell({ header, headerActions, children }: AppShellProps) {
         footer={<AppUserCard collapsed={sidebar.collapsed} />}
       >
         <AppNavigation collapsed={sidebar.collapsed} />
+        {sectionNav === undefined ? null : (
+          <>
+            <span className="my-1 h-px w-full flex-none bg-(--menu-border)" />
+            {sectionNav({ collapsed: sidebar.collapsed })}
+          </>
+        )}
       </Sidebar>
 
       {/* Same sidebar, in a panel, because it does not fit next to the content
@@ -43,6 +52,12 @@ export function AppShell({ header, headerActions, children }: AppShellProps) {
           footer={<AppUserCard collapsed={false} />}
         >
           <AppNavigation collapsed={false} onNavigate={closeMenu} />
+          {sectionNav === undefined ? null : (
+            <>
+              <span className="my-1 h-px w-full flex-none bg-(--menu-border)" />
+              {sectionNav({ collapsed: false, onNavigate: closeMenu })}
+            </>
+          )}
         </Sidebar>
       </Drawer>
 
