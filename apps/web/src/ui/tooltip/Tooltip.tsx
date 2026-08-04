@@ -3,8 +3,7 @@ import { cn } from '../cn';
 import { tooltipVariants, type TooltipVariants } from './Tooltip-variants';
 
 type TooltipProps = TooltipVariants & {
-  // Short text. A tooltip is a hint, never the only place where something is
-  // explained: it does not exist on touch screens.
+  // A tooltip is only a hint: it does not exist on touch screens.
   content: string;
   children: ReactNode;
   className?: string;

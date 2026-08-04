@@ -25,8 +25,8 @@ export const switchTrackVariants = cva(
   },
 );
 
-// The knob lives inside the track, so `peer-checked` cannot reach it: that
-// variant only matches siblings. It reads the checked prop instead.
+// `peer-checked` only reaches siblings, and the knob is inside the track. So it
+// reads the checked prop instead.
 export const switchKnobVariants = cva(
   [
     'absolute left-0.5 rounded-(--radius-round) bg-(--toggle-knob) shadow-(--shadow-1)',

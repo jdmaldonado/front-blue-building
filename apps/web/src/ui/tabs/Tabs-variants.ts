@@ -3,8 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const tabsAppearances = ['underline', 'pill'] as const;
 export type TabsAppearance = (typeof tabsAppearances)[number];
 
-// On narrow screens the list scrolls sideways instead of wrapping: a tab bar
-// that breaks into two rows stops looking like a tab bar.
+// On narrow screens the list scrolls sideways instead of wrapping.
 export const tabsVariants = cva(
   'flex items-center overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
   {
@@ -46,8 +45,7 @@ export const tabsItemVariants = cva(
   },
 );
 
-// Grows from the middle when the tab becomes active, so the change is visible
-// without moving anything else.
+// Grows from the middle when the tab becomes active.
 export const tabsIndicatorVariants = cva(
   [
     'absolute inset-x-0 -bottom-px h-0.5 rounded-(--radius-round) bg-(--tab-indicator)',

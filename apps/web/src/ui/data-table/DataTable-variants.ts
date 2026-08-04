@@ -67,8 +67,7 @@ export const dataTableRowVariants = cva(
   },
 );
 
-// Mobile: the same rows, stacked as cards. A table with eight columns is
-// unreadable on a phone.
+// Phones get cards instead. A table with eight columns is unreadable there.
 export const dataTableCardVariants = cva(
   [
     'flex flex-col gap-2 rounded-(--card-radius) border border-(--card-border) bg-(--card-bg) p-4',

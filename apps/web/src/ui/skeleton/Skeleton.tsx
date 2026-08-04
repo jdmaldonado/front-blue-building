@@ -4,8 +4,8 @@ import { skeletonVariants, type SkeletonVariants } from './Skeleton-variants';
 
 type SkeletonProps = ComponentProps<'span'> & SkeletonVariants;
 
-// Placeholder while data loads. It is decoration, so it is hidden from screen
-// readers: the loading state is announced by whoever owns the region.
+// Decoration while data loads, so it is hidden from screen readers. The region
+// that owns it announces the loading state.
 export function Skeleton({ shape, className, ...props }: SkeletonProps) {
   return <span aria-hidden className={cn(skeletonVariants({ shape }), className)} {...props} />;
 }

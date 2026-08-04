@@ -142,7 +142,7 @@ export const pattern = {
 } as const;
 
 // Named loops the interface can reuse. Each one has a meaning:
-// scan   -> a live feed is running (camera tiles)
+// scan   -> a reader is waiting for a card to be tapped
 // sweep  -> a device is busy and we cannot see inside (reboot, config sent)
 // shimmer-> content is loading (skeletons)
 // breathe-> something is alive but idle (online dot)

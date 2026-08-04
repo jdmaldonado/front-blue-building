@@ -11,8 +11,7 @@ type SwitchProps = Omit<ComponentProps<'input'>, 'type' | 'size' | 'onChange' | 
     labelPosition?: 'start' | 'end';
   };
 
-// A checkbox with `role="switch"`: it turns something on or off right away, it
-// does not wait for a form to be submitted.
+// A checkbox with `role="switch"`: it acts right away, without a form.
 export function Switch({
   checked,
   onChange,

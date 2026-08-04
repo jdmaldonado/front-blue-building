@@ -36,7 +36,6 @@ export function DropdownMenu({ trigger, groups, align, className }: DropdownMenu
   const containerRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
 
-  // Closes when the click lands anywhere else, or on Escape.
   useEffect(() => {
     if (!open) {
       return;
@@ -63,7 +62,6 @@ export function DropdownMenu({ trigger, groups, align, className }: DropdownMenu
     };
   }, [open]);
 
-  // Up and down move between items, as expected from a menu.
   function handleMenuKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
     const step = event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0;
     if (step === 0) {

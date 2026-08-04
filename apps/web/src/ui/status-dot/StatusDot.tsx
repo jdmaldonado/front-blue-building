@@ -4,8 +4,7 @@ import { statusDotHaloVariants, statusDotVariants, type StatusDotVariants } from
 
 type StatusDotProps = Omit<ComponentProps<'span'>, 'children'> &
   StatusDotVariants & {
-    // What the color means, for people who cannot see it. Without this the dot
-    // is decoration and stays hidden from screen readers.
+    // What the color means. Without it the dot is only decoration.
     label?: string;
     halo?: boolean;
   };

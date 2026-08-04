@@ -43,15 +43,15 @@ declare module '@tanstack/react-table' {
 type DataTableProps<TData> = {
   columns: Array<ColumnDef<TData, unknown>>;
   data: TData[];
-  // Stable row id. Without it, selection breaks when the list reorders.
+  // Stable id. Without it, selection breaks when rows reorder.
   getRowId?: (row: TData) => string;
   onRowClick?: (row: TData) => void;
   isRowSelected?: (row: TData) => boolean;
   isPending?: boolean;
-  // Shown when there is nothing to list. Usually an EmptyState.
+  // Shown when there are no rows. Usually an EmptyState.
   empty?: ReactNode;
   density?: DataTableDensity;
-  // Text typed in a search field outside the table.
+  // Search text. The view owns the field.
   globalFilter?: string;
   pageSize?: number;
   // Counter next to the pager, for example "120 usuarios".
@@ -135,8 +135,8 @@ export function DataTable<TData>({
                   );
                 }
 
-                // The card label needs plain text. A header built with JSX has
-                // no place here, so the column id is the fallback.
+                // The card label needs plain text, so a JSX header falls back
+                // to the column id.
                 const header = cell.column.columnDef.header;
 
                 return (

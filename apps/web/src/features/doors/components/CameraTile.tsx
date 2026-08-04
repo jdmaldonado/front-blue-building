@@ -26,21 +26,14 @@ export function CameraTile({ camera, buildingId, className }: CameraTileProps) {
       {frame.src === null ? (
         <div className="flex size-full items-center justify-center text-body-sm text-(--text-muted)">Conectando...</div>
       ) : (
+        // `object-contain` and not `cover`: cameras are not always 16:9 and
+        // cropping hides part of the scene.
         <img
           src={frame.src}
           alt={`Cámara ${camera.name ?? ''}`}
-          className={cn('size-full object-cover', frame.isLive ? '' : 'opacity-60 grayscale')}
+          className={cn('size-full object-contain', frame.isLive ? '' : 'opacity-60 grayscale')}
         />
       )}
-
-      {/* A line travelling over the frame: it makes a live feed look alive even
-          when the scene does not move. */}
-      {frame.isLive ? (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-12 animate-scan bg-[linear-gradient(180deg,transparent,var(--scan-line))] opacity-25"
-        />
-      ) : null}
 
       <div className="absolute top-2 left-2">
         {frame.isLive ? (

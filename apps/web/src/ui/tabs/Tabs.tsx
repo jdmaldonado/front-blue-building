@@ -21,8 +21,7 @@ type TabsProps<TValue extends string> = TabsVariants & {
   className?: string;
 };
 
-// Only the tab list. The panels belong to whoever uses it: in this app they are
-// usually nested routes, not hidden divs.
+// Only the tab list. Here the panels are usually nested routes.
 export function Tabs<TValue extends string>({
   items,
   value,
@@ -33,7 +32,6 @@ export function Tabs<TValue extends string>({
 }: TabsProps<TValue>) {
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Arrow keys move between tabs, as expected from a tablist.
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
     const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
     if (step === 0) {

@@ -24,6 +24,9 @@ type RadioGroupProps<TValue extends string> = {
   label: string;
   appearance?: RadioGroupAppearance;
   size?: RadioGroupSize;
+  // Leaves only the icon on screen. The label stays for screen readers, so
+  // every option keeps a name.
+  hideLabels?: boolean;
   disabled?: boolean;
   className?: string;
 };
@@ -40,6 +43,7 @@ export function RadioGroup<TValue extends string>({
   label,
   appearance = 'list',
   size = 'md',
+  hideLabels = false,
   disabled = false,
   className,
 }: RadioGroupProps<TValue>) {
@@ -100,7 +104,7 @@ export function RadioGroup<TValue extends string>({
               </span>
             ) : null}
             {Icon ? <Icon size={16} aria-hidden /> : null}
-            {option.label}
+            {hideLabels ? <span className="sr-only">{option.label}</span> : option.label}
           </button>
         );
       })}

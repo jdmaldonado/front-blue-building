@@ -28,12 +28,17 @@ export function useDoorStatuses(buildingId: string | null): UseQueryResult<DoorS
 
     socketClient.subscribeDoorStatus(buildingId);
 
-    return socketClient.onDoorUpdate(buildingId, (update) => {
+    const unsubscribe = socketClient.onDoorUpdate(buildingId, (update) => {
       queryClient.setQueryData<DoorStatuses>(queryKey, (current) => ({
         ...current,
         [update.doorId]: update.event,
       }));
     });
+
+    return () => {
+      unsubscribe();
+      socketClient.leaveDoorStatus(buildingId);
+    };
   }, [buildingId, socketClient, queryClient]);
 
   return query;

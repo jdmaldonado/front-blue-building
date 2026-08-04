@@ -17,8 +17,7 @@ export const statusDotVariants = cva('inline-block shrink-0 rounded-(--radius-ro
       md: 'size-2',
       lg: 'size-2.5',
     },
-    // `breathe` for something alive and idle, `pulse` for something asking for
-    // attention. Only one of them ever runs.
+    // `breathe` for alive and idle, `pulse` for asking attention.
     motion: {
       none: '',
       breathe: 'animate-breathe',

@@ -13,8 +13,8 @@ type PaginationProps = PaginationVariants & {
   className?: string;
 };
 
-// Previous and next only. Numbered pages need a stable total, which most of our
-// lists do not have.
+// Previous and next only: numbered pages need a stable total, and most of our
+// lists do not have one.
 export function Pagination({ pageIndex, pageCount, onPageChange, total, padding, className }: PaginationProps) {
   const safePageCount = Math.max(pageCount, 1);
   const isFirst = pageIndex <= 0;

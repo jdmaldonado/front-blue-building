@@ -3,9 +3,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const checkboxSizes = ['sm', 'md'] as const;
 export type CheckboxSize = (typeof checkboxSizes)[number];
 
-// The real <input> stays in the DOM but invisible, so keyboard, forms and
-// screen readers keep working. This box is what people see, and it reacts to
-// the input state with `peer-*`.
+// The real <input> stays invisible so keyboard and forms keep working. This box
+// is what people see, and it follows the input with `peer-*`.
 export const checkboxVariants = cva(
   [
     'flex shrink-0 items-center justify-center rounded-(--radius-1) border transition-colors',

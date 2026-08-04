@@ -3,9 +3,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const skeletonShapes = ['line', 'block', 'circle'] as const;
 export type SkeletonShape = (typeof skeletonShapes)[number];
 
-// A flat base with a lighter band travelling over it. The band is a gradient
-// twice as wide as the box, moved with `background-position` by the shimmer
-// animation, so nothing is painted on top and the layout never shifts.
+// A lighter band moves over a flat base with `background-position`, so nothing
+// is painted on top and the layout never shifts.
 export const skeletonVariants = cva(
   [
     'block bg-(--skeleton-bg)',

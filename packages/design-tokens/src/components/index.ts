@@ -107,7 +107,7 @@ export const componentTokens = {
   'tooltip-foreground': 'text-inverse',
   'tooltip-radius': 'radius-1',
 
-  // The line that travels over a live camera frame.
+  // The line that travels while a reader waits for a card.
   'scan-line': 'accent',
 
   'avatar-bg': 'accent-subtle',

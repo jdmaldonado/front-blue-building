@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
-export const dialogSizes = ['sm', 'md', 'lg'] as const;
+export const dialogSizes = ['sm', 'md', 'lg', 'xl'] as const;
 export type DialogSize = (typeof dialogSizes)[number];
 
 // Uses the native <dialog>, so backdrop, ESC and focus trap are free.
@@ -26,6 +26,7 @@ export const dialogVariants = cva(
         sm: 'sm:max-w-md',
         md: 'sm:max-w-xl',
         lg: 'sm:max-w-3xl',
+        xl: 'sm:max-w-5xl',
       },
     },
     defaultVariants: {
