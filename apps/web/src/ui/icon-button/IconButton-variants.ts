@@ -8,7 +8,7 @@ export type IconButtonTone = (typeof iconButtonTones)[number];
 
 export const iconButtonVariants = cva(
   [
-    'inline-flex shrink-0 items-center justify-center rounded-(--radius-round) border transition-colors',
+    'inline-flex shrink-0 items-center justify-center rounded-(--icon-button-radius) border transition-colors',
     'focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none',
     'cursor-pointer disabled:cursor-not-allowed disabled:opacity-60',
   ],

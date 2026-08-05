@@ -13,7 +13,7 @@ export const emptyStateVariants = cva('flex flex-col items-center justify-center
 });
 
 export const emptyStateIconVariants = cva(
-  'flex items-center justify-center rounded-(--radius-round) bg-(--surface-sunken) text-(--text-muted)',
+  'flex items-center justify-center rounded-(--radius-2) bg-(--surface-sunken) text-(--text-muted)',
   {
     variants: {
       padding: {

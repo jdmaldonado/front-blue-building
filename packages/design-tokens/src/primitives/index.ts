@@ -60,10 +60,13 @@ export const space = {
   8: 64,
 } as const;
 
+// Square by decision, not by accident: the brand leans on hard corners. The
+// three steps stay so the scale can be turned back on from one place, and
+// `round` is reserved for what is a circle by nature: dots, knobs, portraits.
 export const radius = {
-  1: 6,
-  2: 10,
-  3: 16,
+  1: 0,
+  2: 0,
+  3: 0,
   round: 999,
 } as const;
 

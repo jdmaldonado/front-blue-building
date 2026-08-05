@@ -49,6 +49,7 @@ export const componentTokens = {
   'button-radius': 'radius-2',
 
   'badge-live-foreground': 'destructive',
+  'badge-radius': 'radius-1',
 
   'input-bg': 'surface-raised',
   'input-border': 'border-default',
@@ -70,6 +71,9 @@ export const componentTokens = {
   'radio-border': 'border-strong',
   'radio-border-checked': 'accent',
   'radio-dot': 'accent',
+  // The segmented track is chrome, so it squares off. The radio itself stays a
+  // circle: a square one reads as a checkbox.
+  'radio-track-radius': 'radius-1',
 
   'checkbox-border': 'border-strong',
   'checkbox-bg-checked': 'accent',
@@ -79,10 +83,12 @@ export const componentTokens = {
   'toggle-track-on': 'accent',
   'toggle-knob': 'surface-raised',
   'toggle-border': 'border-strong',
+  'toggle-track-radius': 'radius-1',
 
   'tab-foreground': 'text-secondary',
   'tab-foreground-active': 'text-primary',
   'tab-indicator': 'accent',
+  'tab-radius': 'radius-1',
 
   'menu-bg': 'surface-raised',
   'menu-border': 'border-default',
@@ -121,9 +127,15 @@ export const componentTokens = {
 
   'avatar-bg': 'accent-subtle',
   'avatar-foreground': 'accent',
+  'avatar-radius': 'radius-1',
 
   'icon-button-foreground': 'text-secondary',
   'icon-button-bg-hover': 'surface-sunken',
+  'icon-button-radius': 'radius-1',
+
+  // Four L marks on the corners of a frame. Reads as an instrument, not a card.
+  'corner-bracket-line': 'accent',
+  'corner-bracket-line-muted': 'border-strong',
 } as const satisfies Record<string, ComponentRef>;
 
 export type ComponentToken = keyof typeof componentTokens;

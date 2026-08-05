@@ -11,7 +11,7 @@ export const tabsVariants = cva(
     variants: {
       appearance: {
         underline: 'gap-1 border-b border-(--table-border)',
-        pill: 'gap-1 rounded-(--radius-round) bg-(--surface-sunken) p-1',
+        pill: 'gap-1 rounded-(--tab-radius) bg-(--surface-sunken) p-1',
       },
     },
     defaultVariants: {
@@ -31,7 +31,7 @@ export const tabsItemVariants = cva(
     variants: {
       appearance: {
         underline: 'px-3 py-2.5 text-body-sm',
-        pill: 'rounded-(--radius-round) px-3.5 py-1.5 text-body-sm',
+        pill: 'rounded-(--tab-radius) px-3.5 py-1.5 text-body-sm',
       },
       active: {
         true: 'text-(--tab-foreground-active) font-medium',

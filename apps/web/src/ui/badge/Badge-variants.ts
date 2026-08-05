@@ -4,7 +4,7 @@ export const badgeTones = ['neutral', 'success', 'danger', 'warning', 'accent'] 
 export type BadgeTone = (typeof badgeTones)[number];
 
 export const badgeVariants = cva(
-  'inline-flex items-center gap-2 rounded-(--radius-round) font-mono tracking-wide uppercase',
+  'inline-flex items-center gap-2 rounded-(--badge-radius) font-mono tracking-wide uppercase',
   {
     variants: {
       tone: {

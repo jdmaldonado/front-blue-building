@@ -5,7 +5,7 @@ export type AvatarSize = (typeof avatarSizes)[number];
 
 export const avatarVariants = cva(
   [
-    'inline-flex shrink-0 items-center justify-center rounded-(--radius-round)',
+    'inline-flex shrink-0 items-center justify-center rounded-(--avatar-radius)',
     'bg-(--avatar-bg) font-medium text-(--avatar-foreground) uppercase',
   ],
   {

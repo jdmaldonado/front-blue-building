@@ -25,6 +25,15 @@ export type { CheckboxSize, CheckboxVariants } from './checkbox';
 export { ConfirmDialog, confirmDialogFooterVariants, confirmDialogTextVariants } from './confirm-dialog';
 
 export {
+  CornerBrackets,
+  cornerBracketCorners,
+  cornerBracketMarkVariants,
+  cornerBracketTones,
+  cornerBracketsVariants,
+} from './corner-brackets';
+export type { CornerBracketCorner, CornerBracketTone, CornerBracketsVariants } from './corner-brackets';
+
+export {
   DataTable,
   dataTableCardLabelVariants,
   dataTableCardRowVariants,

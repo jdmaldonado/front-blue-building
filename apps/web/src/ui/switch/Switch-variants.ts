@@ -5,7 +5,7 @@ export type SwitchSize = (typeof switchSizes)[number];
 
 export const switchTrackVariants = cva(
   [
-    'relative flex shrink-0 items-center rounded-(--radius-round) border transition-colors',
+    'relative flex shrink-0 items-center rounded-(--toggle-track-radius) border transition-colors',
     'duration-(--duration-base) ease-standard',
     'border-(--toggle-border) bg-(--toggle-track-off)',
     'peer-checked:border-(--toggle-track-on) peer-checked:bg-(--toggle-track-on)',

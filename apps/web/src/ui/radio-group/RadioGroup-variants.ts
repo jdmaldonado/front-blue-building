@@ -12,7 +12,7 @@ export const radioGroupVariants = cva('', {
   variants: {
     appearance: {
       list: 'flex flex-col',
-      segmented: 'inline-flex w-full gap-1 rounded-(--radius-round) bg-(--surface-sunken)',
+      segmented: 'inline-flex w-full gap-1 rounded-(--radio-track-radius) bg-(--surface-sunken)',
     },
     size: {
       sm: '',
@@ -41,7 +41,7 @@ export const radioGroupItemVariants = cva(
     variants: {
       appearance: {
         list: 'rounded-(--radius-1) text-left text-(--text-primary)',
-        segmented: 'flex-1 justify-center rounded-(--radius-round)',
+        segmented: 'flex-1 justify-center rounded-(--radio-track-radius)',
       },
       size: {
         sm: 'text-label',
