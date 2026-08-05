@@ -1,13 +1,20 @@
-import type { RadiusToken } from '../primitives';
+import type { PatternToken, RadiusToken } from '../primitives';
 import type { SemanticToken } from '../semantic';
 
-// A component token aliases either a semantic role or a primitive dimension var.
+// A component token aliases a semantic role, a primitive dimension, or one of
+// the decorative patterns.
 type RadiusRef = `radius-${RadiusToken}`;
-type ComponentRef = SemanticToken | RadiusRef;
+type PatternRef = `pattern-${PatternToken}`;
+type ComponentRef = SemanticToken | RadiusRef | PatternRef;
 
 // Layer 3: component-level tokens. Each one points at a semantic role (color) or
 // a primitive dimension, so the CSS output becomes `--button-primary-bg: var(--accent)`.
 export const componentTokens = {
+  // The brand in the dialog is one small block with the mark, cut on a diagonal,
+  // the way the old modals did it. Everything else in the header stays quiet.
+  'dialog-mark-bg': 'accent',
+  'dialog-mark-foreground': 'text-on-accent',
+
   // Button: 4 intents x 3 appearances. `bg`/`bg-hover`/`foreground` resolve the
   // solid fill; `text`/`border`/`soft` resolve outline and ghost (text = label on
   // transparent, border = outline stroke, soft = hover fill).

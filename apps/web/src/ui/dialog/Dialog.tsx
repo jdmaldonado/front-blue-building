@@ -2,9 +2,12 @@ import { X } from 'lucide-react';
 import { useEffect, useId, useRef, type KeyboardEventHandler, type MouseEvent, type ReactNode } from 'react';
 import { cn } from '../cn';
 import { IconButton } from '../icon-button';
+import { LogoMark } from '../logo';
 import {
   dialogBodyVariants,
   dialogFooterVariants,
+  dialogHeaderContentVariants,
+  dialogHeaderMarkVariants,
   dialogHeaderVariants,
   dialogVariants,
   type DialogSize,
@@ -71,18 +74,24 @@ export function Dialog({
     >
       <div className="flex max-h-[85dvh] flex-col">
         <div className={dialogHeaderVariants()}>
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <h2 id={titleId} className="font-display text-title-sm font-bold tracking-tight">
-              {title}
-            </h2>
-            {description === undefined ? null : (
-              <div className="text-body-sm text-(--text-secondary)">{description}</div>
-            )}
+          <span aria-hidden className={dialogHeaderMarkVariants()}>
+            <LogoMark className="size-7" />
+          </span>
+
+          <div className={dialogHeaderContentVariants()}>
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <h2 id={titleId} className="font-display text-title-sm font-bold tracking-tight">
+                {title}
+              </h2>
+              {description === undefined ? null : (
+                <div className="text-body-sm text-(--text-secondary)">{description}</div>
+              )}
+            </div>
+            {headerAside}
+            <IconButton label="Cerrar" onClick={onClose} className="ml-auto">
+              <X size={18} />
+            </IconButton>
           </div>
-          {headerAside}
-          <IconButton label="Cerrar" onClick={onClose} className="ml-auto">
-            <X size={18} />
-          </IconButton>
         </div>
 
         <div className={dialogBodyVariants()}>{children}</div>

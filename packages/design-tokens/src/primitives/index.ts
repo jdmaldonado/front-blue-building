@@ -130,23 +130,36 @@ export const fontFamily = {
 
 export type FontFamilyToken = keyof typeof fontFamily;
 
-// Decorative honeycomb, the brand's recurring motif. The stroke is white at low
-// opacity, so it only reads on dark surfaces. Tile is 39 x 22.52.
-const HONEYCOMB_SVG =
-  "<svg xmlns='http://www.w3.org/2000/svg' width='39' height='22.52' viewBox='0 0 39 22.52'>" +
-  "<g fill='none' stroke='%23ffffff' stroke-opacity='0.08' stroke-width='1'>" +
-  "<polygon points='13.00,0.00 6.50,11.26 -6.50,11.26 -13.00,0.00 -6.50,-11.26 6.50,-11.26'/>" +
-  "<polygon points='13.00,22.52 6.50,33.77 -6.50,33.77 -13.00,22.52 -6.50,11.26 6.50,11.26'/>" +
-  "<polygon points='52.00,0.00 45.50,11.26 32.50,11.26 26.00,0.00 32.50,-11.26 45.50,-11.26'/>" +
-  "<polygon points='52.00,22.52 45.50,33.77 32.50,33.77 26.00,22.52 32.50,11.26 45.50,11.26'/>" +
-  "<polygon points='32.50,11.26 26.00,22.52 13.00,22.52 6.50,11.26 13.00,0.00 26.00,0.00'/>" +
-  "<polygon points='32.50,-11.26 26.00,0.00 13.00,0.00 6.50,-11.26 13.00,-22.52 26.00,-22.52'/>" +
-  "<polygon points='32.50,33.77 26.00,45.03 13.00,45.03 6.50,33.77 13.00,22.52 26.00,22.52'/>" +
-  '</g></svg>';
+// Decorative honeycomb, the brand's recurring motif. Tile is 39 x 22.52.
+// The stroke colour decides where it reads, so there is one version per surface:
+// white for dark panels, brand blue for light ones.
+function honeycombSvg(stroke: string, opacity: string): string {
+  return (
+    "<svg xmlns='http://www.w3.org/2000/svg' width='39' height='22.52' viewBox='0 0 39 22.52'>" +
+    `<g fill='none' stroke='${stroke}' stroke-opacity='${opacity}' stroke-width='1'>` +
+    "<polygon points='13.00,0.00 6.50,11.26 -6.50,11.26 -13.00,0.00 -6.50,-11.26 6.50,-11.26'/>" +
+    "<polygon points='13.00,22.52 6.50,33.77 -6.50,33.77 -13.00,22.52 -6.50,11.26 6.50,11.26'/>" +
+    "<polygon points='52.00,0.00 45.50,11.26 32.50,11.26 26.00,0.00 32.50,-11.26 45.50,-11.26'/>" +
+    "<polygon points='52.00,22.52 45.50,33.77 32.50,33.77 26.00,22.52 32.50,11.26 45.50,11.26'/>" +
+    "<polygon points='32.50,11.26 26.00,22.52 13.00,22.52 6.50,11.26 13.00,0.00 26.00,0.00'/>" +
+    "<polygon points='32.50,-11.26 26.00,0.00 13.00,0.00 6.50,-11.26 13.00,-22.52 26.00,-22.52'/>" +
+    "<polygon points='32.50,33.77 26.00,45.03 13.00,45.03 6.50,33.77 13.00,22.52 26.00,22.52'/>" +
+    '</g></svg>'
+  );
+}
+
+// Hex, not oklch: the pattern travels inside a data URI and a colour with
+// spaces and parentheses would have to be escaped. This is cyan[500] in sRGB.
+const HONEYCOMB_BRAND_STROKE = '%230e85b0';
 
 export const pattern = {
-  honeycomb: `url("data:image/svg+xml,${HONEYCOMB_SVG}")`,
+  honeycomb: `url("data:image/svg+xml,${honeycombSvg('%23ffffff', '0.08')}")`,
+  // For light surfaces, where the white one is invisible. Kept because the
+  // system needs it the day something light wants texture.
+  'honeycomb-brand': `url("data:image/svg+xml,${honeycombSvg(HONEYCOMB_BRAND_STROKE, '0.07')}")`,
 } as const;
+
+export type PatternToken = keyof typeof pattern;
 
 // Named loops the interface can reuse. Each one has a meaning:
 // scan   -> a reader is waiting for a card to be tapped
@@ -190,5 +203,3 @@ export const keyframes = {
 } as const;
 
 export const PATTERN_TILE_SIZE = '39px 22.52px';
-
-export type PatternToken = keyof typeof pattern;
