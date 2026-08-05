@@ -2,6 +2,7 @@ import {
   AccessGateway,
   AuthGateway,
   BuildingsGateway,
+  CardsGateway,
   SocketClient,
   UsersGateway,
   createFetchHttpClient,
@@ -27,6 +28,7 @@ export function createServices(): Services {
     authGateway: new AuthGateway(http),
     accessGateway: new AccessGateway(http),
     buildingsGateway: new BuildingsGateway(http),
+    cardsGateway: new CardsGateway(http, logger),
     usersGateway: new UsersGateway(http, logger),
     socketClient: new SocketClient({ url: config.socket.url, logger }),
   };

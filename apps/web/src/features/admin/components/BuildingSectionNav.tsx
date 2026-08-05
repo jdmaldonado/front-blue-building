@@ -1,4 +1,4 @@
-import { DoorOpen, Home, LayoutDashboard, Settings, Users, type LucideIcon } from 'lucide-react';
+import { CreditCard, DoorOpen, Home, LayoutDashboard, Settings, Users, type LucideIcon } from 'lucide-react';
 import { AppRoute } from '../../../app/navigation';
 import { AppNavigationItem } from '../../../layouts/app';
 
@@ -31,6 +31,16 @@ export function BuildingSectionNav({ buildingId, collapsed, onNavigate }: Buildi
           onNavigate={onNavigate}
         />
       ))}
+
+      {/* Cards are not a section of the building, but the register mode runs on
+          one of its readers, so it starts here with the building already set. */}
+      <AppNavigationItem
+        link={{ to: AppRoute.AdminCards, search: { buildingId } }}
+        icon={CreditCard}
+        label="Tarjetas"
+        collapsed={collapsed}
+        onNavigate={onNavigate}
+      />
     </>
   );
 }

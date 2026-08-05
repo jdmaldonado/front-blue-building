@@ -1,4 +1,11 @@
-import type { AccessGateway, AuthGateway, BuildingsGateway, SocketClient, UsersGateway } from '@bb/api-client';
+import type {
+  AccessGateway,
+  AuthGateway,
+  BuildingsGateway,
+  CardsGateway,
+  SocketClient,
+  UsersGateway,
+} from '@bb/api-client';
 import type { Logger } from '@bb/logger';
 import { createContext, useContext } from 'react';
 
@@ -6,6 +13,7 @@ export interface Services {
   authGateway: AuthGateway;
   accessGateway: AccessGateway;
   buildingsGateway: BuildingsGateway;
+  cardsGateway: CardsGateway;
   usersGateway: UsersGateway;
   socketClient: SocketClient;
   logger: Logger;

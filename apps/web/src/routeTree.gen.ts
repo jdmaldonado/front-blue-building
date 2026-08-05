@@ -19,6 +19,7 @@ import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-pa
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminCardsRouteImport } from './routes/admin/cards'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminBuildingsBuildingIdRouteImport } from './routes/admin/buildings.$buildingId'
 import { Route as AdminBuildingsBuildingIdIndexRouteImport } from './routes/admin/buildings.$buildingId/index'
@@ -75,6 +76,11 @@ const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCardsRoute = AdminCardsRouteImport.update({
+  id: '/cards',
+  path: '/cards',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/admin/cards': typeof AdminCardsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/admin/cards': typeof AdminCardsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
   '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
+  '/admin/cards': typeof AdminCardsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/reset-password'
+    | '/admin/cards'
     | '/admin/users'
     | '/admin/'
     | '/admin/buildings/$buildingId'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/reset-password'
+    | '/admin/cards'
     | '/admin/users'
     | '/admin'
     | '/admin/buildings/$buildingId/apartments'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/reset-password'
+    | '/admin/cards'
     | '/admin/users'
     | '/admin/'
     | '/admin/buildings/$buildingId'
@@ -320,6 +332,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cards': {
+      id: '/admin/cards'
+      path: '/cards'
+      fullPath: '/admin/cards'
+      preLoaderRoute: typeof AdminCardsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/users': {
@@ -435,12 +454,14 @@ const AdminBuildingsBuildingIdRouteWithChildren =
   )
 
 interface AdminRouteChildren {
+  AdminCardsRoute: typeof AdminCardsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminBuildingsBuildingIdRoute: typeof AdminBuildingsBuildingIdRouteWithChildren
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminCardsRoute: AdminCardsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminBuildingsBuildingIdRoute: AdminBuildingsBuildingIdRouteWithChildren,

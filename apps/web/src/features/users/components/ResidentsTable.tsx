@@ -1,7 +1,9 @@
 import { RoleType, type ResidentDetails } from '@bb/core';
+import { Link } from '@tanstack/react-router';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Pencil, Power, Users } from 'lucide-react';
 import { useMemo } from 'react';
+import { AppRoute } from '../../../app/navigation';
 import { ROLE_LABEL } from '../../account/lib';
 import {
   Alert,
@@ -116,9 +118,15 @@ export function ResidentsTable({
         accessorFn: (resident) => resident.tags.length,
         header: 'Tarjetas',
         cell: ({ row }) => (
-          <Text as="span" size="body-sm" tone="secondary" className="font-mono">
+          // Straight to the card screen with the person already loaded.
+          <Link
+            to={AppRoute.AdminCards}
+            search={{ document: row.original.cedula }}
+            onClick={(event) => event.stopPropagation()}
+            className="font-mono text-body-sm text-(--accent) underline-offset-2 hover:underline"
+          >
             {row.original.tags.length}
-          </Text>
+          </Link>
         ),
       },
       {

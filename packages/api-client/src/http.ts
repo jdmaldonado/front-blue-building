@@ -35,8 +35,11 @@ export interface FetchHttpClientConfig {
 export function createFetchHttpClient(config: FetchHttpClientConfig): HttpClient {
   async function request(method: string, req: HttpRequest): Promise<unknown> {
     const token = config.getToken?.() ?? null;
+    // A multipart body sets its own content type, boundary included. Writing it
+    // by hand leaves the boundary out and the server cannot read the parts.
+    const multipart = req.body instanceof FormData ? req.body : null;
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      ...(multipart === null ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { Authorization: `JWT ${token}` } : {}),
       ...req.headers,
     };
@@ -46,7 +49,7 @@ export function createFetchHttpClient(config: FetchHttpClientConfig): HttpClient
       response = await fetch(`${config.baseUrl}${req.path}`, {
         method,
         headers,
-        body: req.body === undefined ? undefined : JSON.stringify(req.body),
+        body: multipart ?? (req.body === undefined ? undefined : JSON.stringify(req.body)),
       });
     } catch (cause) {
       throw new HttpError(null, 'Network request failed', cause);

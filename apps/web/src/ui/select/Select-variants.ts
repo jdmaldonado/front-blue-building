@@ -13,8 +13,8 @@ export const selectVariants = cva(
   {
     variants: {
       selectSize: {
-        sm: 'py-2 pl-3 text-body-sm',
-        md: 'py-2.5 pl-3.5 text-body',
+        sm: 'py-2 pl-3 text-field sm:text-body-sm',
+        md: 'py-2.5 pl-3.5 text-field sm:text-body',
       },
     },
     defaultVariants: {

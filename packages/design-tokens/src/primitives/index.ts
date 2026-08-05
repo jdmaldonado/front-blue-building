@@ -107,6 +107,9 @@ export const typeScale = {
   'body-sm': { size: 13, lineHeight: 1.5 },
   body: { size: 14, lineHeight: 1.5 },
   'body-lg': { size: 15, lineHeight: 1.5 },
+  // Form controls on a phone. Under 16px Safari zooms the page the moment the
+  // field takes focus, and the layout jumps.
+  field: { size: 16, lineHeight: 1.5 },
   'title-sm': { size: 17, lineHeight: 1.35 },
   title: { size: 20, lineHeight: 1.3 },
   'title-lg': { size: 23, lineHeight: 1.25 },

@@ -49,6 +49,23 @@ export type ResidentList = {
   skipped: number;
 };
 
+// What `GET /users/:cedula` answers, wrapped in `{ user }`. `verified` is the
+// gate: without it the API refuses to create cards for this person.
+export const UserAccountSchema = z.object({
+  id: IdSchema,
+  cedula: z.string(),
+  name: z.string(),
+
+  verified: z.boolean().nullish().catch(null),
+  active: z.boolean().nullish().catch(null),
+  photo: z.string().nullish().catch(null),
+  phone: z.string().nullish().catch(null),
+  email: z.string().nullish().catch(null),
+});
+export type UserAccount = z.infer<typeof UserAccountSchema>;
+
+export const UserAccountResponseSchema = z.object({ user: UserAccountSchema });
+
 export const UpdateResidentInputSchema = z.object({
   userId: IdSchema,
   phone: z.string().trim().min(1, 'Ingresa un teléfono.'),

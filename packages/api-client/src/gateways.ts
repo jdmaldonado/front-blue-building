@@ -11,18 +11,30 @@ import {
   InvalidCredentialsError,
   LoginMode,
   NoSpacesAssignedError,
+  CardSchema,
+  CardsContractError,
+  CardsNetworkError,
+  CardsResponseSchema,
+  CardNotFoundError,
   SessionExpiredError,
   ResidentDetailsEntrySchema,
   ResidentDetailsResponseSchema,
   UnknownAuthError,
   UnknownBuildingsError,
+  UnknownCardsError,
   UnknownUsersError,
+  UserAccountResponseSchema,
+  UserNotFoundError,
+  UserNotVerifiedError,
   UsersContractError,
   UsersNetworkError,
   UserLoginResponseSchema,
   WeakPasswordError,
   type Apartment,
   type Building,
+  type Card,
+  type CardList,
+  type CreateCardInput,
   type Door,
   type DoorStatuses,
   type Floor,
@@ -32,6 +44,8 @@ import {
   type ResetPasswordInput,
   type ResidentDetails,
   type ResidentList,
+  type UpdateCardInput,
+  type UserAccount,
   type SetResidentActiveInput,
   type UpdateResidentInput,
   type Session,
@@ -223,6 +237,10 @@ function toBuildingsError(error: unknown): Error {
   return new UnknownBuildingsError('Unexpected error while listing buildings', { cause: error });
 }
 
+const AccessPath = {
+  BuildingDoors: '/api/bluebuilding/doors',
+} as const;
+
 export class AccessGateway {
   constructor(private readonly http: HttpClient) {}
 
@@ -238,6 +256,13 @@ export class AccessGateway {
     return DoorStatusesSchema.parse(raw);
   }
 
+  // Every door of the building, not only the ones the user can open. The card
+  // screen needs them all to pick which reader goes into register mode.
+  async listBuildingDoors(buildingId: string): Promise<Door[]> {
+    const raw = await this.http.post({ path: AccessPath.BuildingDoors, body: { buildingId } });
+    return BuildingDoorsResponseSchema.parse(raw);
+  }
+
   async getTowerFloors(towerId: string): Promise<Floor[]> {
     const raw = await this.http.get({ path: `/api/towers/${towerId}/floors` });
     return z.array(FloorSchema).parse(raw);
@@ -246,11 +271,33 @@ export class AccessGateway {
 
 const UsersPath = {
   Residents: '/api/bluebuilding/usersV2/ResidentUserDetails',
+  Validate: '/api/bluebuilding/userv2',
 } as const;
+
+const NOT_FOUND_STATUS = 404;
 
 function apartmentUsersPath(apartmentId: string): string {
   return `/api/bluebuilding/apartments/${apartmentId}/users`;
 }
+
+function userByDocumentPath(document: string): string {
+  return `/api/bluebuilding/users/${encodeURIComponent(document)}`;
+}
+
+// Files, so this input cannot live in `core`: that package has no DOM types.
+export interface ValidateUserInput {
+  cedula: string;
+  photo: File;
+  documentFront: File;
+  documentBack: File;
+}
+
+// The endpoint answers a bare list, but the sibling one wraps it in `doors`.
+// Accept both instead of guessing.
+const BuildingDoorsResponseSchema = z.union([
+  z.array(DoorSchema),
+  z.object({ doors: z.array(DoorSchema) }).transform((value) => value.doors),
+]);
 
 export class UsersGateway {
   constructor(
@@ -299,6 +346,38 @@ export class UsersGateway {
     return { residents, skipped };
   }
 
+  // The card screen starts here: one document in, one person out.
+  async getByDocument(document: string): Promise<UserAccount> {
+    try {
+      const raw = await this.http.get({ path: userByDocumentPath(document) });
+      return UserAccountResponseSchema.parse(raw).user;
+    } catch (error) {
+      if (error instanceof HttpError && error.status === NOT_FOUND_STATUS) {
+        throw new UserNotFoundError('No user with that document', { cause: error });
+      }
+      throw toUsersError(error);
+    }
+  }
+
+  // Photo and both sides of the document. Multipart, so the body is FormData and
+  // the browser writes the content type.
+  async validate(input: ValidateUserInput): Promise<void> {
+    const body = new FormData();
+    body.set('cedula', input.cedula);
+    body.set('photo', input.photo);
+    body.set('cedulaFrontal', input.documentFront);
+    body.set('cedulaPosterior', input.documentBack);
+
+    try {
+      await this.http.post({ path: UsersPath.Validate, body });
+    } catch (error) {
+      if (error instanceof HttpError && error.status === NOT_FOUND_STATUS) {
+        throw new UserNotFoundError('No user with that document', { cause: error });
+      }
+      throw toUsersError(error);
+    }
+  }
+
   // Only the phone travels. The old panel also sent `alias`, but it had no
   // field for it, so the value was always empty (front/src/components/UsersList.jsx:49).
   async updateResident(input: UpdateResidentInput): Promise<void> {
@@ -338,4 +417,103 @@ function toUsersError(error: unknown): Error {
     }
   }
   return new UnknownUsersError('Unexpected error while reading users', { cause: error });
+}
+
+const CardsPath = {
+  Cards: '/api/bluebuilding/cardsv2',
+} as const;
+
+function cardPath(cardId: string): string {
+  return `${CardsPath.Cards}/${cardId}`;
+}
+
+export class CardsGateway {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly logger: Logger,
+  ) {}
+
+  async listByDocument(document: string): Promise<CardList> {
+    const path = `${CardsPath.Cards}?document=${encodeURIComponent(document)}`;
+    try {
+      const raw = await this.http.get({ path });
+      return this.toCardList(raw, path);
+    } catch (error) {
+      throw toCardsError(error);
+    }
+  }
+
+  async create(input: CreateCardInput): Promise<void> {
+    try {
+      await this.http.post({ path: CardsPath.Cards, body: input });
+    } catch (error) {
+      throw toCardsError(error);
+    }
+  }
+
+  async update(input: UpdateCardInput): Promise<void> {
+    try {
+      await this.http.put({
+        path: cardPath(input.cardId),
+        body: { tag: input.tag, type: input.type, active: input.active },
+      });
+    } catch (error) {
+      throw toCardsError(error);
+    }
+  }
+
+  // Hard delete on the API: there is no bin to recover it from.
+  async remove(cardId: string): Promise<void> {
+    try {
+      await this.http.delete({ path: cardPath(cardId) });
+    } catch (error) {
+      throw toCardsError(error);
+    }
+  }
+
+  // Row by row, like the resident list: a card we cannot read costs that card.
+  private toCardList(raw: unknown, path: string): CardList {
+    const entries = CardsResponseSchema.parse(raw);
+    const cards: Card[] = [];
+    let skipped = 0;
+
+    for (const entry of entries) {
+      const parsed = CardSchema.safeParse(entry);
+      if (parsed.success) {
+        cards.push(parsed.data);
+        continue;
+      }
+      skipped += 1;
+      this.logger.warn('Card record dropped', { path, issues: parsed.error.issues });
+    }
+
+    return { cards, skipped };
+  }
+}
+
+function toCardsError(error: unknown): Error {
+  if (error instanceof z.ZodError) {
+    return new CardsContractError('Cards response does not match the contract', { cause: error });
+  }
+  if (error instanceof HttpError) {
+    if (error.status === null) {
+      return new CardsNetworkError('Network error while reading cards', { cause: error });
+    }
+    if (error.status === 401) {
+      return new SessionExpiredError('Session is no longer valid', { cause: error });
+    }
+    if (error.status === NOT_FOUND_STATUS) {
+      return new CardNotFoundError('Card no longer exists', { cause: error });
+    }
+    // The API refuses to create a card for a user without photo and document.
+    if (isUserNotVerified(error)) {
+      return new UserNotVerifiedError('User has no photo or document on file', { cause: error });
+    }
+  }
+  return new UnknownCardsError('Unexpected error while working with cards', { cause: error });
+}
+
+function isUserNotVerified(error: HttpError): boolean {
+  const body = z.object({ error: z.string() }).catch({ error: '' }).parse(error.body);
+  return body.error.includes('UserNotVerified');
 }

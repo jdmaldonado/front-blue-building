@@ -1,4 +1,11 @@
-import { DoorAction, DoorUpdateSchema, OutOfScheduleError, UnauthorizedDoorError, type UserEvent } from '@bb/core';
+import {
+  CardReaderError,
+  DoorAction,
+  DoorUpdateSchema,
+  OutOfScheduleError,
+  UnauthorizedDoorError,
+  type UserEvent,
+} from '@bb/core';
 import type { DomainError, DoorUpdate } from '@bb/core';
 import type { Logger } from '@bb/logger';
 import { io, type Socket } from 'socket.io-client';
@@ -13,12 +20,28 @@ export type Unsubscribe = () => void;
 
 const doorActionErrorSchema = z.object({ error: z.string() }).catch({ error: 'UNKNOWN' });
 
+// The reader answers READY once it is in register mode, or an error.
+const cardSetupResponseSchema = z
+  .object({ status: z.string().nullish(), error: z.string().nullish() })
+  .catch({ status: null, error: 'UNKNOWN' });
+
+const CARD_SETUP_READY = 'READY';
+
+// The tag arrives raw, sometimes as a number.
+const readTagSchema = z.union([z.string(), z.number()]).transform((value) => String(value));
+
 // `init` sets the session on the server socket and every `subscribe:*` needs it
 // (api/src/hardware/index.ts:593, :1072). It answers nothing, so we wait before
 // joining rooms. Too early and the subscription is lost without any error.
 const SESSION_SETTLE_MS = 600;
 
 type CamSubscription = { buildingId: string; camId: string };
+
+export interface CardReaderCallbacks {
+  onReady: () => void;
+  onTag: (tag: string) => void;
+  onError: (error: DomainError) => void;
+}
 
 // How many views asked for the same room. The room is left when the last one
 // goes, so closing one camera does not cut the others.
@@ -108,6 +131,45 @@ export class SocketClient {
 
   closeDoor(input: { buildingId: string; localId: string }): void {
     this.emitDoorAction(input.buildingId, input.localId, DoorAction.Close);
+  }
+
+  // Puts one reader into register mode. The API answers once; the RPI closes
+  // the mode by itself after a minute or after the first card.
+  setupCardReader(input: { buildingId: string; localId: string }, callbacks: CardReaderCallbacks): Unsubscribe {
+    const onResponse = (payload: unknown): void => {
+      const answer = cardSetupResponseSchema.parse(payload);
+      if (answer.status === CARD_SETUP_READY) {
+        callbacks.onReady();
+        return;
+      }
+      callbacks.onError(new CardReaderError(answer.error ?? 'Reader did not get ready'));
+    };
+
+    // The API registers its own listener with `.on` and never removes it
+    // (HandleCardRegisterRequestParams.ts:30), so after several setups one card
+    // arrives several times. The caller only hears about the first one.
+    let delivered = false;
+    const onTag = (payload: unknown): void => {
+      if (delivered) {
+        return;
+      }
+      const parsed = readTagSchema.safeParse(payload);
+      if (!parsed.success) {
+        this.logger.warn('Unreadable tag from reader', { issues: parsed.error.issues });
+        return;
+      }
+      delivered = true;
+      callbacks.onTag(parsed.data);
+    };
+
+    this.socket.once('card:setup:response', onResponse);
+    this.socket.on('read_tag', onTag);
+    this.socket.emit('card:setup', { buildingId: input.buildingId, door: input.localId });
+
+    return () => {
+      this.socket.off('card:setup:response', onResponse);
+      this.socket.off('read_tag', onTag);
+    };
   }
 
   onDoorActionError(callback: (error: DomainError) => void): Unsubscribe {

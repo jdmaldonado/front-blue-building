@@ -1,6 +1,6 @@
 import { LoginMode } from '@bb/core';
 import { selectCurrentSpace, useSessionStore } from '@bb/logic';
-import { Building2, Users } from 'lucide-react';
+import { Building2, CreditCard, Users } from 'lucide-react';
 import { AppRoute } from '../../app/navigation';
 import { AppNavigationItem } from './AppNavigationItem';
 
@@ -34,6 +34,13 @@ export function AppNavigation({ collapsed, onNavigate }: AppNavigationProps) {
           link={{ to: AppRoute.AdminUsers }}
           icon={Users}
           label="Usuarios"
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <AppNavigationItem
+          link={{ to: AppRoute.AdminCards }}
+          icon={CreditCard}
+          label="Tarjetas"
           collapsed={collapsed}
           onNavigate={onNavigate}
         />
