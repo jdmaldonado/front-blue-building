@@ -13,7 +13,7 @@ type DrawerProps = DrawerVariants & {
 
 // Panel that slides in from the edge of the screen. Used for navigation on
 // small screens, where a fixed sidebar does not fit.
-export function Drawer({ open, onClose, label, side, children, className }: DrawerProps) {
+export function Drawer({ open, onClose, label, side, size, children, className }: DrawerProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export function Drawer({ open, onClose, label, side, children, className }: Draw
       onClose={onClose}
       onClick={handleClick}
       aria-label={label}
-      className={cn(drawerVariants({ side }), className)}
+      className={cn(drawerVariants({ side, size }), className)}
     >
       {children}
     </dialog>

@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { useEffect, useRef, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type KeyboardEventHandler, type MouseEvent, type ReactNode } from 'react';
 import { cn } from '../cn';
 import { IconButton } from '../icon-button';
 import {
@@ -14,11 +14,13 @@ type DialogProps = {
   open: boolean;
   onClose: () => void;
   title: string;
-  description?: string;
+  description?: ReactNode;
   size?: DialogSize;
   // Rendered next to the title, before the close button.
   headerAside?: ReactNode;
   footer?: ReactNode;
+  // Keys pressed anywhere inside the dialog bubble up to here.
+  onKeyDown?: KeyboardEventHandler<HTMLDialogElement>;
   children: ReactNode;
   className?: string;
 };
@@ -31,10 +33,12 @@ export function Dialog({
   size,
   headerAside,
   footer,
+  onKeyDown,
   children,
   className,
 }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     const dialog = ref.current;
@@ -61,17 +65,18 @@ export function Dialog({
       ref={ref}
       onClose={onClose}
       onClick={handleClick}
-      aria-labelledby="dialog-title"
+      onKeyDown={onKeyDown}
+      aria-labelledby={titleId}
       className={cn(dialogVariants({ size }), className)}
     >
       <div className="flex max-h-[85dvh] flex-col">
         <div className={dialogHeaderVariants()}>
           <div className="flex min-w-0 flex-col gap-0.5">
-            <h2 id="dialog-title" className="font-display text-title-sm font-bold tracking-tight">
+            <h2 id={titleId} className="font-display text-title-sm font-bold tracking-tight">
               {title}
             </h2>
             {description === undefined ? null : (
-              <span className="text-body-sm text-(--text-secondary)">{description}</span>
+              <div className="text-body-sm text-(--text-secondary)">{description}</div>
             )}
           </div>
           {headerAside}

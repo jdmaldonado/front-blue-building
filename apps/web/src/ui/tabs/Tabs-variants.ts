@@ -3,9 +3,10 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const tabsAppearances = ['underline', 'pill'] as const;
 export type TabsAppearance = (typeof tabsAppearances)[number];
 
-// On narrow screens the list scrolls sideways instead of wrapping.
+// On narrow screens the list scrolls sideways instead of wrapping, and snaps so
+// a drag never stops between two tabs.
 export const tabsVariants = cva(
-  'flex items-center overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+  'flex snap-x snap-mandatory items-center overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
   {
     variants: {
       appearance: {
@@ -21,7 +22,7 @@ export const tabsVariants = cva(
 
 export const tabsItemVariants = cva(
   [
-    'relative flex shrink-0 items-center gap-2 whitespace-nowrap transition-colors',
+    'relative flex shrink-0 snap-center items-center gap-2 whitespace-nowrap transition-colors',
     'duration-(--duration-fast) ease-standard',
     'focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none',
     'disabled:cursor-not-allowed disabled:opacity-60',

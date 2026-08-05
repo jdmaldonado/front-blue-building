@@ -40,7 +40,7 @@ export function FloorPlan({ floor, doors, statusOf, selectedDoorId, onSelect, cl
   return (
     <div
       className={cn(
-        'relative flex min-h-0 items-center justify-center overflow-hidden rounded-(--card-radius) border border-(--card-border) bg-(--surface-inverse)',
+        'relative flex min-h-0 items-center justify-center overflow-hidden rounded-(--card-radius) border border-(--card-border) bg-(--card-bg)',
         className,
       )}
     >

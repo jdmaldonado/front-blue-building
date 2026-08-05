@@ -1,9 +1,9 @@
 import type { Door, DoorStatus } from '@bb/core';
-import { Columns2, Columns3, DoorOpen, RectangleHorizontal, RefreshCw } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, ArrowRight, Columns2, Columns3, DoorOpen, RectangleHorizontal, RefreshCw } from 'lucide-react';
+import { useState, type KeyboardEvent } from 'react';
 import { UserEventActions, useUserEventActions } from '../../building-events';
 import { Badge, Button, Dialog, IconButton, RadioGroup, Text, cn, type RadioOption } from '../../../ui';
-import { CameraColumns, useCameraColumns } from '../hooks';
+import { CameraColumns, useCameraColumns, useSwipe } from '../hooks';
 import { doorStatusMeta } from '../lib';
 import { CameraTile } from './CameraTile';
 
@@ -11,7 +11,10 @@ type DoorDialogProps = {
   door: Door | null;
   status: DoorStatus;
   buildingId: string;
+  previousDoor: Door | null;
+  nextDoor: Door | null;
   onClose: () => void;
+  onSelectDoor: (doorId: string) => void;
   onOpenDoor: (door: Door) => void;
 };
 
@@ -30,7 +33,16 @@ const columnClasses: Record<CameraColumns, string> = {
   [CameraColumns.Three]: 'sm:grid-cols-3',
 };
 
-export function DoorDialog({ door, status, buildingId, onClose, onOpenDoor }: DoorDialogProps) {
+export function DoorDialog({
+  door,
+  status,
+  buildingId,
+  previousDoor,
+  nextDoor,
+  onClose,
+  onSelectDoor,
+  onOpenDoor,
+}: DoorDialogProps) {
   const meta = doorStatusMeta(status);
   const events = useUserEventActions(buildingId);
   const { columns, setColumns } = useCameraColumns();
@@ -42,13 +54,64 @@ export function DoorDialog({ door, status, buildingId, onClose, onOpenDoor }: Do
   const cameras = door?.cameras ?? [];
   const hasCameras = cameras.length > 0;
 
+  const goPrevious = () => {
+    if (previousDoor !== null) {
+      onSelectDoor(previousDoor.id);
+    }
+  };
+
+  const goNext = () => {
+    if (nextDoor !== null) {
+      onSelectDoor(nextDoor.id);
+    }
+  };
+
+  const swipe = useSwipe({ onSwipeLeft: goNext, onSwipeRight: goPrevious });
+
+  // The segmented control of camera columns also answers the arrows, and it
+  // calls preventDefault when it does.
+  const handleKeyDown = (event: KeyboardEvent<HTMLDialogElement>) => {
+    if (event.defaultPrevented) {
+      return;
+    }
+    if (event.key === 'ArrowLeft') {
+      goPrevious();
+    }
+    if (event.key === 'ArrowRight') {
+      goNext();
+    }
+  };
+
   return (
     <Dialog
       open={door !== null}
       onClose={onClose}
+      onKeyDown={handleKeyDown}
       size="xl"
       title={door?.name ?? 'Puerta'}
-      description={door?.floor?.name ?? undefined}
+      description={
+        door === null ? undefined : (
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            {door.floor?.name ?? null}
+            {previousDoor === null && nextDoor === null ? null : (
+              <span className="flex items-center gap-1">
+                {previousDoor === null ? null : (
+                  <Button intent="neutral" appearance="ghost" size="sm" onClick={goPrevious}>
+                    <ArrowLeft size={16} />
+                    {previousDoor.name ?? 'Anterior'}
+                  </Button>
+                )}
+                {nextDoor === null ? null : (
+                  <Button intent="neutral" appearance="ghost" size="sm" onClick={goNext}>
+                    {nextDoor.name ?? 'Siguiente'}
+                    <ArrowRight size={16} />
+                  </Button>
+                )}
+              </span>
+            )}
+          </span>
+        )
+      }
       headerAside={
         <div className="flex items-center gap-2">
           <Badge tone={meta.tone} dot pulse={meta.pulse}>
@@ -90,7 +153,7 @@ export function DoorDialog({ door, status, buildingId, onClose, onOpenDoor }: Do
       }
     >
       {door === null ? null : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4" {...swipe}>
           {hasCameras ? (
             <div className={cn('grid gap-3', columnClasses[columns])}>
               {cameras.map((camera) => (

@@ -1,17 +1,21 @@
 import { DoorStatus, type Door, type Floor } from '@bb/core';
 import { selectDoorStatus, useAccessibleDoors, useDoorControl, useDoorStatuses, useTowerFloors } from '@bb/logic';
 import { useMemo, useState } from 'react';
-import type { SelectOption } from '../../../ui';
+import type { TabItem } from '../../../ui';
 
 export interface DoorsDashboardController {
   isPending: boolean;
   isError: boolean;
   hasDoors: boolean;
-  floorOptions: ReadonlyArray<SelectOption<string>>;
+  floorOptions: ReadonlyArray<TabItem<string>>;
   currentFloorId: string | null;
   currentFloor: Floor | null;
   floorDoors: Door[];
   selectedDoor: Door | null;
+  // The doors on either side of the selected one, to move without closing the
+  // dialog. Null at the ends: the list does not wrap around.
+  previousDoor: Door | null;
+  nextDoor: Door | null;
   statusOf: (door: Door) => DoorStatus;
   selectFloor: (floorId: string) => void;
   selectDoor: (doorId: string | null) => void;
@@ -31,9 +35,18 @@ export function useDoorsDashboard(buildingId: string): DoorsDashboardController 
   const floors = useTowerFloors(towerId);
   const control = useDoorControl(buildingId);
 
+  // A floor with no doors has nothing to offer here, not even a plan to look at.
+  const floorOptions: ReadonlyArray<TabItem<string>> = useMemo(
+    () =>
+      (floors.data ?? [])
+        .filter((floor) => (doors.data ?? []).some((door) => door.floor?.id === floor.id))
+        .map((floor) => ({ value: floor.id, label: floor.name ?? `Piso ${floor.id}` })),
+    [floors.data, doors.data],
+  );
+
   // Default to the floor of the first door the user can reach: starting on a
   // floor with no doors looks like the plan is broken.
-  const defaultFloorId = doors.data?.[0]?.floor?.id ?? floors.data?.[0]?.id ?? null;
+  const defaultFloorId = doors.data?.[0]?.floor?.id ?? floorOptions[0]?.value ?? null;
   const currentFloorId = floorId ?? defaultFloorId;
   const currentFloor: Floor | null = floors.data?.find((floor) => floor.id === currentFloorId) ?? null;
 
@@ -42,15 +55,7 @@ export function useDoorsDashboard(buildingId: string): DoorsDashboardController 
     [doors.data, currentFloorId],
   );
 
-  const floorOptions: ReadonlyArray<SelectOption<string>> = useMemo(
-    () =>
-      (floors.data ?? []).map((floor) => {
-        const count = (doors.data ?? []).filter((door) => door.floor?.id === floor.id).length;
-        const name = floor.name ?? `Piso ${floor.id}`;
-        return { value: floor.id, label: count > 0 ? `${name} (${count})` : name };
-      }),
-    [floors.data, doors.data],
-  );
+  const selectedIndex = floorDoors.findIndex((door) => door.id === selectedDoorId);
 
   return {
     isPending: doors.isPending,
@@ -60,7 +65,9 @@ export function useDoorsDashboard(buildingId: string): DoorsDashboardController 
     currentFloorId,
     currentFloor,
     floorDoors,
-    selectedDoor: floorDoors.find((door) => door.id === selectedDoorId) ?? null,
+    selectedDoor: floorDoors[selectedIndex] ?? null,
+    previousDoor: selectedIndex > 0 ? (floorDoors[selectedIndex - 1] ?? null) : null,
+    nextDoor: selectedIndex >= 0 ? (floorDoors[selectedIndex + 1] ?? null) : null,
     statusOf: (door) => selectDoorStatus(statuses.data, door.id),
     selectFloor: setFloorId,
     selectDoor: setSelectedDoorId,

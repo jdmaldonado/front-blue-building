@@ -2,10 +2,9 @@ import { LoginMode } from '@bb/core';
 import { useSessionStore } from '@bb/logic';
 import { Link } from '@tanstack/react-router';
 import { LogOut } from 'lucide-react';
-import { useConfirm } from '../../app/ConfirmProvider';
 import { AppRoute } from '../../app/navigation';
-import { endSession } from '../../app/session';
 import { Avatar, IconButton, Text, sidebarItemVariants } from '../../ui';
+import { useSignOut } from './useSignOut';
 
 type AppUserCardProps = {
   collapsed: boolean;
@@ -14,7 +13,7 @@ type AppUserCardProps = {
 // Who is signed in. The name opens the profile, the button ends the session.
 export function AppUserCard({ collapsed }: AppUserCardProps) {
   const session = useSessionStore((state) => state.session);
-  const confirm = useConfirm();
+  const signOut = useSignOut();
 
   if (session === null) {
     return null;
@@ -22,20 +21,8 @@ export function AppUserCard({ collapsed }: AppUserCardProps) {
 
   const caption = session.mode === LoginMode.Admin ? 'Administrador' : `Documento ${session.user.cedula}`;
 
-  const requestSignOut = async () => {
-    const confirmed = await confirm({
-      title: '¿Cerrar sesión?',
-      description: 'Tendrás que ingresar tu documento y contraseña para volver a entrar.',
-      confirmLabel: 'Cerrar sesión',
-      intent: 'destructive',
-    });
-    if (confirmed) {
-      endSession();
-    }
-  };
-
   const signOutButton = (
-    <IconButton label="Cerrar sesión" onClick={() => void requestSignOut()}>
+    <IconButton label="Cerrar sesión" onClick={signOut}>
       <LogOut size={18} />
     </IconButton>
   );

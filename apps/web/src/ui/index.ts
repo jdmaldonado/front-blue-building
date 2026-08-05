@@ -50,8 +50,8 @@ export {
 } from './dialog';
 export type { DialogSize, DialogVariants } from './dialog';
 
-export { Drawer, drawerSides, drawerVariants } from './drawer';
-export type { DrawerSide, DrawerVariants } from './drawer';
+export { Drawer, drawerSides, drawerSizes, drawerVariants } from './drawer';
+export type { DrawerSide, DrawerSize, DrawerVariants } from './drawer';
 
 export {
   DropdownMenu,

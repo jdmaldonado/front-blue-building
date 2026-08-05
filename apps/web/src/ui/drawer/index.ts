@@ -1,3 +1,3 @@
 export { Drawer } from './Drawer';
-export { drawerSides, drawerVariants } from './Drawer-variants';
-export type { DrawerSide, DrawerVariants } from './Drawer-variants';
+export { drawerSides, drawerSizes, drawerVariants } from './Drawer-variants';
+export type { DrawerSide, DrawerSize, DrawerVariants } from './Drawer-variants';

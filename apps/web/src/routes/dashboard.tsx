@@ -5,6 +5,7 @@ import { requireMode } from '../app/guards';
 import { BuildingEventsButton } from '../features/building-events';
 import { DoorsDashboardPage } from '../features/doors';
 import { AppShell, AppTitle } from '../layouts/app';
+import { ResidentMobileNav } from '../layouts/resident';
 import { Alert } from '../ui';
 
 // Resident entry. The admin panel reaches the same screen with the building
@@ -32,6 +33,7 @@ function RouteComponent() {
       <AppShell
         header={<AppTitle title={building.name} />}
         headerActions={<BuildingEventsButton buildingId={building.id} />}
+        mobileNav={<ResidentMobileNav buildingId={building.id} />}
       >
         <DoorsDashboardPage />
       </AppShell>

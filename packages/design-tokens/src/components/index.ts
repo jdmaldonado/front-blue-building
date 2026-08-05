@@ -93,6 +93,10 @@ export const componentTokens = {
   'menu-danger-foreground': 'destructive',
   'menu-danger-hover': 'destructive-subtle',
 
+  // The resident menu on a phone: a full brand panel, not a dropdown.
+  'menu-panel-gradient': 'brand-gradient-vivid',
+  'menu-panel-foreground': 'brand-foreground',
+
   'table-header-bg': 'surface-sunken',
   'table-row-hover': 'surface-sunken',
   'table-row-selected': 'accent-subtle',

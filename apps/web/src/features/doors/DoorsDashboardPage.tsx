@@ -1,6 +1,6 @@
 import { DoorStatus } from '@bb/core';
 import { useBuilding } from '../../app/BuildingContext';
-import { Alert, Loading, Select, Text } from '../../ui';
+import { Alert, Loading, Tabs, Text } from '../../ui';
 import { DoorDialog, FloorPlan } from './components';
 import { useDoorsDashboard } from './hooks';
 
@@ -26,12 +26,13 @@ export function DoorsDashboardPage() {
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       <div className="flex flex-none flex-wrap items-center gap-3">
         {dashboard.floorOptions.length > 1 && dashboard.currentFloorId !== null ? (
-          <Select
-            aria-label="Piso"
-            options={dashboard.floorOptions}
+          <Tabs
+            items={dashboard.floorOptions}
             value={dashboard.currentFloorId}
             onChange={dashboard.selectFloor}
-            className="w-full sm:max-w-xs"
+            label="Piso"
+            appearance="pill"
+            className="max-w-full"
           />
         ) : null}
         <Text as="span" size="label" tone="muted">
@@ -58,7 +59,10 @@ export function DoorsDashboardPage() {
         door={dashboard.selectedDoor}
         status={dashboard.selectedDoor === null ? DoorStatus.Unknown : dashboard.statusOf(dashboard.selectedDoor)}
         buildingId={building.id}
+        previousDoor={dashboard.previousDoor}
+        nextDoor={dashboard.nextDoor}
         onClose={() => dashboard.selectDoor(null)}
+        onSelectDoor={dashboard.selectDoor}
         onOpenDoor={dashboard.openDoor}
       />
     </div>
