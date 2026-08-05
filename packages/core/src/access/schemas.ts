@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { TowerSchema } from '../buildings';
+import { ReaderStateSchema } from '../readers/schemas';
 import { IdSchema } from '../shared';
 import { DoorType } from './constants';
 
@@ -41,6 +42,9 @@ export const DoorEventDataSchema = z.object({
   slaveSpiOk: z.boolean().nullish().catch(null),
   deviceType: z.string().nullish().catch(null),
   lastTelemetryTimestamp: z.number().nullish().catch(null),
+  // The nested part: wifi, device id, firmware and hardware versions. It is the
+  // only way to read anything the reader currently has.
+  readerState: ReaderStateSchema.nullish().catch(null),
 });
 export type DoorEventData = z.infer<typeof DoorEventDataSchema>;
 

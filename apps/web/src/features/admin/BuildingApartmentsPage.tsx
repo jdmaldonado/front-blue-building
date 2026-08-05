@@ -15,6 +15,7 @@ import {
   IconButton,
   Text,
   Tooltip,
+  iconButtonVariants,
   useDataTableFilters,
 } from '../../ui';
 import { useApartmentActions } from './hooks';
@@ -88,11 +89,18 @@ export function BuildingApartmentsPage() {
         meta: { actions: true },
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <Link to={AppRoute.AdminBuildingApartmentUsers} params={{ buildingId, apartmentId: row.original.id }}>
-              <IconButton label={`Ver residentes de ${row.original.name ?? 'apartamento'}`}>
+            {/* The link carries the icon-button skin itself. A button inside an
+                anchor is invalid HTML, and the button eats the click. */}
+            <Tooltip content={`Ver residentes de ${row.original.name ?? 'apartamento'}`} decorative>
+              <Link
+                to={AppRoute.AdminBuildingApartmentUsers}
+                params={{ buildingId, apartmentId: row.original.id }}
+                aria-label={`Ver residentes de ${row.original.name ?? 'apartamento'}`}
+                className={iconButtonVariants()}
+              >
                 <Users size={16} />
-              </IconButton>
-            </Link>
+              </Link>
+            </Tooltip>
             <IconButton
               label={`Dar de baja ${row.original.name ?? 'apartamento'}`}
               tone="destructive"

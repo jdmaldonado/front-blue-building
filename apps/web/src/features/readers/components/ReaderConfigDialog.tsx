@@ -8,6 +8,7 @@ import {
   type ReaderConfig,
   type ReaderHardwareConfig,
   type ReaderLogicConfig,
+  type ReaderState,
 } from '@bb/core';
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Dialog, Field, Input, Switch, Tabs, Text, type RadioOption } from '../../../ui';
@@ -16,6 +17,8 @@ import { NumericField } from './NumericField';
 
 type ReaderConfigDialogProps = {
   door: Door | null;
+  // What the reader is reporting right now. The only values we can read back.
+  reported: ReaderState | null;
   pending: boolean;
   onClose: () => void;
   onSend: (config: ReaderConfig) => void;
@@ -34,7 +37,7 @@ const targetOptions: ReadonlyArray<RadioOption<ReaderTarget>> = [
   { value: ReaderTarget.Slave, label: 'Esclava' },
 ];
 
-export function ReaderConfigDialog({ door, pending, onClose, onSend }: ReaderConfigDialogProps) {
+export function ReaderConfigDialog({ door, reported, pending, onClose, onSend }: ReaderConfigDialogProps) {
   const [target, setTarget] = useState<ReaderTarget>(ReaderTarget.Master);
   const [section, setSection] = useState<Section>('hardware');
   const [hardware, setHardware] = useState<ReaderHardwareConfig>(DEFAULT_MASTER_HARDWARE);
@@ -48,15 +51,21 @@ export function ReaderConfigDialog({ door, pending, onClose, onSend }: ReaderCon
     setHardware(target === ReaderTarget.Master ? DEFAULT_MASTER_HARDWARE : DEFAULT_SLAVE_HARDWARE);
   }, [target]);
 
+  // Wifi and device id are the two things telemetry does tell us, so they start
+  // from what the reader reports instead of from an empty box.
   useEffect(() => {
     if (door === null) {
       setTarget(ReaderTarget.Master);
       setSection('hardware');
       setLogic(defaultLogicConfig());
-      setSsid('');
-      setDeviceId('');
     }
-  }, [door]);
+    setSsid(reported?.system?.network?.wifi_ssid ?? '');
+    setDeviceId(
+      reported?.metadata?.device_id === null || reported?.metadata?.device_id === undefined
+        ? ''
+        : String(reported.metadata.device_id),
+    );
+  }, [door, reported]);
 
   const hardwareEntries = useMemo(() => Object.entries(hardware), [hardware]);
   const isMaster = target === ReaderTarget.Master;
@@ -172,7 +181,9 @@ export function ReaderConfigDialog({ door, pending, onClose, onSend }: ReaderCon
         ) : null}
 
         <Text size="body-sm" tone="secondary">
-          El formulario parte siempre de los valores por defecto: la lectora no puede decirnos qué tiene puesto ahora.
+          {section === 'network' || section === 'identity'
+            ? 'Este valor es el que la lectora está reportando ahora mismo.'
+            : 'Hardware y tiempos parten de los valores por defecto: la lectora no reporta qué tiene puesto.'}
         </Text>
       </div>
     </Dialog>

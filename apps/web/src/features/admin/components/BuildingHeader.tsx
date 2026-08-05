@@ -2,7 +2,7 @@ import type { Building } from '@bb/core';
 import { Link } from '@tanstack/react-router';
 import { ArrowLeft } from 'lucide-react';
 import { AppRoute } from '../../../app/navigation';
-import { IconButton, Text } from '../../../ui';
+import { Text, Tooltip, iconButtonVariants } from '../../../ui';
 import { BuildingActions } from './BuildingActions';
 import { BuildingStatusBadge } from './BuildingStatusBadge';
 
@@ -15,11 +15,12 @@ type BuildingHeaderProps = {
 export function BuildingHeader({ building }: BuildingHeaderProps) {
   return (
     <>
-      <Link to={AppRoute.Admin}>
-        <IconButton label="Volver a edificios">
+      {/* Same reason as in the apartments table: no button inside an anchor. */}
+      <Tooltip content="Volver a edificios" decorative>
+        <Link to={AppRoute.Admin} aria-label="Volver a edificios" className={iconButtonVariants()}>
           <ArrowLeft size={18} />
-        </IconButton>
-      </Link>
+        </Link>
+      </Tooltip>
 
       <div className="flex min-w-0 flex-col">
         <Text as="h1" size="title-sm" weight="bold" truncate>

@@ -28,6 +28,7 @@ import { Route as AdminBuildingsBuildingIdLiveRouteImport } from './routes/admin
 import { Route as AdminBuildingsBuildingIdReadersRouteImport } from './routes/admin/buildings.$buildingId/readers'
 import { Route as AdminBuildingsBuildingIdSettingsRouteImport } from './routes/admin/buildings.$buildingId/settings'
 import { Route as AdminBuildingsBuildingIdUsersRouteImport } from './routes/admin/buildings.$buildingId/users'
+import { Route as AdminBuildingsBuildingIdApartmentsIndexRouteImport } from './routes/admin/buildings.$buildingId/apartments.index'
 import { Route as AdminBuildingsBuildingIdApartmentsApartmentIdUsersRouteImport } from './routes/admin/buildings.$buildingId/apartments.$apartmentId.users'
 
 const IndexRoute = IndexRouteImport.update({
@@ -131,6 +132,12 @@ const AdminBuildingsBuildingIdUsersRoute =
     path: '/users',
     getParentRoute: () => AdminBuildingsBuildingIdRoute,
   } as any)
+const AdminBuildingsBuildingIdApartmentsIndexRoute =
+  AdminBuildingsBuildingIdApartmentsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AdminBuildingsBuildingIdApartmentsRoute,
+  } as any)
 const AdminBuildingsBuildingIdApartmentsApartmentIdUsersRoute =
   AdminBuildingsBuildingIdApartmentsApartmentIdUsersRouteImport.update({
     id: '/$apartmentId/users',
@@ -157,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
   '/admin/buildings/$buildingId/users': typeof AdminBuildingsBuildingIdUsersRoute
   '/admin/buildings/$buildingId/': typeof AdminBuildingsBuildingIdIndexRoute
+  '/admin/buildings/$buildingId/apartments/': typeof AdminBuildingsBuildingIdApartmentsIndexRoute
   '/admin/buildings/$buildingId/apartments/$apartmentId/users': typeof AdminBuildingsBuildingIdApartmentsApartmentIdUsersRoute
 }
 export interface FileRoutesByTo {
@@ -170,12 +178,12 @@ export interface FileRoutesByTo {
   '/admin/cards': typeof AdminCardsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
-  '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
   '/admin/buildings/$buildingId/readers': typeof AdminBuildingsBuildingIdReadersRoute
   '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
   '/admin/buildings/$buildingId/users': typeof AdminBuildingsBuildingIdUsersRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdIndexRoute
+  '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsIndexRoute
   '/admin/buildings/$buildingId/apartments/$apartmentId/users': typeof AdminBuildingsBuildingIdApartmentsApartmentIdUsersRoute
 }
 export interface FileRoutesById {
@@ -199,6 +207,7 @@ export interface FileRoutesById {
   '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
   '/admin/buildings/$buildingId/users': typeof AdminBuildingsBuildingIdUsersRoute
   '/admin/buildings/$buildingId/': typeof AdminBuildingsBuildingIdIndexRoute
+  '/admin/buildings/$buildingId/apartments/': typeof AdminBuildingsBuildingIdApartmentsIndexRoute
   '/admin/buildings/$buildingId/apartments/$apartmentId/users': typeof AdminBuildingsBuildingIdApartmentsApartmentIdUsersRoute
 }
 export interface FileRouteTypes {
@@ -222,6 +231,7 @@ export interface FileRouteTypes {
     | '/admin/buildings/$buildingId/settings'
     | '/admin/buildings/$buildingId/users'
     | '/admin/buildings/$buildingId/'
+    | '/admin/buildings/$buildingId/apartments/'
     | '/admin/buildings/$buildingId/apartments/$apartmentId/users'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -235,12 +245,12 @@ export interface FileRouteTypes {
     | '/admin/cards'
     | '/admin/users'
     | '/admin'
-    | '/admin/buildings/$buildingId/apartments'
     | '/admin/buildings/$buildingId/live'
     | '/admin/buildings/$buildingId/readers'
     | '/admin/buildings/$buildingId/settings'
     | '/admin/buildings/$buildingId/users'
     | '/admin/buildings/$buildingId'
+    | '/admin/buildings/$buildingId/apartments'
     | '/admin/buildings/$buildingId/apartments/$apartmentId/users'
   id:
     | '__root__'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/admin/buildings/$buildingId/settings'
     | '/admin/buildings/$buildingId/users'
     | '/admin/buildings/$buildingId/'
+    | '/admin/buildings/$buildingId/apartments/'
     | '/admin/buildings/$buildingId/apartments/$apartmentId/users'
   fileRoutesById: FileRoutesById
 }
@@ -410,6 +421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBuildingsBuildingIdUsersRouteImport
       parentRoute: typeof AdminBuildingsBuildingIdRoute
     }
+    '/admin/buildings/$buildingId/apartments/': {
+      id: '/admin/buildings/$buildingId/apartments/'
+      path: '/'
+      fullPath: '/admin/buildings/$buildingId/apartments/'
+      preLoaderRoute: typeof AdminBuildingsBuildingIdApartmentsIndexRouteImport
+      parentRoute: typeof AdminBuildingsBuildingIdApartmentsRoute
+    }
     '/admin/buildings/$buildingId/apartments/$apartmentId/users': {
       id: '/admin/buildings/$buildingId/apartments/$apartmentId/users'
       path: '/$apartmentId/users'
@@ -435,11 +453,14 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface AdminBuildingsBuildingIdApartmentsRouteChildren {
+  AdminBuildingsBuildingIdApartmentsIndexRoute: typeof AdminBuildingsBuildingIdApartmentsIndexRoute
   AdminBuildingsBuildingIdApartmentsApartmentIdUsersRoute: typeof AdminBuildingsBuildingIdApartmentsApartmentIdUsersRoute
 }
 
 const AdminBuildingsBuildingIdApartmentsRouteChildren: AdminBuildingsBuildingIdApartmentsRouteChildren =
   {
+    AdminBuildingsBuildingIdApartmentsIndexRoute:
+      AdminBuildingsBuildingIdApartmentsIndexRoute,
     AdminBuildingsBuildingIdApartmentsApartmentIdUsersRoute:
       AdminBuildingsBuildingIdApartmentsApartmentIdUsersRoute,
   }

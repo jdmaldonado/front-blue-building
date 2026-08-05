@@ -54,6 +54,22 @@ export function ReadersPage() {
     }
   };
 
+  const requestConfig = async (config: ReaderConfig): Promise<void> => {
+    const localId = configuring?.localId;
+    if (localId === null || localId === undefined) {
+      return;
+    }
+    const confirmed = await confirm({
+      title: '¿Enviar la configuración?',
+      description: `Cambia el comportamiento físico de ${configuring?.name ?? 'la lectora'}. No se puede leer lo que tiene puesto ahora, así que no hay a qué volver.`,
+      confirmLabel: 'Enviar',
+      intent: 'destructive',
+    });
+    if (confirmed) {
+      control.configure(localId, config);
+    }
+  };
+
   const columns = useMemo<Array<ColumnDef<Door, unknown>>>(
     () => [
       {
@@ -93,6 +109,17 @@ export function ReadersPage() {
             </Badge>
           );
         },
+      },
+      {
+        id: 'firmware',
+        accessorFn: (door) => statuses.data?.[door.id]?.readerState?.readers?.master?.firmware_version ?? '',
+        header: 'Firmware',
+        meta: { hideOnMobile: true },
+        cell: ({ row }) => (
+          <Text as="span" size="body-sm" tone="muted" className="font-mono">
+            {statuses.data?.[row.original.id]?.readerState?.readers?.master?.firmware_version ?? '—'}
+          </Text>
+        ),
       },
       {
         id: 'slave',
@@ -170,13 +197,10 @@ export function ReadersPage() {
 
       <ReaderConfigDialog
         door={configuring}
+        reported={configuring === null ? null : (statuses.data?.[configuring.id]?.readerState ?? null)}
         pending={control.pending !== null}
         onClose={() => setConfiguring(null)}
-        onSend={(config: ReaderConfig) => {
-          if (configuring?.localId !== null && configuring?.localId !== undefined) {
-            control.configure(configuring.localId, config);
-          }
-        }}
+        onSend={(config: ReaderConfig) => void requestConfig(config)}
       />
     </div>
   );

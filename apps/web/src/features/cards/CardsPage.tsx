@@ -49,8 +49,17 @@ export function CardsPage({ search, onSearchChange }: CardsPageProps) {
     });
   };
 
-  const handleSaveEdit = (input: { tag: string; type: Card['type']; active: boolean }): void => {
+  const handleSaveEdit = async (input: { tag: string; type: Card['type']; active: boolean }): Promise<void> => {
     if (editing === null || input.type === null || input.type === undefined) {
+      return;
+    }
+
+    const confirmed = await confirm({
+      title: '¿Guardar los cambios?',
+      description: 'Cambiar el número o desactivar la tarjeta cambia a qué puertas abre desde ya.',
+      confirmLabel: 'Guardar',
+    });
+    if (!confirmed) {
       return;
     }
 
@@ -163,7 +172,7 @@ export function CardsPage({ search, onSearchChange }: CardsPageProps) {
                 card={editing}
                 pending={update.isPending}
                 onClose={() => setEditing(null)}
-                onSave={handleSaveEdit}
+                onSave={(input) => void handleSaveEdit(input)}
               />
             </>
           ) : (

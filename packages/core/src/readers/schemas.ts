@@ -114,3 +114,51 @@ export const DEFAULT_SLAVE_HARDWARE: ReaderHardwareConfig = {
 export function defaultLogicConfig(): ReaderLogicConfig {
   return Object.fromEntries(LOGIC_FIELDS.map((field) => [field.key, field.defaultValue]));
 }
+
+// What the reader reports about itself, inside the telemetry frame
+// (api/src/2.0/state/buildingTelemetryState.ts). Everything degrades: this is
+// diagnostics, and a missing field must never cost us the frame.
+const ReaderDetailStateSchema = z.object({
+  state: z.string().nullish().catch(null),
+  spi_ok: z.boolean().nullish().catch(null),
+  firmware_version: z.string().nullish().catch(null),
+  hw_version: z.string().nullish().catch(null),
+  device_mode: z.string().nullish().catch(null),
+  last_seen_sec: z.number().nullish().catch(null),
+});
+export type ReaderDetailState = z.infer<typeof ReaderDetailStateSchema>;
+
+export const ReaderStateSchema = z.object({
+  metadata: z
+    .object({
+      device_id: z.union([z.string(), z.number()]).nullish().catch(null),
+      device_type: z.string().nullish().catch(null),
+      timestamp: z.string().nullish().catch(null),
+    })
+    .nullish()
+    .catch(null),
+  system: z
+    .object({
+      uptime_sec: z.number().nullish().catch(null),
+      cpu_temp: z.number().nullish().catch(null),
+      free_heap_bytes: z.number().nullish().catch(null),
+      flash_size: z.string().nullish().catch(null),
+      network: z
+        .object({
+          wifi_ssid: z.string().nullish().catch(null),
+          rssi: z.number().nullish().catch(null),
+        })
+        .nullish()
+        .catch(null),
+    })
+    .nullish()
+    .catch(null),
+  readers: z
+    .object({
+      master: ReaderDetailStateSchema.nullish().catch(null),
+      slave: ReaderDetailStateSchema.nullish().catch(null),
+    })
+    .nullish()
+    .catch(null),
+});
+export type ReaderState = z.infer<typeof ReaderStateSchema>;

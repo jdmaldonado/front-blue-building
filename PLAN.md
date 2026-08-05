@@ -192,10 +192,28 @@ actualizar `front`, `api` y `RPI-blue-building`, que traían el PR de telemetrí
 - Punto de salud en el panorama de edificios, alimentado por la telemetría ya
   cacheada.
 
+- Del `readerState` de la telemetría se leen wifi, device id y versiones de
+  firmware. Las secciones de Red e Identidad arrancan con lo que la lectora
+  reporta, no en blanco.
+
 **Avisos que vienen del backend, no nuestros**: el éxito significa "la API lo
-reenvió", no "la lectora lo aplicó"; la configuración no se puede leer, siempre
-se parte de los valores por defecto; y `alert_auto_silence_timeout_min = 0`
-significa deshabilitado.
+reenvió", no "la lectora lo aplicó"; el hardware y los tiempos **no se pueden
+leer** —solo existe el evento de escritura—, así que esas dos secciones parten
+de los valores por defecto; y `alert_auto_silence_timeout_min = 0` significa
+deshabilitado.
+
+### Tooltips y confirmaciones
+
+- `IconButton` muestra su `label` como tooltip al pasar el puntero. La burbuja va
+  dentro del botón, no en un envoltorio, porque un envoltorio se tragaría las
+  clases de layout de quien lo usa. En táctil no aparece: no hay hover.
+- Confirmación en todo lo que cambia el mundo físico o es difícil de deshacer:
+  configurar lectora, poner una lectora en modo registro, crear tarjeta, validar
+  usuario y editar tarjeta, además de las que ya la tenían.
+- **A propósito sin confirmación**: abrir puerta, que es la acción diaria del
+  residente y ya queda registrada con quién la hizo; editar teléfono, que se
+  deshace editando otra vez; y emergencia, por la decisión previa de que
+  preguntar dos veces cuesta segundos que importan.
 
 ## Fases siguientes
 

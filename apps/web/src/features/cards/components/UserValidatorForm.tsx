@@ -1,6 +1,7 @@
 import type { UserAccount } from '@bb/core';
 import { useValidateUser } from '@bb/logic';
 import { useState, type SubmitEvent } from 'react';
+import { useConfirm } from '../../../app/ConfirmProvider';
 import { useToast } from '../../../app/ToastProvider';
 import { Alert, Button, Card, Text } from '../../../ui';
 import { ImagePicker } from './ImagePicker';
@@ -23,6 +24,7 @@ export function UserValidatorForm({ user }: UserValidatorFormProps) {
   const [pictures, setPictures] = useState<Pictures>(EMPTY);
   const validate = useValidateUser();
   const toast = useToast();
+  const confirm = useConfirm();
 
   const { photo, documentFront, documentBack } = pictures;
   const complete = photo !== null && documentFront !== null && documentBack !== null;
@@ -31,9 +33,18 @@ export function UserValidatorForm({ user }: UserValidatorFormProps) {
     setPictures((current) => ({ ...current, [key]: file }));
   };
 
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     if (photo === null || documentFront === null || documentBack === null) {
+      return;
+    }
+
+    const confirmed = await confirm({
+      title: '¿Validar al usuario?',
+      description: `Se suben las tres imágenes de ${user.name} y queda habilitado para recibir tarjetas.`,
+      confirmLabel: 'Validar',
+    });
+    if (!confirmed) {
       return;
     }
 
@@ -70,7 +81,7 @@ export function UserValidatorForm({ user }: UserValidatorFormProps) {
         </Alert>
       ) : null}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={(event) => void handleSubmit(event)} className="flex flex-col gap-4">
         <div className="grid gap-3 sm:grid-cols-3">
           <ImagePicker label="Foto del rostro" file={photo} onPick={pick('photo')} />
           <ImagePicker label="Documento, frente" file={documentFront} onPick={pick('documentFront')} />
