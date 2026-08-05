@@ -45,10 +45,10 @@ export function BuildingSummaryPage({ building }: BuildingSummaryPageProps) {
         <Text size="label" tone="muted">
           Estado
         </Text>
+        {/* TODO: show whether the building box is online. The API does not
+            publish device status yet; a PR for reader status is on the way.
+            Proposal filed in docs 07-abierto/propuestas-panel-admin.md. */}
         <BuildingStatusBadge building={building} />
-        <Text size="body-sm" tone="secondary">
-          Todavía no sabemos si el equipo del edificio está conectado. Llegará cuando la API lo publique.
-        </Text>
       </Card>
 
       {details.length === 0 ? null : (

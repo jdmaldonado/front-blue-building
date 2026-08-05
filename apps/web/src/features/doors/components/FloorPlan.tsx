@@ -74,7 +74,6 @@ export function FloorPlan({ floor, doors, statusOf, selectedDoorId, onSelect, cl
       ) : (
         <Text size="body-sm" tone="muted" className="p-6 text-center">
           Este piso no tiene plano cargado.
-          {doors.length > 0 ? ` Tiene ${doors.length} puerta(s) registradas.` : ''}
         </Text>
       )}
     </div>
