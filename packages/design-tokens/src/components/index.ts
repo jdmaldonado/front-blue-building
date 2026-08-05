@@ -93,9 +93,14 @@ export const componentTokens = {
   'menu-danger-foreground': 'destructive',
   'menu-danger-hover': 'destructive-subtle',
 
-  // The resident menu on a phone: a full brand panel, not a dropdown.
-  'menu-panel-gradient': 'brand-gradient-vivid',
+  // The resident menu on a phone: a brand panel, the same family as the login.
+  'menu-panel-bg': 'brand-surface',
+  'menu-panel-gradient': 'brand-gradient',
   'menu-panel-foreground': 'brand-foreground',
+  'menu-panel-muted': 'brand-muted',
+  'menu-panel-accent': 'brand-accent',
+  'menu-panel-border': 'brand-border',
+  'menu-panel-hover': 'brand-hover',
 
   'table-header-bg': 'surface-sunken',
   'table-row-hover': 'surface-sunken',

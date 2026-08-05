@@ -17,10 +17,10 @@ export const drawerVariants = cva(
   [
     'h-dvh max-h-none max-w-none p-0',
     'my-0 border-(--card-border) bg-(--card-bg) text-(--text-primary) shadow-(--shadow-3)',
-    'opacity-0 transition-[opacity,transform,display,overlay] duration-(--duration-base) ease-standard transition-discrete',
+    'opacity-0 transition-[opacity,transform,display,overlay] duration-(--duration-slow) ease-standard transition-discrete',
     'open:opacity-100 starting:open:opacity-0',
     'backdrop:bg-black/60 backdrop:opacity-0 backdrop:transition-[opacity,display,overlay]',
-    'backdrop:duration-(--duration-base) backdrop:ease-standard backdrop:transition-discrete',
+    'backdrop:duration-(--duration-slow) backdrop:ease-standard backdrop:transition-discrete',
     'open:backdrop:opacity-100 starting:open:backdrop:opacity-0',
   ],
   {

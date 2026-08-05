@@ -55,9 +55,10 @@ export const semanticLight = {
   'brand-muted': 'oklch(0.86 0.03 235/.8)',
   'brand-accent': palette.cyan[400],
   'brand-gradient': 'linear-gradient(158deg, oklch(0.28 0.06 232/.55), oklch(0.14 0.02 244/.2))',
-  // The brand at full colour, cyan falling into blue. For a panel that is the
-  // brand itself, not a surface with a veil of brand on top.
-  'brand-gradient-vivid': `linear-gradient(to bottom, ${palette.cyan[400]}, ${palette.cyan[600]})`,
+  // Hairlines and hover states on top of the brand surface. Light ink at low
+  // alpha, so they read on the dark panel without becoming a second colour.
+  'brand-border': 'oklch(0.86 0.03 235/.18)',
+  'brand-hover': 'oklch(0.86 0.03 235/.10)',
 
   'shadow-1': '0 1px 2px oklch(0.2 0.02 242/.06), 0 2px 8px oklch(0.2 0.02 242/.05)',
   'shadow-2': '0 4px 16px oklch(0.2 0.02 242/.12)',
@@ -117,9 +118,10 @@ export const semanticDark = {
   'brand-muted': 'oklch(0.86 0.03 235/.8)',
   'brand-accent': palette.cyan[400],
   'brand-gradient': 'linear-gradient(158deg, oklch(0.28 0.06 232/.55), oklch(0.14 0.02 244/.2))',
-  // The brand at full colour, cyan falling into blue. For a panel that is the
-  // brand itself, not a surface with a veil of brand on top.
-  'brand-gradient-vivid': `linear-gradient(to bottom, ${palette.cyan[400]}, ${palette.cyan[600]})`,
+  // Hairlines and hover states on top of the brand surface. Light ink at low
+  // alpha, so they read on the dark panel without becoming a second colour.
+  'brand-border': 'oklch(0.86 0.03 235/.18)',
+  'brand-hover': 'oklch(0.86 0.03 235/.10)',
 
   'shadow-1': '0 1px 2px oklch(0 0 0/.4), 0 2px 8px oklch(0 0 0/.3)',
   'shadow-2': '0 4px 16px oklch(0 0 0/.5)',
