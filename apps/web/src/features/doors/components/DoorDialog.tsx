@@ -13,6 +13,7 @@ type DoorDialogProps = {
   buildingId: string;
   previousDoor: Door | null;
   nextDoor: Door | null;
+  isOpening: boolean;
   onClose: () => void;
   onSelectDoor: (doorId: string) => void;
   onOpenDoor: (door: Door) => void;
@@ -39,6 +40,7 @@ export function DoorDialog({
   buildingId,
   previousDoor,
   nextDoor,
+  isOpening,
   onClose,
   onSelectDoor,
   onOpenDoor,
@@ -89,32 +91,10 @@ export function DoorDialog({
       onKeyDown={handleKeyDown}
       size="xl"
       title={door?.name ?? 'Puerta'}
-      description={
-        door === null ? undefined : (
-          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            {door.floor?.name ?? null}
-            {previousDoor === null && nextDoor === null ? null : (
-              <span className="flex items-center gap-1">
-                {previousDoor === null ? null : (
-                  <Button intent="neutral" appearance="ghost" size="sm" onClick={goPrevious}>
-                    <ArrowLeft size={16} />
-                    {previousDoor.name ?? 'Anterior'}
-                  </Button>
-                )}
-                {nextDoor === null ? null : (
-                  <Button intent="neutral" appearance="ghost" size="sm" onClick={goNext}>
-                    {nextDoor.name ?? 'Siguiente'}
-                    <ArrowRight size={16} />
-                  </Button>
-                )}
-              </span>
-            )}
-          </span>
-        )
-      }
+      description={door?.floor?.name ?? undefined}
       headerAside={
         <div className="flex items-center gap-2">
-          <Badge tone={meta.tone} dot pulse={meta.pulse}>
+          <Badge tone={meta.tone} dot pulse={meta.pulse} className="whitespace-nowrap">
             {meta.label}
           </Badge>
           {hasCameras ? (
@@ -143,9 +123,14 @@ export function DoorDialog({
           // Reversed on mobile so the events sit above the primary action,
           // while the DOM keeps "Abrir puerta" first for keyboard order.
           <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:items-center">
-            <Button size="lg" onClick={() => onOpenDoor(door)} className="w-full sm:w-auto sm:flex-[2]">
-              <DoorOpen size={18} />
-              Abrir puerta
+            <Button
+              size="lg"
+              onClick={() => onOpenDoor(door)}
+              loading={isOpening}
+              className="w-full sm:w-auto sm:flex-[2]"
+            >
+              {isOpening ? null : <DoorOpen size={18} />}
+              {isOpening ? 'Abriendo...' : 'Abrir puerta'}
             </Button>
             <UserEventActions controller={events} className="sm:flex-[3]" />
           </div>
@@ -153,7 +138,30 @@ export function DoorDialog({
       }
     >
       {door === null ? null : (
-        <div className="flex flex-col gap-4" {...swipe}>
+        <div className="flex touch-pan-y flex-col gap-4" {...swipe}>
+          {previousDoor === null && nextDoor === null ? null : (
+            // Each arrow on its own edge, so the thumb finds them where the
+            // swipe would take it.
+            <div className="flex items-center justify-between gap-2">
+              {previousDoor === null ? (
+                <span />
+              ) : (
+                <Button intent="neutral" appearance="ghost" size="sm" onClick={goPrevious} className="min-w-0">
+                  <ArrowLeft size={16} />
+                  <span className="truncate">{previousDoor.name ?? 'Anterior'}</span>
+                </Button>
+              )}
+              {nextDoor === null ? (
+                <span />
+              ) : (
+                <Button intent="neutral" appearance="ghost" size="sm" onClick={goNext} className="min-w-0">
+                  <span className="truncate">{nextDoor.name ?? 'Siguiente'}</span>
+                  <ArrowRight size={16} />
+                </Button>
+              )}
+            </div>
+          )}
+
           {hasCameras ? (
             <div className={cn('grid gap-3', columnClasses[columns])}>
               {cameras.map((camera) => (

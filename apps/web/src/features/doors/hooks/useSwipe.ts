@@ -1,9 +1,9 @@
 import { useRef, type PointerEvent } from 'react';
 
-// How far a finger travels before it counts as a swipe, and how much it may
-// drift sideways before we read it as a scroll instead.
+// How far the pointer travels before it counts as a swipe, and how much it may
+// drift up or down before we read it as a scroll instead.
 const MIN_DISTANCE = 50;
-const MAX_DRIFT = 40;
+const MAX_DRIFT = 60;
 
 type SwipeInput = {
   onSwipeLeft: () => void;
@@ -16,14 +16,15 @@ type SwipeHandlers = {
   onPointerCancel: () => void;
 };
 
-// Horizontal swipe on touch only. A mouse drag inside a dialog is usually a
-// text selection, not a gesture.
+// Horizontal swipe, by finger, pen or mouse drag. The element that takes these
+// handlers needs `touch-pan-y`, or the browser claims the drag for scrolling
+// and cancels the pointer before it ends.
 export function useSwipe({ onSwipeLeft, onSwipeRight }: SwipeInput): SwipeHandlers {
   const start = useRef<{ x: number; y: number } | null>(null);
 
   return {
     onPointerDown: (event) => {
-      start.current = event.pointerType === 'touch' ? { x: event.clientX, y: event.clientY } : null;
+      start.current = { x: event.clientX, y: event.clientY };
     },
     onPointerCancel: () => {
       start.current = null;

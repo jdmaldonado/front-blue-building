@@ -1,7 +1,20 @@
-import { DoorStatus, type Door, type Floor } from '@bb/core';
+import { DoorStatus, type Door, type DomainError, type Floor } from '@bb/core';
 import { selectDoorStatus, useAccessibleDoors, useDoorControl, useDoorStatuses, useTowerFloors } from '@bb/logic';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useToast } from '../../../app/ToastProvider';
 import type { TabItem } from '../../../ui';
+import { DOOR_NOT_WIRED_MESSAGE, DOOR_NO_ANSWER_MESSAGE, doorErrorMessage } from '../lib';
+
+// The API never says "the door opened". What it does send is the new state of
+// the door, so that is what we wait for before telling the user it worked.
+const OPEN_CONFIRMATION_TIMEOUT_MS = 8000;
+
+type PendingOpen = {
+  doorId: string;
+  // The last event the door had before we asked. A different one means the
+  // building answered.
+  previousEventAt: string | number | null;
+};
 
 export interface DoorsDashboardController {
   isPending: boolean;
@@ -16,6 +29,8 @@ export interface DoorsDashboardController {
   // dialog. Null at the ends: the list does not wrap around.
   previousDoor: Door | null;
   nextDoor: Door | null;
+  // Set while an open order is waiting for the building to answer.
+  openingDoorId: string | null;
   statusOf: (door: Door) => DoorStatus;
   selectFloor: (floorId: string) => void;
   selectDoor: (doorId: string | null) => void;
@@ -27,13 +42,51 @@ export interface DoorsDashboardController {
 export function useDoorsDashboard(buildingId: string): DoorsDashboardController {
   const [floorId, setFloorId] = useState<string | null>(null);
   const [selectedDoorId, setSelectedDoorId] = useState<string | null>(null);
+  const [pendingOpen, setPendingOpen] = useState<PendingOpen | null>(null);
+  const toast = useToast();
 
   const doors = useAccessibleDoors(buildingId);
   const statuses = useDoorStatuses(buildingId);
   // Today all doors belong to the same tower, so the floors come from it.
   const towerId = doors.data?.[0]?.tower?.id ?? null;
   const floors = useTowerFloors(towerId);
-  const control = useDoorControl(buildingId);
+
+  const onError = useCallback(
+    (error: DomainError) => {
+      setPendingOpen(null);
+      toast({ tone: 'error', title: 'No pudimos abrir la puerta', message: doorErrorMessage(error) });
+    },
+    [toast],
+  );
+
+  const control = useDoorControl(
+    buildingId,
+    useMemo(() => ({ onError }), [onError]),
+  );
+
+  // A new event on the door is the building saying it acted.
+  useEffect(() => {
+    if (pendingOpen === null) {
+      return;
+    }
+    const current = statuses.data?.[pendingOpen.doorId]?.lastEventTimestamp ?? null;
+    if (current !== pendingOpen.previousEventAt) {
+      setPendingOpen(null);
+      toast({ tone: 'success', title: 'Puerta abierta', message: 'La orden llegó al edificio.' });
+    }
+  }, [statuses.data, pendingOpen, toast]);
+
+  // Nothing came back. Saying so beats a spinner that never stops.
+  useEffect(() => {
+    if (pendingOpen === null) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setPendingOpen(null);
+      toast({ tone: 'warning', title: 'Sin confirmación', message: DOOR_NO_ANSWER_MESSAGE });
+    }, OPEN_CONFIRMATION_TIMEOUT_MS);
+    return () => window.clearTimeout(timer);
+  }, [pendingOpen, toast]);
 
   // A floor with no doors has nothing to offer here, not even a plan to look at.
   const floorOptions: ReadonlyArray<TabItem<string>> = useMemo(
@@ -68,14 +121,18 @@ export function useDoorsDashboard(buildingId: string): DoorsDashboardController 
     selectedDoor: floorDoors[selectedIndex] ?? null,
     previousDoor: selectedIndex > 0 ? (floorDoors[selectedIndex - 1] ?? null) : null,
     nextDoor: selectedIndex >= 0 ? (floorDoors[selectedIndex + 1] ?? null) : null,
+    openingDoorId: pendingOpen?.doorId ?? null,
     statusOf: (door) => selectDoorStatus(statuses.data, door.id),
     selectFloor: setFloorId,
     selectDoor: setSelectedDoorId,
     openDoor: (door) => {
       // Doors without a local id are not wired to a reader yet.
-      if (door.localId !== null && door.localId !== undefined) {
-        control.openDoor(door.localId);
+      if (door.localId === null || door.localId === undefined) {
+        toast({ tone: 'warning', title: 'Puerta sin equipo', message: DOOR_NOT_WIRED_MESSAGE });
+        return;
       }
+      setPendingOpen({ doorId: door.id, previousEventAt: statuses.data?.[door.id]?.lastEventTimestamp ?? null });
+      control.openDoor(door.localId);
     },
   };
 }
