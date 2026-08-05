@@ -3,7 +3,7 @@ import { palette } from '../primitives';
 // Layer 2: intent. This is the only color layer components should consume.
 // Keys are flattened from the design system (surface.base -> surface-base).
 export const semanticLight = {
-  'surface-base': palette.ink[50],
+  'surface-base': palette.ink[75],
   'surface-raised': palette.ink[0],
   'surface-sunken': palette.ink[100],
   'surface-inverse': palette.ink[900],
