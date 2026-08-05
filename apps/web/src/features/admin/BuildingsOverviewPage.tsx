@@ -1,17 +1,19 @@
 import { isBuildingInMaintenance, type Building } from '@bb/core';
-import { useBuildings } from '@bb/logic';
+import { useBuildings, useBuildingsHealth } from '@bb/logic';
 import { useNavigate } from '@tanstack/react-router';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Building2 } from 'lucide-react';
 import { useMemo } from 'react';
 import { AppRoute } from '../../app/navigation';
 import { Alert, DataTable, DataTableToolbar, EmptyState, Text, useDataTableFilters } from '../../ui';
+import { ReaderHealthDot } from '../readers';
 import { BuildingActions, BuildingStatusBadge } from './components';
 
 export function BuildingsOverviewPage() {
   const buildings = useBuildings();
   const navigate = useNavigate();
   const filters = useDataTableFilters();
+  const healthOf = useBuildingsHealth();
 
   const columns = useMemo<Array<ColumnDef<Building, unknown>>>(
     () => [
@@ -44,7 +46,12 @@ export function BuildingsOverviewPage() {
             ],
           },
         },
-        cell: ({ row }) => <BuildingStatusBadge building={row.original} />,
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <BuildingStatusBadge building={row.original} />
+            <ReaderHealthDot health={healthOf(row.original.id)} />
+          </div>
+        ),
       },
       {
         id: 'actions',

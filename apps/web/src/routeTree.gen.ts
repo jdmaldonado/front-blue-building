@@ -25,6 +25,7 @@ import { Route as AdminBuildingsBuildingIdRouteImport } from './routes/admin/bui
 import { Route as AdminBuildingsBuildingIdIndexRouteImport } from './routes/admin/buildings.$buildingId/index'
 import { Route as AdminBuildingsBuildingIdApartmentsRouteImport } from './routes/admin/buildings.$buildingId/apartments'
 import { Route as AdminBuildingsBuildingIdLiveRouteImport } from './routes/admin/buildings.$buildingId/live'
+import { Route as AdminBuildingsBuildingIdReadersRouteImport } from './routes/admin/buildings.$buildingId/readers'
 import { Route as AdminBuildingsBuildingIdSettingsRouteImport } from './routes/admin/buildings.$buildingId/settings'
 import { Route as AdminBuildingsBuildingIdUsersRouteImport } from './routes/admin/buildings.$buildingId/users'
 import { Route as AdminBuildingsBuildingIdApartmentsApartmentIdUsersRouteImport } from './routes/admin/buildings.$buildingId/apartments.$apartmentId.users'
@@ -112,6 +113,12 @@ const AdminBuildingsBuildingIdLiveRoute =
     path: '/live',
     getParentRoute: () => AdminBuildingsBuildingIdRoute,
   } as any)
+const AdminBuildingsBuildingIdReadersRoute =
+  AdminBuildingsBuildingIdReadersRouteImport.update({
+    id: '/readers',
+    path: '/readers',
+    getParentRoute: () => AdminBuildingsBuildingIdRoute,
+  } as any)
 const AdminBuildingsBuildingIdSettingsRoute =
   AdminBuildingsBuildingIdSettingsRouteImport.update({
     id: '/settings',
@@ -146,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
   '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
+  '/admin/buildings/$buildingId/readers': typeof AdminBuildingsBuildingIdReadersRoute
   '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
   '/admin/buildings/$buildingId/users': typeof AdminBuildingsBuildingIdUsersRoute
   '/admin/buildings/$buildingId/': typeof AdminBuildingsBuildingIdIndexRoute
@@ -164,6 +172,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
+  '/admin/buildings/$buildingId/readers': typeof AdminBuildingsBuildingIdReadersRoute
   '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
   '/admin/buildings/$buildingId/users': typeof AdminBuildingsBuildingIdUsersRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdIndexRoute
@@ -186,6 +195,7 @@ export interface FileRoutesById {
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
   '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
+  '/admin/buildings/$buildingId/readers': typeof AdminBuildingsBuildingIdReadersRoute
   '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
   '/admin/buildings/$buildingId/users': typeof AdminBuildingsBuildingIdUsersRoute
   '/admin/buildings/$buildingId/': typeof AdminBuildingsBuildingIdIndexRoute
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/admin/buildings/$buildingId'
     | '/admin/buildings/$buildingId/apartments'
     | '/admin/buildings/$buildingId/live'
+    | '/admin/buildings/$buildingId/readers'
     | '/admin/buildings/$buildingId/settings'
     | '/admin/buildings/$buildingId/users'
     | '/admin/buildings/$buildingId/'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/buildings/$buildingId/apartments'
     | '/admin/buildings/$buildingId/live'
+    | '/admin/buildings/$buildingId/readers'
     | '/admin/buildings/$buildingId/settings'
     | '/admin/buildings/$buildingId/users'
     | '/admin/buildings/$buildingId'
@@ -247,6 +259,7 @@ export interface FileRouteTypes {
     | '/admin/buildings/$buildingId'
     | '/admin/buildings/$buildingId/apartments'
     | '/admin/buildings/$buildingId/live'
+    | '/admin/buildings/$buildingId/readers'
     | '/admin/buildings/$buildingId/settings'
     | '/admin/buildings/$buildingId/users'
     | '/admin/buildings/$buildingId/'
@@ -376,6 +389,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBuildingsBuildingIdLiveRouteImport
       parentRoute: typeof AdminBuildingsBuildingIdRoute
     }
+    '/admin/buildings/$buildingId/readers': {
+      id: '/admin/buildings/$buildingId/readers'
+      path: '/readers'
+      fullPath: '/admin/buildings/$buildingId/readers'
+      preLoaderRoute: typeof AdminBuildingsBuildingIdReadersRouteImport
+      parentRoute: typeof AdminBuildingsBuildingIdRoute
+    }
     '/admin/buildings/$buildingId/settings': {
       id: '/admin/buildings/$buildingId/settings'
       path: '/settings'
@@ -432,6 +452,7 @@ const AdminBuildingsBuildingIdApartmentsRouteWithChildren =
 interface AdminBuildingsBuildingIdRouteChildren {
   AdminBuildingsBuildingIdApartmentsRoute: typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
   AdminBuildingsBuildingIdLiveRoute: typeof AdminBuildingsBuildingIdLiveRoute
+  AdminBuildingsBuildingIdReadersRoute: typeof AdminBuildingsBuildingIdReadersRoute
   AdminBuildingsBuildingIdSettingsRoute: typeof AdminBuildingsBuildingIdSettingsRoute
   AdminBuildingsBuildingIdUsersRoute: typeof AdminBuildingsBuildingIdUsersRoute
   AdminBuildingsBuildingIdIndexRoute: typeof AdminBuildingsBuildingIdIndexRoute
@@ -442,6 +463,7 @@ const AdminBuildingsBuildingIdRouteChildren: AdminBuildingsBuildingIdRouteChildr
     AdminBuildingsBuildingIdApartmentsRoute:
       AdminBuildingsBuildingIdApartmentsRouteWithChildren,
     AdminBuildingsBuildingIdLiveRoute: AdminBuildingsBuildingIdLiveRoute,
+    AdminBuildingsBuildingIdReadersRoute: AdminBuildingsBuildingIdReadersRoute,
     AdminBuildingsBuildingIdSettingsRoute:
       AdminBuildingsBuildingIdSettingsRoute,
     AdminBuildingsBuildingIdUsersRoute: AdminBuildingsBuildingIdUsersRoute,

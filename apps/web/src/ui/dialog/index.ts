@@ -2,8 +2,6 @@ export { Dialog } from './Dialog';
 export {
   dialogBodyVariants,
   dialogFooterVariants,
-  dialogHeaderContentVariants,
-  dialogHeaderMarkVariants,
   dialogHeaderVariants,
   dialogSizes,
   dialogVariants,

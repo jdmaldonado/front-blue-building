@@ -1,9 +1,13 @@
 import {
   CardReaderError,
   DoorAction,
+  READER_REBOOT_TIMEOUT_MS,
+  ReaderTimeoutError,
+  ReaderUnreachableError,
   DoorUpdateSchema,
   OutOfScheduleError,
   UnauthorizedDoorError,
+  type ReaderConfig,
   type UserEvent,
 } from '@bb/core';
 import type { DomainError, DoorUpdate } from '@bb/core';
@@ -27,6 +31,10 @@ const cardSetupResponseSchema = z
 
 const CARD_SETUP_READY = 'READY';
 
+// Both reader answers look the same: a success event or an error event with a
+// reason. "No socket found" means the reader is not connected.
+const readerErrorSchema = z.object({ error: z.string().nullish() }).catch({ error: null });
+
 // The tag arrives raw, sometimes as a number.
 const readTagSchema = z.union([z.string(), z.number()]).transform((value) => String(value));
 
@@ -36,6 +44,11 @@ const readTagSchema = z.union([z.string(), z.number()]).transform((value) => Str
 const SESSION_SETTLE_MS = 600;
 
 type CamSubscription = { buildingId: string; camId: string };
+
+export interface ReaderCallbacks {
+  onSuccess: () => void;
+  onError: (error: DomainError) => void;
+}
 
 export interface CardReaderCallbacks {
   onReady: () => void;
@@ -170,6 +183,79 @@ export class SocketClient {
       this.socket.off('card:setup:response', onResponse);
       this.socket.off('read_tag', onTag);
     };
+  }
+
+  // Reboot answers success or error, and sometimes nothing at all: the panel
+  // cannot wait forever, so the wait is part of the call.
+  rebootReader(input: { buildingId: string; localId: string }, callbacks: ReaderCallbacks): Unsubscribe {
+    return this.commandReader('reader:reboot', 'frontend:reader:reboot', input, callbacks, READER_REBOOT_TIMEOUT_MS);
+  }
+
+  // Success here means the API forwarded the config to the reader, not that the
+  // reader applied it (api/src/hardware/index.ts:1259). No timeout: the current
+  // panel waits indefinitely and nothing says what a fair wait would be.
+  configureReader(
+    input: { buildingId: string; localId: string; config: ReaderConfig },
+    callbacks: ReaderCallbacks,
+  ): Unsubscribe {
+    return this.commandReader('reader:config', 'frontend:reader:config', input, callbacks, null);
+  }
+
+  private commandReader(
+    answer: string,
+    request: string,
+    input: { buildingId: string; localId: string; config?: ReaderConfig },
+    callbacks: ReaderCallbacks,
+    timeoutMs: number | null,
+  ): Unsubscribe {
+    let settled = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const finish = (): void => {
+      settled = true;
+      if (timer !== null) {
+        clearTimeout(timer);
+      }
+      this.socket.off(`${answer}:success`, onSuccess);
+      this.socket.off(`${answer}:error`, onError);
+    };
+
+    const onSuccess = (): void => {
+      if (settled) {
+        return;
+      }
+      finish();
+      callbacks.onSuccess();
+    };
+
+    const onError = (payload: unknown): void => {
+      if (settled) {
+        return;
+      }
+      finish();
+      const reason = readerErrorSchema.parse(payload).error ?? '';
+      callbacks.onError(new ReaderUnreachableError(reason === '' ? 'Reader did not answer' : reason));
+    };
+
+    this.socket.once(`${answer}:success`, onSuccess);
+    this.socket.once(`${answer}:error`, onError);
+    this.socket.emit(request, {
+      buildingId: input.buildingId,
+      localId: input.localId,
+      ...(input.config === undefined ? {} : { config: input.config }),
+    });
+
+    if (timeoutMs !== null) {
+      timer = setTimeout(() => {
+        if (settled) {
+          return;
+        }
+        finish();
+        callbacks.onError(new ReaderTimeoutError('Reader did not answer in time'));
+      }, timeoutMs);
+    }
+
+    return finish;
   }
 
   onDoorActionError(callback: (error: DomainError) => void): Unsubscribe {

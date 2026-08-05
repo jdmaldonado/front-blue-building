@@ -26,16 +26,29 @@ export const DoorSchema = z.object({
 export type Door = z.infer<typeof DoorSchema>;
 
 // `eventType` is a plain string: an unknown type must not break the stream.
+//
+// The same event now also carries reader telemetry (api/src/hardware/handlers/
+// handleTelemetryNotify.ts), so the extra fields live here. All optional: a
+// plain door event carries none of them.
 export const DoorEventDataSchema = z.object({
   eventType: z.string(),
   lastEventTimestamp: z.union([z.string(), z.number()]).nullish(),
   initiatedByUserId: IdSchema.nullish(),
+
+  masterStatus: z.string().nullish().catch(null),
+  slaveStatus: z.string().nullish().catch(null),
+  masterSpiOk: z.boolean().nullish().catch(null),
+  slaveSpiOk: z.boolean().nullish().catch(null),
+  deviceType: z.string().nullish().catch(null),
+  lastTelemetryTimestamp: z.number().nullish().catch(null),
 });
 export type DoorEventData = z.infer<typeof DoorEventDataSchema>;
 
 export const DoorUpdateSchema = z.object({
   buildingId: IdSchema.nullish(),
   doorId: IdSchema,
+  // Telemetry frames also carry it, and it is what identifies the reader.
+  localId: z.union([z.string(), z.number()]).nullish(),
   event: DoorEventDataSchema,
 });
 export type DoorUpdate = z.infer<typeof DoorUpdateSchema>;

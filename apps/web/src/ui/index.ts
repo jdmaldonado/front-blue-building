@@ -56,8 +56,6 @@ export {
   Dialog,
   dialogBodyVariants,
   dialogFooterVariants,
-  dialogHeaderContentVariants,
-  dialogHeaderMarkVariants,
   dialogHeaderVariants,
   dialogSizes,
   dialogVariants,
@@ -101,7 +99,7 @@ export type { LinkVariants } from './link';
 export { Loading, loadingLayouts, loadingSizes, loadingVariants } from './loading';
 export type { LoadingLayout, LoadingSize, LoadingVariants } from './loading';
 
-export { Logo, LogoMark, logoMarkVariants, logoParts, logoSizes, logoVariants, logoWordmarkVariants } from './logo';
+export { Logo, logoMarkVariants, logoParts, logoSizes, logoVariants, logoWordmarkVariants } from './logo';
 export type { LogoPart, LogoSize, LogoVariants } from './logo';
 
 export { Pagination, paginationStatusVariants, paginationVariants } from './pagination';

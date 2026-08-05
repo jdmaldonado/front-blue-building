@@ -93,6 +93,8 @@ export function DoorDialog({
       title={door?.name ?? 'Puerta'}
       description={door?.floor?.name ?? undefined}
       headerAside={
+        // In the header and not in the body: the body scrolls, and the status
+        // and the reload button have to stay reachable while it does.
         <div className="flex items-center gap-2">
           <Badge tone={meta.tone} dot pulse={meta.pulse} className="whitespace-nowrap">
             {meta.label}

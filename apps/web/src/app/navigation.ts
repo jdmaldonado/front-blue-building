@@ -19,6 +19,7 @@ export const AppRoute = {
   AdminBuildingApartments: '/admin/buildings/$buildingId/apartments',
   AdminBuildingApartmentUsers: '/admin/buildings/$buildingId/apartments/$apartmentId/users',
   AdminBuildingUsers: '/admin/buildings/$buildingId/users',
+  AdminBuildingReaders: '/admin/buildings/$buildingId/readers',
   AdminBuildingSettings: '/admin/buildings/$buildingId/settings',
   AdminUsers: '/admin/users',
   // Cards accept `document`, `buildingId` and `doorId` in the query, so the

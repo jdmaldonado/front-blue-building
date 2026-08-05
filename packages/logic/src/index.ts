@@ -26,3 +26,5 @@ export * from './cards/keys';
 export * from './cards/useCards';
 export * from './cards/useCardMutations';
 export * from './cards/useCardReader';
+export * from './readers/useReaderControl';
+export * from './readers/useBuildingsHealth';

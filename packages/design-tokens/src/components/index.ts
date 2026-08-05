@@ -10,11 +10,6 @@ type ComponentRef = SemanticToken | RadiusRef | PatternRef;
 // Layer 3: component-level tokens. Each one points at a semantic role (color) or
 // a primitive dimension, so the CSS output becomes `--button-primary-bg: var(--accent)`.
 export const componentTokens = {
-  // The brand in the dialog is one small block with the mark, cut on a diagonal,
-  // the way the old modals did it. Everything else in the header stays quiet.
-  'dialog-mark-bg': 'accent',
-  'dialog-mark-foreground': 'text-on-accent',
-
   // Button: 4 intents x 3 appearances. `bg`/`bg-hover`/`foreground` resolve the
   // solid fill; `text`/`border`/`soft` resolve outline and ghost (text = label on
   // transparent, border = outline stroke, soft = hover fill).
