@@ -1,4 +1,4 @@
-import { DoorOpen, Home, LayoutDashboard, Settings, type LucideIcon } from 'lucide-react';
+import { DoorOpen, Home, LayoutDashboard, Settings, Users, type LucideIcon } from 'lucide-react';
 import { AppRoute } from '../../../app/navigation';
 import { AppNavigationItem } from '../../../layouts/app';
 
@@ -12,6 +12,7 @@ const sections: Array<{ to: AppRoute; label: string; icon: LucideIcon; exact: bo
   { to: AppRoute.AdminBuilding, label: 'Resumen', icon: LayoutDashboard, exact: true },
   { to: AppRoute.AdminBuildingLive, label: 'Puertas y cámaras', icon: DoorOpen, exact: false },
   { to: AppRoute.AdminBuildingApartments, label: 'Apartamentos', icon: Home, exact: false },
+  { to: AppRoute.AdminBuildingUsers, label: 'Usuarios', icon: Users, exact: false },
   { to: AppRoute.AdminBuildingSettings, label: 'Ajustes', icon: Settings, exact: false },
 ];
 

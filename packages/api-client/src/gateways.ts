@@ -12,8 +12,11 @@ import {
   LoginMode,
   NoSpacesAssignedError,
   SessionExpiredError,
+  ResidentDetailsResponseSchema,
   UnknownAuthError,
   UnknownBuildingsError,
+  UnknownUsersError,
+  UsersNetworkError,
   UserLoginResponseSchema,
   WeakPasswordError,
   type Apartment,
@@ -25,6 +28,9 @@ import {
   type LoginInput,
   type MaintenanceInput,
   type ResetPasswordInput,
+  type ResidentDetails,
+  type SetResidentActiveInput,
+  type UpdateResidentInput,
   type Session,
 } from '@bb/core';
 import { z } from 'zod';
@@ -232,4 +238,72 @@ export class AccessGateway {
     const raw = await this.http.get({ path: `/api/towers/${towerId}/floors` });
     return z.array(FloorSchema).parse(raw);
   }
+}
+
+const UsersPath = {
+  Residents: '/api/bluebuilding/usersV2/ResidentUserDetails',
+} as const;
+
+function apartmentUsersPath(apartmentId: string): string {
+  return `/api/bluebuilding/apartments/${apartmentId}/users`;
+}
+
+export class UsersGateway {
+  constructor(private readonly http: HttpClient) {}
+
+  // Reads every resident in every building. There is no filter or paging yet
+  // (docs 07-abierto/propuestas-panel-admin.md).
+  async listResidents(): Promise<ResidentDetails[]> {
+    try {
+      const raw = await this.http.get({ path: UsersPath.Residents });
+      return ResidentDetailsResponseSchema.parse(raw).map((item) => item.user);
+    } catch (error) {
+      throw toUsersError(error);
+    }
+  }
+
+  async listApartmentResidents(apartmentId: string): Promise<ResidentDetails[]> {
+    try {
+      const raw = await this.http.get({ path: apartmentUsersPath(apartmentId) });
+      return ResidentDetailsResponseSchema.parse(raw).map((item) => item.user);
+    } catch (error) {
+      throw toUsersError(error);
+    }
+  }
+
+  // Only the phone travels. The old panel also sent `alias`, but it had no
+  // field for it, so the value was always empty (front/src/components/UsersList.jsx:49).
+  async updateResident(input: UpdateResidentInput): Promise<void> {
+    try {
+      await this.http.put({
+        path: `/api/bluebuilding/userV2/${input.userId}`,
+        body: { phone: input.phone },
+      });
+    } catch (error) {
+      throw toUsersError(error);
+    }
+  }
+
+  async setResidentActive(input: SetResidentActiveInput): Promise<void> {
+    const action = input.active ? 'activate' : 'deactivate';
+    const body = input.active ? { shouldActivateCards: input.withCards } : { shouldDeactivateCards: input.withCards };
+
+    try {
+      await this.http.put({ path: `/api/bluebuilding/usersV2/${input.userId}/${action}`, body });
+    } catch (error) {
+      throw toUsersError(error);
+    }
+  }
+}
+
+function toUsersError(error: unknown): Error {
+  if (error instanceof HttpError) {
+    if (error.status === null) {
+      return new UsersNetworkError('Network error while reading users', { cause: error });
+    }
+    if (error.status === 401) {
+      return new SessionExpiredError('Session is no longer valid', { cause: error });
+    }
+  }
+  return new UnknownUsersError('Unexpected error while reading users', { cause: error });
 }

@@ -16,3 +16,6 @@ export * from './access/useUserEvents';
 export * from './access/useDoorControl';
 export * from './cameras/useCamStream';
 export * from './cameras/useCameraFrame';
+export * from './users/keys';
+export * from './users/useResidents';
+export * from './users/useResidentMutations';

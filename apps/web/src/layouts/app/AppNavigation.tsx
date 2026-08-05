@@ -1,6 +1,6 @@
 import { LoginMode } from '@bb/core';
 import { selectCurrentSpace, useSessionStore } from '@bb/logic';
-import { Building2 } from 'lucide-react';
+import { Building2, Users } from 'lucide-react';
 import { AppRoute } from '../../app/navigation';
 import { AppNavigationItem } from './AppNavigationItem';
 
@@ -22,13 +22,22 @@ export function AppNavigation({ collapsed, onNavigate }: AppNavigationProps) {
 
   if (session.mode === LoginMode.Admin) {
     return (
-      <AppNavigationItem
-        link={{ to: AppRoute.Admin }}
-        icon={Building2}
-        label="Edificios"
-        collapsed={collapsed}
-        onNavigate={onNavigate}
-      />
+      <>
+        <AppNavigationItem
+          link={{ to: AppRoute.Admin }}
+          icon={Building2}
+          label="Edificios"
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <AppNavigationItem
+          link={{ to: AppRoute.AdminUsers }}
+          icon={Users}
+          label="Usuarios"
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+      </>
     );
   }
 

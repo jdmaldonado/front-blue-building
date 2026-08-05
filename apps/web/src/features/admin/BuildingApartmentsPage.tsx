@@ -1,16 +1,19 @@
 import type { Apartment } from '@bb/core';
 import { useApartments } from '@bb/logic';
+import { Link } from '@tanstack/react-router';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Home, Search, Trash2 } from 'lucide-react';
+import { Home, Search, Trash2, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useBuilding } from '../../app/BuildingContext';
+import { AppRoute } from '../../app/navigation';
 import { Alert, Badge, DataTable, EmptyState, IconButton, Input, Text, Tooltip } from '../../ui';
 import { useApartmentActions } from './hooks';
 
 export function BuildingApartmentsPage() {
   const building = useBuilding();
-  const apartments = useApartments(building.id);
-  const actions = useApartmentActions(building.id);
+  const buildingId = building.id;
+  const apartments = useApartments(buildingId);
+  const actions = useApartmentActions(buildingId);
   const [search, setSearch] = useState('');
 
   const columns = useMemo<Array<ColumnDef<Apartment, unknown>>>(
@@ -54,20 +57,25 @@ export function BuildingApartmentsPage() {
         enableSorting: false,
         meta: { actions: true },
         cell: ({ row }) => (
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Link to={AppRoute.AdminBuildingApartmentUsers} params={{ buildingId, apartmentId: row.original.id }}>
+              <IconButton label={`Ver residentes de ${row.original.name ?? 'apartamento'}`}>
+                <Users size={16} />
+              </IconButton>
+            </Link>
             <IconButton
               label={`Dar de baja ${row.original.name ?? 'apartamento'}`}
               tone="destructive"
               disabled={actions.pending}
               onClick={() => actions.retire(row.original)}
             >
-              <Trash2 size={18} />
+              <Trash2 size={16} />
             </IconButton>
           </div>
         ),
       },
     ],
-    [actions],
+    [actions, buildingId],
   );
 
   if (apartments.isError) {

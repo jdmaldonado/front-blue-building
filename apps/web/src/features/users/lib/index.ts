@@ -1,0 +1,1 @@
+export { residentSearchText } from './residentSearch';
