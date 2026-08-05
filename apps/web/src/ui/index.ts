@@ -7,6 +7,14 @@ export type { AvatarSize, AvatarVariants } from './avatar';
 export { Badge, badgeDotVariants, badgeTones, badgeVariants } from './badge';
 export type { BadgeTone, BadgeVariants } from './badge';
 
+export {
+  Breadcrumb,
+  breadcrumbItemVariants,
+  breadcrumbLinkVariants,
+  breadcrumbSeparatorVariants,
+  breadcrumbVariants,
+} from './breadcrumb';
+
 export { Button, buttonAppearances, buttonIntents, buttonSizes, buttonVariants } from './button';
 export type { ButtonAppearance, ButtonIntent, ButtonSize, ButtonVariants } from './button';
 

@@ -1,10 +1,9 @@
 import { RoleType, type ResidentDetails } from '@bb/core';
-import { Link } from '@tanstack/react-router';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Pencil, Power, Users } from 'lucide-react';
-import { useMemo } from 'react';
-import { AppRoute } from '../../../app/navigation';
+import { useMemo, useState } from 'react';
 import { ROLE_LABEL } from '../../account/lib';
+import { UserCardsDialog } from '../../cards';
 import {
   Alert,
   Avatar,
@@ -43,6 +42,9 @@ export function ResidentsTable({
 }: ResidentsTableProps) {
   const actions = useResidentActions();
   const filters = useDataTableFilters();
+  // Looking at someone's cards is not a change of task, so it does not become a
+  // change of screen: no navigation, nothing to come back from.
+  const [cardsOf, setCardsOf] = useState<ResidentDetails | null>(null);
 
   const columns = useMemo<Array<ColumnDef<ResidentDetails, unknown>>>(() => {
     const list: Array<ColumnDef<ResidentDetails, unknown>> = [
@@ -118,15 +120,14 @@ export function ResidentsTable({
         accessorFn: (resident) => resident.tags.length,
         header: 'Tarjetas',
         cell: ({ row }) => (
-          // Straight to the card screen with the person already loaded.
-          <Link
-            to={AppRoute.AdminCards}
-            search={{ document: row.original.cedula }}
-            onClick={(event) => event.stopPropagation()}
-            className="font-mono text-body-sm text-(--accent) underline-offset-2 hover:underline"
+          <button
+            type="button"
+            onClick={() => setCardsOf(row.original)}
+            aria-label={`Ver las tarjetas de ${row.original.name}`}
+            className="font-mono text-body-sm text-(--accent) underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none"
           >
             {row.original.tags.length}
-          </Link>
+          </button>
         ),
       },
       {
@@ -213,6 +214,11 @@ export function ResidentsTable({
         empty={
           <EmptyState icon={Users} title={emptyTitle} description="Prueba con otra búsqueda o revisa más adelante." />
         }
+      />
+
+      <UserCardsDialog
+        user={cardsOf === null ? null : { cedula: cardsOf.cedula, name: cardsOf.name }}
+        onClose={() => setCardsOf(null)}
       />
 
       <EditResidentDialog

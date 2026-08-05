@@ -1,12 +1,10 @@
-import { UserNotFoundError, type Card, type CardsSearch } from '@bb/core';
-import { useCardMutations, useCards, useUserByDocument } from '@bb/logic';
+import { UserNotFoundError, type CardsSearch } from '@bb/core';
+import { useCards, useUserByDocument } from '@bb/logic';
 import { Plus, Search, UserSearch } from 'lucide-react';
 import { useState, type SubmitEvent } from 'react';
-import { useConfirm } from '../../app/ConfirmProvider';
-import { useToast } from '../../app/ToastProvider';
 import { Alert, Badge, Button, Card as Panel, EmptyState, Input, Loading, Text } from '../../ui';
 import { CardRegisterDialog, CardsTable, EditCardDialog, UserValidatorForm } from './components';
-import { cardErrorMessage } from './lib';
+import { useCardActions } from './hooks';
 
 type CardsPageProps = {
   search: CardsSearch;
@@ -17,63 +15,15 @@ type CardsPageProps = {
 export function CardsPage({ search, onSearchChange }: CardsPageProps) {
   const document = search.document ?? '';
   const [draft, setDraft] = useState(document);
-  const [editing, setEditing] = useState<Card | null>(null);
   const [registering, setRegistering] = useState(false);
 
   const user = useUserByDocument(document === '' ? null : document);
   const cards = useCards(user.data === undefined ? null : document);
-  const { update, remove } = useCardMutations();
-  const confirm = useConfirm();
-  const toast = useToast();
+  const actions = useCardActions();
 
   const handleLookup = (event: SubmitEvent<HTMLFormElement>): void => {
     event.preventDefault();
     onSearchChange({ ...search, document: draft.trim() });
-  };
-
-  const handleRemove = async (card: Card): Promise<void> => {
-    const confirmed = await confirm({
-      title: '¿Borrar la tarjeta?',
-      description: `La tarjeta ${card.tag} se borra para siempre: no hay forma de recuperarla.`,
-      confirmLabel: 'Borrar',
-      intent: 'destructive',
-    });
-    if (!confirmed) {
-      return;
-    }
-
-    remove.mutate(card.id, {
-      onSuccess: () => toast({ tone: 'success', title: 'Tarjeta borrada', message: `Se eliminó ${card.tag}.` }),
-      onError: (error) =>
-        toast({ tone: 'error', title: 'No pudimos borrar la tarjeta', message: cardErrorMessage(error) }),
-    });
-  };
-
-  const handleSaveEdit = async (input: { tag: string; type: Card['type']; active: boolean }): Promise<void> => {
-    if (editing === null || input.type === null || input.type === undefined) {
-      return;
-    }
-
-    const confirmed = await confirm({
-      title: '¿Guardar los cambios?',
-      description: 'Cambiar el número o desactivar la tarjeta cambia a qué puertas abre desde ya.',
-      confirmLabel: 'Guardar',
-    });
-    if (!confirmed) {
-      return;
-    }
-
-    update.mutate(
-      { cardId: editing.id, tag: input.tag, type: input.type, active: input.active },
-      {
-        onSuccess: () => {
-          setEditing(null);
-          toast({ tone: 'success', title: 'Tarjeta actualizada' });
-        },
-        onError: (error) =>
-          toast({ tone: 'error', title: 'No pudimos actualizar la tarjeta', message: cardErrorMessage(error) }),
-      },
-    );
   };
 
   return (
@@ -153,8 +103,8 @@ export function CardsPage({ search, onSearchChange }: CardsPageProps) {
                 <CardsTable
                   cards={cards.data?.cards}
                   isPending={cards.isPending}
-                  onEdit={setEditing}
-                  onRemove={(card) => void handleRemove(card)}
+                  onEdit={actions.startEdit}
+                  onRemove={actions.remove}
                 />
               )}
 
@@ -169,10 +119,10 @@ export function CardsPage({ search, onSearchChange }: CardsPageProps) {
               />
 
               <EditCardDialog
-                card={editing}
-                pending={update.isPending}
-                onClose={() => setEditing(null)}
-                onSave={(input) => void handleSaveEdit(input)}
+                card={actions.editing}
+                pending={actions.pending}
+                onClose={actions.cancelEdit}
+                onSave={actions.saveEdit}
               />
             </>
           ) : (

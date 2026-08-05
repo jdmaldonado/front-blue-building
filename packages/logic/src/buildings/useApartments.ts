@@ -9,12 +9,15 @@ import {
 import { useServices } from '../services/context';
 import { buildingKeys } from './keys';
 
-export function useApartments(buildingId: string): UseQueryResult<Apartment[]> {
+// Null when the caller does not need them yet: the breadcrumb only asks for the
+// list when it has an apartment to name.
+export function useApartments(buildingId: string | null): UseQueryResult<Apartment[]> {
   const { buildingsGateway } = useServices();
 
   return useQuery({
-    queryKey: buildingKeys.apartments(buildingId),
-    queryFn: () => buildingsGateway.listApartments(buildingId),
+    queryKey: buildingKeys.apartments(buildingId ?? ''),
+    queryFn: () => buildingsGateway.listApartments(buildingId ?? ''),
+    enabled: buildingId !== null && buildingId !== '',
   });
 }
 

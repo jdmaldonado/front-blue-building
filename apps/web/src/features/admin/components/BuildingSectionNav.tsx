@@ -1,6 +1,7 @@
-import { CreditCard, Cpu, DoorOpen, Home, LayoutDashboard, Settings, Users, type LucideIcon } from 'lucide-react';
+import { LayoutDashboard } from 'lucide-react';
 import { AppRoute } from '../../../app/navigation';
 import { AppNavigationItem } from '../../../layouts/app';
+import { BUILDING_CARDS_SECTION, BUILDING_SECTIONS } from '../lib';
 
 type BuildingSectionNavProps = {
   buildingId: string;
@@ -8,24 +9,23 @@ type BuildingSectionNavProps = {
   onNavigate?: () => void;
 };
 
-const sections: Array<{ to: AppRoute; label: string; icon: LucideIcon; exact: boolean }> = [
-  { to: AppRoute.AdminBuilding, label: 'Resumen', icon: LayoutDashboard, exact: true },
-  { to: AppRoute.AdminBuildingLive, label: 'Puertas y cámaras', icon: DoorOpen, exact: false },
-  { to: AppRoute.AdminBuildingApartments, label: 'Apartamentos', icon: Home, exact: false },
-  { to: AppRoute.AdminBuildingUsers, label: 'Usuarios', icon: Users, exact: false },
-  { to: AppRoute.AdminBuildingReaders, label: 'Lectoras', icon: Cpu, exact: false },
-  { to: AppRoute.AdminBuildingSettings, label: 'Ajustes', icon: Settings, exact: false },
-];
-
 // Sections of the building the staff is inside. They live in the sidebar and
 // not over the content: the floor plan needs all the height it can get.
 export function BuildingSectionNav({ buildingId, collapsed, onNavigate }: BuildingSectionNavProps) {
   return (
     <>
-      {sections.map((section) => (
+      <AppNavigationItem
+        link={{ to: AppRoute.AdminBuilding, params: { buildingId }, activeOptions: { exact: true } }}
+        icon={LayoutDashboard}
+        label="Resumen"
+        collapsed={collapsed}
+        onNavigate={onNavigate}
+      />
+
+      {BUILDING_SECTIONS.map((section) => (
         <AppNavigationItem
           key={section.to}
-          link={{ to: section.to, params: { buildingId }, activeOptions: { exact: section.exact } }}
+          link={{ to: section.to, params: { buildingId } }}
           icon={section.icon}
           label={section.label}
           collapsed={collapsed}
@@ -36,9 +36,9 @@ export function BuildingSectionNav({ buildingId, collapsed, onNavigate }: Buildi
       {/* Cards are not a section of the building, but the register mode runs on
           one of its readers, so it starts here with the building already set. */}
       <AppNavigationItem
-        link={{ to: AppRoute.AdminCards, search: { buildingId } }}
-        icon={CreditCard}
-        label="Tarjetas"
+        link={{ to: BUILDING_CARDS_SECTION.to, search: { buildingId } }}
+        icon={BUILDING_CARDS_SECTION.icon}
+        label={BUILDING_CARDS_SECTION.label}
         collapsed={collapsed}
         onNavigate={onNavigate}
       />

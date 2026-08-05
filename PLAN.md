@@ -202,6 +202,26 @@ leer** —solo existe el evento de escritura—, así que esas dos secciones par
 de los valores por defecto; y `alert_auto_silence_timeout_min = 0` significa
 deshabilitado.
 
+### Navegación y arreglos de rutas
+
+- Arreglado: el botón de ver residentes de un apartamento era un `<button>`
+  dentro de un `<a>`. HTML inválido, y el botón se comía el clic. Pasaba lo mismo
+  con la flecha de volver. Ahora el enlace lleva puesta la apariencia de botón.
+- Arreglado: `apartments.tsx` era la ruta padre de los residentes de un
+  apartamento y pintaba la tabla sin `<Outlet />`, así que la hija coincidía pero
+  no se renderizaba. Separado en capa (`apartments.tsx`) y lista
+  (`apartments.index.tsx`); las URLs no cambian.
+- `Breadcrumb` en `ui` y `BuildingBreadcrumb` en admin: sustituye la flecha fija
+  que siempre volvía a Edificios. En escritorio la ruta completa, en móvil solo
+  el paso atrás. El título de la página es el último nivel, así que no se repite.
+- Los nombres de las secciones del edificio viven en `BUILDING_SECTIONS`, que
+  leen la barra lateral y el breadcrumb.
+- Las tarjetas de un usuario se ven en un diálogo sobre la tabla, no navegando a
+  `/admin/cards`. Ese salto cruzaba de sección y dejaba sin ruta de vuelta: solo
+  se salía con el botón del navegador. `useCardActions` comparte editar y borrar
+  entre el diálogo y la pantalla completa. Crear sigue solo en la pantalla,
+  porque necesita elegir edificio y puerta para la lectora.
+
 ### Tooltips y confirmaciones
 
 - `IconButton` muestra su `label` como tooltip al pasar el puntero. La burbuja va
