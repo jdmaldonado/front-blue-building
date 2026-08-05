@@ -2,7 +2,7 @@ import { useResidents } from '@bb/logic';
 import { useMemo } from 'react';
 import { useBuilding } from '../../app/BuildingContext';
 import { Alert } from '../../ui';
-import { ResidentsTable } from './components';
+import { ResidentsTable, SkippedResidentsAlert } from './components';
 
 // The API has no "residents of a building" endpoint, so we read them all and
 // match by name. It is the only link the DTO gives us: it carries no building
@@ -12,7 +12,7 @@ export function BuildingResidentsPage() {
   const residents = useResidents();
 
   const ofBuilding = useMemo(
-    () => residents.data?.filter((resident) => resident.buildingName === building.name),
+    () => residents.data?.residents.filter((resident) => resident.buildingName === building.name),
     [residents.data, building.name],
   );
 
@@ -21,6 +21,8 @@ export function BuildingResidentsPage() {
       <Alert variant="info" title="Lista filtrada en el navegador">
         Se cargan todos los residentes y se filtran por nombre del edificio. Con muchos usuarios puede tardar.
       </Alert>
+
+      <SkippedResidentsAlert count={residents.data?.skipped} />
 
       <ResidentsTable
         residents={ofBuilding}

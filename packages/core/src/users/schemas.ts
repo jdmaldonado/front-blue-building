@@ -11,25 +11,43 @@ export type CardTag = z.infer<typeof CardTagSchema>;
 
 // Flat shape the admin list needs. The API nests it inside `{ user: ... }`
 // (api/src/2.0/users/dtos/userDetails.dto.ts:17), and the gateway unwraps it.
+//
+// Two halves on purpose. The first three fields identify the person and are the
+// ones every action needs: without them the row cannot be drawn, because nobody
+// should deactivate a user they cannot name. Everything else degrades to null
+// instead of taking the whole list down, so one odd record costs one field and
+// not the screen.
 export const ResidentDetailsSchema = z.object({
   id: IdSchema,
-  documentType: z.string().nullish(),
   cedula: z.string(),
   name: z.string(),
-  phone: z.string().nullish(),
-  email: z.string().nullish(),
-  active: z.boolean().nullish(),
-  verified: z.boolean().nullish(),
-  photo: z.string().nullish(),
-  tags: z.array(CardTagSchema).default([]),
-  roleName: RoleTypeSchema.nullish(),
+
+  documentType: z.string().nullish().catch(null),
+  phone: z.string().nullish().catch(null),
+  email: z.string().nullish().catch(null),
+  active: z.boolean().nullish().catch(null),
+  verified: z.boolean().nullish().catch(null),
+  photo: z.string().nullish().catch(null),
+  tags: z.array(CardTagSchema).catch([]),
+  // A role we do not know yet is not a reason to hide the user.
+  roleName: RoleTypeSchema.nullish().catch(null),
   // Names only: the DTO carries no apartment or building id.
-  apartmentName: z.string().nullish(),
-  buildingName: z.string().nullish(),
+  apartmentName: z.string().nullish().catch(null),
+  buildingName: z.string().nullish().catch(null),
 });
 export type ResidentDetails = z.infer<typeof ResidentDetailsSchema>;
 
-export const ResidentDetailsResponseSchema = z.array(z.object({ user: ResidentDetailsSchema }));
+export const ResidentDetailsEntrySchema = z.object({ user: ResidentDetailsSchema });
+
+// What the list looks like before reading each entry: only "it is a list".
+export const ResidentDetailsResponseSchema = z.array(z.unknown());
+
+// `skipped` counts the records that could not be identified. The screen says how
+// many were lost instead of pretending the list is complete.
+export type ResidentList = {
+  residents: ResidentDetails[];
+  skipped: number;
+};
 
 export const UpdateResidentInputSchema = z.object({
   userId: IdSchema,

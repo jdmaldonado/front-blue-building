@@ -5,7 +5,7 @@ import { LucideProvider } from 'lucide-react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ConfigErrorScreen } from './app/ConfigErrorScreen';
-import { queryClient } from './app/queryClient';
+import { queryClient, setQueryLogger } from './app/queryClient';
 import { router } from './app/router';
 import { createServices } from './app/services';
 import { initAppConfig } from './config';
@@ -31,6 +31,7 @@ function bootstrap(): void {
   }
 
   const services = createServices();
+  setQueryLogger(services.logger);
 
   root.render(
     <StrictMode>

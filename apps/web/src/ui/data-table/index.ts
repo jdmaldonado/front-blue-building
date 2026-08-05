@@ -1,4 +1,5 @@
 export { DataTable } from './DataTable';
+export { DataTableToolbar } from './DataTableToolbar';
 export {
   dataTableCardLabelVariants,
   dataTableCardRowVariants,
@@ -13,3 +14,5 @@ export {
   dataTableVariants,
 } from './DataTable-variants';
 export type { DataTableDensity, DataTableVariants } from './DataTable-variants';
+export { useDataTableFilters } from './useDataTableFilters';
+export type { DataTableFiltersController } from './useDataTableFilters';

@@ -24,7 +24,9 @@ export const dropdownMenuVariants = cva(
 
 export const dropdownMenuItemVariants = cva(
   [
-    'flex w-full items-center gap-2.5 rounded-(--radius-1) px-2.5 py-2 text-left text-body-sm',
+    // Bigger and taller on a phone: this is a touch target, not a dense list.
+    'flex min-h-11 w-full items-center gap-2.5 rounded-(--radius-1) px-3 py-2 text-left text-body',
+    'sm:min-h-0 sm:px-2.5 sm:text-body-sm',
     'transition-colors duration-(--duration-instant) ease-standard',
     'focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
   ],
@@ -41,7 +43,9 @@ export const dropdownMenuItemVariants = cva(
   },
 );
 
-export const dropdownMenuLabelVariants = cva('px-2.5 py-1.5 text-caption tracking-wide text-(--text-muted) uppercase');
+export const dropdownMenuLabelVariants = cva(
+  'px-3 py-1.5 text-label tracking-wide text-(--text-muted) uppercase sm:px-2.5 sm:text-caption',
+);
 
 export const dropdownMenuSeparatorVariants = cva('my-1 h-px bg-(--menu-border)');
 

@@ -2,11 +2,21 @@ import type { Apartment } from '@bb/core';
 import { useApartments } from '@bb/logic';
 import { Link } from '@tanstack/react-router';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Home, Search, Trash2, Users } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Home, Trash2, Users } from 'lucide-react';
+import { useMemo } from 'react';
 import { useBuilding } from '../../app/BuildingContext';
 import { AppRoute } from '../../app/navigation';
-import { Alert, Badge, DataTable, EmptyState, IconButton, Input, Text, Tooltip } from '../../ui';
+import {
+  Alert,
+  Badge,
+  DataTable,
+  DataTableToolbar,
+  EmptyState,
+  IconButton,
+  Text,
+  Tooltip,
+  useDataTableFilters,
+} from '../../ui';
 import { useApartmentActions } from './hooks';
 
 export function BuildingApartmentsPage() {
@@ -14,7 +24,7 @@ export function BuildingApartmentsPage() {
   const buildingId = building.id;
   const apartments = useApartments(buildingId);
   const actions = useApartmentActions(buildingId);
-  const [search, setSearch] = useState('');
+  const filters = useDataTableFilters();
 
   const columns = useMemo<Array<ColumnDef<Apartment, unknown>>>(
     () => [
@@ -33,6 +43,17 @@ export function BuildingApartmentsPage() {
         id: 'type',
         accessorFn: (apartment) => apartment.apartmentType ?? '',
         header: 'Tipo',
+        meta: {
+          filter: {
+            label: 'Tipo',
+            options: [
+              { value: 'APARTAMENT', label: 'Apartamento' },
+              { value: 'BUSINESS', label: 'Local' },
+              { value: 'INTERNAL', label: 'Interno' },
+              { value: 'VISITOR', label: 'Visitante' },
+            ],
+          },
+        },
         cell: ({ row }) => (
           <Text as="span" size="body-sm" tone="secondary">
             {row.original.apartmentType ?? '—'}
@@ -43,6 +64,15 @@ export function BuildingApartmentsPage() {
         id: 'active',
         accessorFn: (apartment) => (apartment.active === true ? 'activo' : 'inactivo'),
         header: 'Citófono',
+        meta: {
+          filter: {
+            label: 'Citófono',
+            options: [
+              { value: 'activo', label: 'Activo' },
+              { value: 'inactivo', label: 'Inactivo' },
+            ],
+          },
+        },
         cell: ({ row }) => (
           <Tooltip content="Un apartamento se activa cuando se aprueba la solicitud del propietario. Solo los activos reciben llamadas desde portería.">
             <Badge tone={row.original.active === true ? 'success' : 'neutral'} size="sm" dot>
@@ -88,22 +118,18 @@ export function BuildingApartmentsPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
-      <div className="relative">
-        <Search size={16} aria-hidden className="absolute top-1/2 left-3 -translate-y-1/2 text-(--text-muted)" />
-        <Input
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Buscar apartamento"
-          aria-label="Buscar apartamentos"
-          className="pl-9"
-        />
-      </div>
+      <DataTableToolbar
+        columns={columns}
+        filters={filters}
+        searchPlaceholder="Buscar apartamento"
+        searchLabel="Buscar apartamentos"
+      />
 
       <DataTable
         columns={columns}
         data={apartments.data ?? []}
         isPending={apartments.isPending}
-        globalFilter={search}
+        filters={filters}
         getRowId={(apartment) => apartment.id}
         total={apartments.data === undefined ? undefined : `${apartments.data.length} apartamentos`}
         empty={

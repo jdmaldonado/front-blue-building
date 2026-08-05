@@ -20,6 +20,15 @@ export const tabsVariants = cva(
   },
 );
 
+// Tells the eye there is more to the sides. Only the edge with content left
+// fades, so a list that fits shows no fade at all.
+export const tabsFade = {
+  none: '',
+  start: '[mask-image:linear-gradient(to_right,transparent,black_2rem)]',
+  end: '[mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)]',
+  both: '[mask-image:linear-gradient(to_right,transparent,black_2rem,black_calc(100%-2rem),transparent)]',
+} as const;
+
 export const tabsItemVariants = cva(
   [
     'relative flex shrink-0 snap-center items-center gap-2 whitespace-nowrap transition-colors',

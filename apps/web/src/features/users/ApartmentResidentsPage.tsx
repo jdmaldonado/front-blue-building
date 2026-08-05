@@ -1,5 +1,5 @@
 import { useApartmentResidents } from '@bb/logic';
-import { ResidentsTable } from './components';
+import { ResidentsTable, SkippedResidentsAlert } from './components';
 
 type ApartmentResidentsPageProps = {
   apartmentId: string;
@@ -10,8 +10,10 @@ export function ApartmentResidentsPage({ apartmentId }: ApartmentResidentsPagePr
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
+      <SkippedResidentsAlert count={residents.data?.skipped} />
+
       <ResidentsTable
-        residents={residents.data}
+        residents={residents.data?.residents}
         isPending={residents.isPending}
         isError={residents.isError}
         showBuilding={false}

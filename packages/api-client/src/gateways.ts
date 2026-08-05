@@ -12,10 +12,12 @@ import {
   LoginMode,
   NoSpacesAssignedError,
   SessionExpiredError,
+  ResidentDetailsEntrySchema,
   ResidentDetailsResponseSchema,
   UnknownAuthError,
   UnknownBuildingsError,
   UnknownUsersError,
+  UsersContractError,
   UsersNetworkError,
   UserLoginResponseSchema,
   WeakPasswordError,
@@ -29,10 +31,12 @@ import {
   type MaintenanceInput,
   type ResetPasswordInput,
   type ResidentDetails,
+  type ResidentList,
   type SetResidentActiveInput,
   type UpdateResidentInput,
   type Session,
 } from '@bb/core';
+import type { Logger } from '@bb/logger';
 import { z } from 'zod';
 import { HttpError, type HttpClient } from './http';
 
@@ -249,26 +253,50 @@ function apartmentUsersPath(apartmentId: string): string {
 }
 
 export class UsersGateway {
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly logger: Logger,
+  ) {}
 
   // Reads every resident in every building. There is no filter or paging yet
   // (docs 07-abierto/propuestas-panel-admin.md).
-  async listResidents(): Promise<ResidentDetails[]> {
+  async listResidents(): Promise<ResidentList> {
     try {
       const raw = await this.http.get({ path: UsersPath.Residents });
-      return ResidentDetailsResponseSchema.parse(raw).map((item) => item.user);
+      return this.toResidentList(raw, UsersPath.Residents);
     } catch (error) {
       throw toUsersError(error);
     }
   }
 
-  async listApartmentResidents(apartmentId: string): Promise<ResidentDetails[]> {
+  async listApartmentResidents(apartmentId: string): Promise<ResidentList> {
+    const path = apartmentUsersPath(apartmentId);
     try {
-      const raw = await this.http.get({ path: apartmentUsersPath(apartmentId) });
-      return ResidentDetailsResponseSchema.parse(raw).map((item) => item.user);
+      const raw = await this.http.get({ path });
+      return this.toResidentList(raw, path);
     } catch (error) {
       throw toUsersError(error);
     }
+  }
+
+  // Read row by row. One record we cannot identify costs that record, not the
+  // screen; and it leaves its reason in the log, which is where it gets fixed.
+  private toResidentList(raw: unknown, path: string): ResidentList {
+    const entries = ResidentDetailsResponseSchema.parse(raw);
+    const residents: ResidentDetails[] = [];
+    let skipped = 0;
+
+    for (const entry of entries) {
+      const parsed = ResidentDetailsEntrySchema.safeParse(entry);
+      if (parsed.success) {
+        residents.push(parsed.data.user);
+        continue;
+      }
+      skipped += 1;
+      this.logger.warn('Resident record dropped', { path, issues: parsed.error.issues });
+    }
+
+    return { residents, skipped };
   }
 
   // Only the phone travels. The old panel also sent `alias`, but it had no
@@ -297,6 +325,10 @@ export class UsersGateway {
 }
 
 function toUsersError(error: unknown): Error {
+  // Not the network: the answer is not a list of users at all.
+  if (error instanceof z.ZodError) {
+    return new UsersContractError('Users response does not match the contract', { cause: error });
+  }
   if (error instanceof HttpError) {
     if (error.status === null) {
       return new UsersNetworkError('Network error while reading users', { cause: error });

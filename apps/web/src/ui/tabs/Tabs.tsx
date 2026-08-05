@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
-import { useRef, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { cn } from '../cn';
-import { tabsIndicatorVariants, tabsItemVariants, tabsVariants, type TabsVariants } from './Tabs-variants';
+import { tabsFade, tabsIndicatorVariants, tabsItemVariants, tabsVariants, type TabsVariants } from './Tabs-variants';
 
 export interface TabItem<TValue extends string> {
   value: TValue;
@@ -31,6 +31,32 @@ export function Tabs<TValue extends string>({
   className,
 }: TabsProps<TValue>) {
   const listRef = useRef<HTMLDivElement>(null);
+  const [reach, setReach] = useState<{ start: boolean; end: boolean }>({ start: false, end: false });
+
+  // A scrollable strip looks exactly like a full one until you try it. Measure
+  // what is left on each side and fade only that side.
+  useEffect(() => {
+    const list = listRef.current;
+    if (list === null) {
+      return;
+    }
+
+    const update = () => {
+      const remaining = list.scrollWidth - list.clientWidth - list.scrollLeft;
+      setReach({ start: list.scrollLeft > 1, end: remaining > 1 });
+    };
+
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(list);
+    list.addEventListener('scroll', update, { passive: true });
+    return () => {
+      observer.disconnect();
+      list.removeEventListener('scroll', update);
+    };
+  }, [items]);
+
+  const fade = reach.start && reach.end ? 'both' : reach.start ? 'start' : reach.end ? 'end' : 'none';
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
     const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
@@ -56,7 +82,7 @@ export function Tabs<TValue extends string>({
       role="tablist"
       aria-label={label}
       onKeyDown={handleKeyDown}
-      className={cn(tabsVariants({ appearance }), className)}
+      className={cn(tabsVariants({ appearance }), tabsFade[fade], className)}
     >
       {items.map((item) => {
         const active = item.value === value;

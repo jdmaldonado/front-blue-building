@@ -10,8 +10,9 @@ import {
   type SortingState,
 } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react';
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { cn } from '../cn';
+import type { DataTableFiltersController } from './useDataTableFilters';
 import { IconButton } from '../icon-button';
 import { Pagination } from '../pagination';
 import { Select } from '../select';
@@ -39,6 +40,12 @@ declare module '@tanstack/react-table' {
     hideOnMobile?: boolean;
     // Actions column: no label on the card, pinned to the bottom.
     actions?: boolean;
+    // Turns the column into a filter in the toolbar. The options are domain
+    // knowledge, so they are declared here and not inside the table.
+    filter?: {
+      label: string;
+      options: ReadonlyArray<{ value: string; label: string }>;
+    };
   }
 }
 
@@ -53,8 +60,9 @@ type DataTableProps<TData> = {
   // Shown when there are no rows. Usually an EmptyState.
   empty?: ReactNode;
   density?: DataTableDensity;
-  // Search text. The view owns the field.
-  globalFilter?: string;
+  // Search text and column filters. The view owns them, so the toolbar can sit
+  // wherever the screen needs it.
+  filters?: DataTableFiltersController;
   pageSize?: number;
   // Counter next to the pager, for example "120 usuarios".
   total?: string;
@@ -72,7 +80,7 @@ export function DataTable<TData>({
   isPending = false,
   empty,
   density = 'comfortable',
-  globalFilter,
+  filters,
   pageSize,
   total,
   className,
@@ -80,11 +88,28 @@ export function DataTable<TData>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const paginated = pageSize !== undefined;
 
+  // A declared filter is a pick from a list, so it matches the whole value. The
+  // default guess would treat "activo" as a substring and match too much.
+  const filterableColumns = useMemo(
+    () =>
+      columns.map((column) =>
+        column.meta?.filter === undefined || column.filterFn !== undefined
+          ? column
+          : { ...column, filterFn: 'equalsString' as const },
+      ),
+    [columns],
+  );
+
   const table = useReactTable({
     data,
-    columns,
-    state: { sorting, globalFilter },
+    columns: filterableColumns,
+    state: {
+      sorting,
+      globalFilter: filters?.search,
+      columnFilters: filters?.columnFilters ?? [],
+    },
     onSortingChange: setSorting,
+    onColumnFiltersChange: filters?.setColumnFilters,
     getRowId: getRowId === undefined ? undefined : (row) => getRowId(row),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

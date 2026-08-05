@@ -2,16 +2,16 @@ import { isBuildingInMaintenance, type Building } from '@bb/core';
 import { useBuildings } from '@bb/logic';
 import { useNavigate } from '@tanstack/react-router';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Building2, Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Building2 } from 'lucide-react';
+import { useMemo } from 'react';
 import { AppRoute } from '../../app/navigation';
-import { Alert, DataTable, EmptyState, Input, Text } from '../../ui';
+import { Alert, DataTable, DataTableToolbar, EmptyState, Text, useDataTableFilters } from '../../ui';
 import { BuildingActions, BuildingStatusBadge } from './components';
 
 export function BuildingsOverviewPage() {
   const buildings = useBuildings();
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
+  const filters = useDataTableFilters();
 
   const columns = useMemo<Array<ColumnDef<Building, unknown>>>(
     () => [
@@ -35,6 +35,15 @@ export function BuildingsOverviewPage() {
         id: 'status',
         accessorFn: (building) => (isBuildingInMaintenance(building) ? 'mantenimiento' : 'activo'),
         header: 'Estado',
+        meta: {
+          filter: {
+            label: 'Estado',
+            options: [
+              { value: 'activo', label: 'Activo' },
+              { value: 'mantenimiento', label: 'En mantenimiento' },
+            ],
+          },
+        },
         cell: ({ row }) => <BuildingStatusBadge building={row.original} />,
       },
       {
@@ -63,22 +72,18 @@ export function BuildingsOverviewPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-4">
-      <div className="relative">
-        <Search size={16} aria-hidden className="absolute top-1/2 left-3 -translate-y-1/2 text-(--text-muted)" />
-        <Input
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Buscar por nombre o ciudad"
-          aria-label="Buscar edificios"
-          className="pl-9"
-        />
-      </div>
+      <DataTableToolbar
+        columns={columns}
+        filters={filters}
+        searchPlaceholder="Buscar por nombre o ciudad"
+        searchLabel="Buscar edificios"
+      />
 
       <DataTable
         columns={columns}
         data={buildings.data ?? []}
         isPending={buildings.isPending}
-        globalFilter={search}
+        filters={filters}
         getRowId={(building) => building.id}
         onRowClick={(building) => {
           void navigate({ to: AppRoute.AdminBuilding, params: { buildingId: building.id } });

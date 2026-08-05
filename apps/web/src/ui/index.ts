@@ -35,6 +35,7 @@ export type { CornerBracketCorner, CornerBracketTone, CornerBracketsVariants } f
 
 export {
   DataTable,
+  DataTableToolbar,
   dataTableCardLabelVariants,
   dataTableCardRowVariants,
   dataTableCardValueVariants,
@@ -48,6 +49,8 @@ export {
   dataTableVariants,
 } from './data-table';
 export type { DataTableDensity, DataTableVariants } from './data-table';
+export { useDataTableFilters } from './data-table';
+export type { DataTableFiltersController } from './data-table';
 
 export {
   Dialog,

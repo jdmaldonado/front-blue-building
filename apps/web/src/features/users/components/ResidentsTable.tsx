@@ -1,9 +1,20 @@
-import type { ResidentDetails } from '@bb/core';
+import { RoleType, type ResidentDetails } from '@bb/core';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Pencil, Power, Search, Users } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Pencil, Power, Users } from 'lucide-react';
+import { useMemo } from 'react';
 import { ROLE_LABEL } from '../../account/lib';
-import { Alert, Avatar, Badge, DataTable, EmptyState, IconButton, Input, Text, Tooltip } from '../../../ui';
+import {
+  Alert,
+  Avatar,
+  Badge,
+  DataTable,
+  DataTableToolbar,
+  EmptyState,
+  IconButton,
+  Text,
+  Tooltip,
+  useDataTableFilters,
+} from '../../../ui';
 import { useResidentActions } from '../hooks';
 import { residentSearchText } from '../lib';
 import { EditResidentDialog } from './EditResidentDialog';
@@ -29,7 +40,7 @@ export function ResidentsTable({
   emptyTitle = 'Sin usuarios',
 }: ResidentsTableProps) {
   const actions = useResidentActions();
-  const [search, setSearch] = useState('');
+  const filters = useDataTableFilters();
 
   const columns = useMemo<Array<ColumnDef<ResidentDetails, unknown>>>(() => {
     const list: Array<ColumnDef<ResidentDetails, unknown>> = [
@@ -57,6 +68,12 @@ export function ResidentsTable({
         accessorFn: (resident) =>
           resident.roleName === null || resident.roleName === undefined ? '' : ROLE_LABEL[resident.roleName],
         header: 'Rol',
+        meta: {
+          filter: {
+            label: 'Rol',
+            options: Object.values(RoleType).map((role) => ({ value: ROLE_LABEL[role], label: ROLE_LABEL[role] })),
+          },
+        },
         cell: ({ row }) => (
           <Text as="span" size="body-sm" tone="secondary">
             {row.original.roleName === null || row.original.roleName === undefined
@@ -108,6 +125,15 @@ export function ResidentsTable({
         id: 'state',
         accessorFn: (resident) => (resident.active === true ? 'activo' : 'inactivo'),
         header: 'Estado',
+        meta: {
+          filter: {
+            label: 'Estado',
+            options: [
+              { value: 'activo', label: 'Activo' },
+              { value: 'inactivo', label: 'Inactivo' },
+            ],
+          },
+        },
         cell: ({ row }) => (
           <div className="flex flex-wrap items-center gap-1.5">
             <Badge tone={row.original.active === true ? 'success' : 'neutral'} size="sm" dot>
@@ -161,22 +187,18 @@ export function ResidentsTable({
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="relative">
-        <Search size={16} aria-hidden className="absolute top-1/2 left-3 -translate-y-1/2 text-(--text-muted)" />
-        <Input
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Buscar por nombre, documento, correo, apartamento o tarjeta"
-          aria-label="Buscar usuarios"
-          className="pl-9"
-        />
-      </div>
+      <DataTableToolbar
+        columns={columns}
+        filters={filters}
+        searchPlaceholder="Buscar por nombre, documento, correo, apartamento o tarjeta"
+        searchLabel="Buscar usuarios"
+      />
 
       <DataTable
         columns={columns}
         data={residents ?? []}
         isPending={isPending}
-        globalFilter={search}
+        filters={filters}
         getRowId={(resident) => resident.id}
         pageSize={25}
         total={residents === undefined ? undefined : `${residents.length} usuarios`}

@@ -27,7 +27,7 @@ export function createServices(): Services {
     authGateway: new AuthGateway(http),
     accessGateway: new AccessGateway(http),
     buildingsGateway: new BuildingsGateway(http),
-    usersGateway: new UsersGateway(http),
+    usersGateway: new UsersGateway(http, logger),
     socketClient: new SocketClient({ url: config.socket.url, logger }),
   };
 }
