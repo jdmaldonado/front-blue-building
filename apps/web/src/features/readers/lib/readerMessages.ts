@@ -41,6 +41,28 @@ export function formatDuration(value: number, unit: LogicFieldUnit): string {
   return seconds === 0 ? `${minutes} min` : `${minutes} min ${seconds} s`;
 }
 
+const SECONDS_PER_HOUR = 3600;
+const HOURS_PER_DAY = 24;
+const BYTES_PER_KB = 1024;
+
+export function formatUptime(seconds: number): string {
+  const days = Math.floor(seconds / (SECONDS_PER_HOUR * HOURS_PER_DAY));
+  const hours = Math.floor((seconds % (SECONDS_PER_HOUR * HOURS_PER_DAY)) / SECONDS_PER_HOUR);
+  const minutes = Math.floor((seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
+
+  if (days > 0) {
+    return `${days} d ${hours} h`;
+  }
+  if (hours > 0) {
+    return `${hours} h ${minutes} min`;
+  }
+  return `${minutes} min`;
+}
+
+export function formatBytes(bytes: number): string {
+  return `${Math.round(bytes / BYTES_PER_KB)} KB`;
+}
+
 export function readerErrorMessage(error: DomainError): string {
   if (error instanceof ReaderTimeoutError) {
     return 'La lectora no contestó en 15 segundos. Puede estar apagada o sin red.';

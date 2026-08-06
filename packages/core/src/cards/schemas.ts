@@ -15,6 +15,10 @@ export const CardSchema = z.object({
 });
 export type Card = z.infer<typeof CardSchema>;
 
+// The API nests every card inside `{ card: ... }`, the same way it nests users
+// (api/src/controllers/bluebuilding/cards/show_card_dto.ts:7).
+export const CardEntrySchema = z.object({ card: CardSchema });
+
 // What the list looks like before reading each entry: only "it is a list".
 export const CardsResponseSchema = z.array(z.unknown());
 

@@ -11,7 +11,7 @@ import {
   InvalidCredentialsError,
   LoginMode,
   NoSpacesAssignedError,
-  CardSchema,
+  CardEntrySchema,
   CardsContractError,
   CardsNetworkError,
   CardsResponseSchema,
@@ -478,9 +478,9 @@ export class CardsGateway {
     let skipped = 0;
 
     for (const entry of entries) {
-      const parsed = CardSchema.safeParse(entry);
+      const parsed = CardEntrySchema.safeParse(entry);
       if (parsed.success) {
-        cards.push(parsed.data);
+        cards.push(parsed.data.card);
         continue;
       }
       skipped += 1;

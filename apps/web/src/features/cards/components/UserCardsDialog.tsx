@@ -55,6 +55,7 @@ export function UserCardsDialog({ user, onClose }: UserCardsDialogProps) {
         ) : (
           <CardsTable
             cards={cards.data?.cards}
+            skipped={cards.data?.skipped}
             isPending={cards.isPending}
             onEdit={actions.startEdit}
             onRemove={actions.remove}

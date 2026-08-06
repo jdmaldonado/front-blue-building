@@ -31,7 +31,10 @@ export function useDoorStatuses(buildingId: string | null): UseQueryResult<DoorS
     const unsubscribe = socketClient.onDoorUpdate(buildingId, (update) => {
       queryClient.setQueryData<DoorStatuses>(queryKey, (current) => ({
         ...current,
-        [update.doorId]: update.event,
+        // Merged, not replaced. Door events and reader telemetry travel on the
+        // same event, and a plain open/close carries no telemetry: replacing
+        // would wipe what the reader last told us about its boards.
+        [update.doorId]: { ...current?.[update.doorId], ...update.event },
       }));
     });
 

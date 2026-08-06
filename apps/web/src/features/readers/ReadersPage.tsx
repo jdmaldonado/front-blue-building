@@ -6,8 +6,8 @@ import { useMemo, useState } from 'react';
 import { useBuilding } from '../../app/BuildingContext';
 import { useConfirm } from '../../app/ConfirmProvider';
 import { useToast } from '../../app/ToastProvider';
-import { Alert, Badge, DataTable, DataTableToolbar, EmptyState, IconButton, Text, useDataTableFilters } from '../../ui';
-import { ReaderConfigDialog } from './components';
+import { Alert, DataTable, DataTableToolbar, EmptyState, IconButton, Text, useDataTableFilters } from '../../ui';
+import { ReaderBoardStatus, ReaderConfigDialog } from './components';
 import { READER_HEALTH_META, READER_SENT_MESSAGE, readerErrorMessage } from './lib';
 
 export function ReadersPage() {
@@ -82,7 +82,7 @@ export function ReadersPage() {
             <Text as="span" weight="medium" truncate>
               {row.original.name ?? 'Sin nombre'}
             </Text>
-            <Text as="span" size="label" tone="muted" className="font-mono">
+            <Text as="span" size="label" className="font-mono text-(--accent)">
               {row.original.localId}
             </Text>
           </div>
@@ -101,12 +101,24 @@ export function ReadersPage() {
             })),
           },
         },
+        // Both boards, each with its own state and its own SPI: a reader can be
+        // online and still not read a card if its chip bus is down.
         cell: ({ row }) => {
-          const meta = READER_HEALTH_META[healthOf(row.original)];
+          const event = statuses.data?.[row.original.id];
+          const boards = event?.readerState?.readers;
           return (
-            <Badge tone={meta.tone} dot pulse={meta.pulse} className="whitespace-nowrap">
-              {meta.label}
-            </Badge>
+            <div className="flex flex-col gap-1.5">
+              <ReaderBoardStatus
+                title="Maestra"
+                state={event?.masterStatus ?? boards?.master?.state}
+                spiOk={event?.masterSpiOk ?? boards?.master?.spi_ok}
+              />
+              <ReaderBoardStatus
+                title="Esclava"
+                state={event?.slaveStatus ?? boards?.slave?.state}
+                spiOk={event?.slaveSpiOk ?? boards?.slave?.spi_ok}
+              />
+            </div>
           );
         },
       },
@@ -118,17 +130,6 @@ export function ReadersPage() {
         cell: ({ row }) => (
           <Text as="span" size="body-sm" tone="muted" className="font-mono">
             {statuses.data?.[row.original.id]?.readerState?.readers?.master?.firmware_version ?? '—'}
-          </Text>
-        ),
-      },
-      {
-        id: 'slave',
-        accessorFn: (door) => statuses.data?.[door.id]?.slaveStatus ?? '',
-        header: 'Esclava',
-        meta: { hideOnMobile: true },
-        cell: ({ row }) => (
-          <Text as="span" size="body-sm" tone="secondary">
-            {statuses.data?.[row.original.id]?.slaveStatus ?? '—'}
           </Text>
         ),
       },

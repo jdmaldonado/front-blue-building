@@ -2,17 +2,28 @@ import { CardType, type Card } from '@bb/core';
 import type { ColumnDef } from '@tanstack/react-table';
 import { CreditCard, Pencil, Trash2 } from 'lucide-react';
 import { useMemo } from 'react';
-import { Badge, DataTable, DataTableToolbar, EmptyState, IconButton, Text, useDataTableFilters } from '../../../ui';
+import {
+  Alert,
+  Badge,
+  DataTable,
+  DataTableToolbar,
+  EmptyState,
+  IconButton,
+  Text,
+  useDataTableFilters,
+} from '../../../ui';
 import { CARD_TYPE_LABEL } from '../lib';
 
 type CardsTableProps = {
   cards: Card[] | undefined;
   isPending: boolean;
+  // Records the API sent that we could not read. Zero is the normal case.
+  skipped?: number;
   onEdit: (card: Card) => void;
   onRemove: (card: Card) => void;
 };
 
-export function CardsTable({ cards, isPending, onEdit, onRemove }: CardsTableProps) {
+export function CardsTable({ cards, isPending, skipped = 0, onEdit, onRemove }: CardsTableProps) {
   const filters = useDataTableFilters();
 
   const columns = useMemo<Array<ColumnDef<Card, unknown>>>(
@@ -103,6 +114,15 @@ export function CardsTable({ cards, isPending, onEdit, onRemove }: CardsTablePro
 
   return (
     <div className="flex w-full flex-col gap-4">
+      {skipped === 0 ? null : (
+        <Alert
+          variant="warning"
+          title={skipped === 1 ? 'Una tarjeta no se pudo leer' : `${skipped} tarjetas no se pudieron leer`}
+        >
+          Sus datos no traen número o identificador, así que no aparecen en la lista.
+        </Alert>
+      )}
+
       <DataTableToolbar
         columns={columns}
         filters={filters}

@@ -6,12 +6,14 @@ type ReaderHealthDotProps = {
   health: ReaderHealth;
 };
 
+// Same reason as in `ReaderBoardStatus`: a disconnected reader is a fault, so it
+// is red and not the neutral grey of a closed door.
 const DOT_STATE = {
   [ReaderHealth.Online]: 'online',
   [ReaderHealth.Busy]: 'online',
   [ReaderHealth.Warning]: 'warning',
   [ReaderHealth.Alert]: 'alert',
-  [ReaderHealth.Offline]: 'offline',
+  [ReaderHealth.Offline]: 'alert',
   [ReaderHealth.Unknown]: 'unknown',
 } as const;
 

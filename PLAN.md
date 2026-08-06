@@ -192,6 +192,11 @@ actualizar `front`, `api` y `RPI-blue-building`, que traían el PR de telemetrí
 - Punto de salud en el panorama de edificios, alimentado por la telemetría ya
   cacheada.
 
+- Arreglado: los estados de puerta se guardaban **reemplazando** la entrada, y un
+  evento normal de apertura borraba la telemetría de esa puerta. Ahora se
+  mezclan, porque las dos cosas viajan en el mismo evento.
+- La tabla muestra maestra y esclava por separado, cada una con su estado y su
+  SPI, en columnas de ancho fijo: si no, el texto salta con cada frame.
 - Del `readerState` de la telemetría se leen wifi, device id y versiones de
   firmware. Las secciones de Red e Identidad arrancan con lo que la lectora
   reporta, no en blanco.
@@ -267,9 +272,13 @@ PWA.
 
 Detalle y tamaño en `bluebuilding-docs/07-abierto/propuestas-panel-admin.md`.
 
-1. Un `GET` de telemetría de lectoras. Hoy vive solo en memoria en la API y solo
-   se empuja por socket, así que al entrar en el panorama no hay nada que mostrar
-   hasta que una lectora cambie de estado.
+1. **Que `subscribe:door_status` conteste con la telemetría actual.** La API ya
+   tiene el estado de todas las lectoras en memoria
+   (`api/src/2.0/state/buildingTelemetryState.ts`); solo falta volcarlo al que se
+   suscribe. Hoy solo se empuja cuando algo cambia, y la RPI filtra los repetidos,
+   así que una lectora estable no reporta nada: al abrir la pantalla no hay estado
+   que mostrar hasta que algo se mueva. Es más barato que un `GET` nuevo y arregla
+   el arranque en frío de la tabla de lectoras y del punto del panorama.
 2. `GET /buildings/overview` privado con metadata de estado, separado del listado
    público que llena los selects.
 3. Paginación, búsqueda y filtro por edificio en `usersV2/ResidentUserDetails`.

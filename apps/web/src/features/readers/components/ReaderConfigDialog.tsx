@@ -14,6 +14,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Dialog, Field, Input, Switch, Tabs, Text, type RadioOption } from '../../../ui';
 import { RadioGroup } from '../../../ui';
 import { NumericField } from './NumericField';
+import { ReaderDiagnostics } from './ReaderDiagnostics';
 
 type ReaderConfigDialogProps = {
   door: Door | null;
@@ -104,6 +105,8 @@ export function ReaderConfigDialog({ door, reported, pending, onClose, onSend }:
       }
     >
       <div className="flex flex-col gap-4">
+        <ReaderDiagnostics reported={reported} />
+
         {section === 'network' || section === 'identity' ? null : (
           <RadioGroup
             options={targetOptions}
