@@ -1,5 +1,13 @@
 import { X } from 'lucide-react';
-import { useEffect, useId, useRef, type KeyboardEventHandler, type MouseEvent, type ReactNode } from 'react';
+import {
+  useEffect,
+  useId,
+  useRef,
+  type KeyboardEventHandler,
+  type MouseEvent,
+  type ReactNode,
+  type SyntheticEvent,
+} from 'react';
 import { cn } from '../cn';
 import { IconButton } from '../icon-button';
 import {
@@ -61,10 +69,19 @@ export function Dialog({
     }
   };
 
+  // A dialog rendered inside another one closes only itself. React routes the
+  // `close` event through the tree, so without this the parent would take a
+  // child's close as its own and both would disappear.
+  const handleClose = (event: SyntheticEvent<HTMLDialogElement>) => {
+    if (event.target === ref.current) {
+      onClose();
+    }
+  };
+
   return (
     <dialog
       ref={ref}
-      onClose={onClose}
+      onClose={handleClose}
       onClick={handleClick}
       onKeyDown={onKeyDown}
       aria-labelledby={titleId}

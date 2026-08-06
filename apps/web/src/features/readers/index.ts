@@ -1,2 +1,2 @@
 export { ReadersPage } from './ReadersPage';
-export { ReaderHealthDot } from './components';
+export { ReaderHealthDot, ReaderTelemetryDialog } from './components';

@@ -62,6 +62,7 @@ export function DoorsDashboardPage() {
         previousDoor={dashboard.previousDoor}
         nextDoor={dashboard.nextDoor}
         isOpening={dashboard.openingDoorId !== null && dashboard.openingDoorId === dashboard.selectedDoor?.id}
+        telemetry={dashboard.selectedDoor === null ? null : dashboard.telemetryOf(dashboard.selectedDoor)}
         onClose={() => dashboard.selectDoor(null)}
         onSelectDoor={dashboard.selectDoor}
         onOpenDoor={dashboard.openDoor}

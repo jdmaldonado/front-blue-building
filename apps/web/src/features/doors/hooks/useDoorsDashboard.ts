@@ -1,5 +1,13 @@
 import { DoorStatus, type Door, type DomainError, type Floor } from '@bb/core';
-import { selectDoorStatus, useAccessibleDoors, useDoorControl, useDoorStatuses, useTowerFloors } from '@bb/logic';
+import {
+  selectDoorStatus,
+  selectReaderTelemetry,
+  useAccessibleDoors,
+  useDoorControl,
+  useDoorStatuses,
+  useTowerFloors,
+  type ReaderTelemetry,
+} from '@bb/logic';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useToast } from '../../../app/ToastProvider';
 import type { TabItem } from '../../../ui';
@@ -32,6 +40,9 @@ export interface DoorsDashboardController {
   // Set while an open order is waiting for the building to answer.
   openingDoorId: string | null;
   statusOf: (door: Door) => DoorStatus;
+  // The hardware behind the door, when it has reported. A different question
+  // from `statusOf`, and it comes from a different place.
+  telemetryOf: (door: Door) => ReaderTelemetry | null;
   selectFloor: (floorId: string) => void;
   selectDoor: (doorId: string | null) => void;
   openDoor: (door: Door) => void;
@@ -123,6 +134,7 @@ export function useDoorsDashboard(buildingId: string): DoorsDashboardController 
     nextDoor: selectedIndex >= 0 ? (floorDoors[selectedIndex + 1] ?? null) : null,
     openingDoorId: pendingOpen?.doorId ?? null,
     statusOf: (door) => selectDoorStatus(statuses.data, door.id),
+    telemetryOf: (door) => selectReaderTelemetry(statuses.data, door.id),
     selectFloor: setFloorId,
     selectDoor: setSelectedDoorId,
     openDoor: (door) => {

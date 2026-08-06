@@ -1,7 +1,9 @@
 import type { Door, DoorStatus } from '@bb/core';
-import { ArrowLeft, ArrowRight, Columns2, Columns3, DoorOpen, RectangleHorizontal, RefreshCw } from 'lucide-react';
+import { selectIsSuperUser, useSessionStore, type ReaderTelemetry } from '@bb/logic';
+import { ArrowLeft, ArrowRight, Columns2, Columns3, Cpu, DoorOpen, RectangleHorizontal, RefreshCw } from 'lucide-react';
 import { useState, type KeyboardEvent } from 'react';
 import { UserEventActions, useUserEventActions } from '../../building-events';
+import { ReaderTelemetryDialog } from '../../readers';
 import { Badge, Button, Dialog, IconButton, RadioGroup, Text, cn, type RadioOption } from '../../../ui';
 import { CameraColumns, useCameraColumns, useSwipe } from '../hooks';
 import { doorStatusMeta } from '../lib';
@@ -14,6 +16,8 @@ type DoorDialogProps = {
   previousDoor: Door | null;
   nextDoor: Door | null;
   isOpening: boolean;
+  // Hardware of this door. Only staff gets to look at it.
+  telemetry: ReaderTelemetry | null;
   onClose: () => void;
   onSelectDoor: (doorId: string) => void;
   onOpenDoor: (door: Door) => void;
@@ -41,6 +45,7 @@ export function DoorDialog({
   previousDoor,
   nextDoor,
   isOpening,
+  telemetry,
   onClose,
   onSelectDoor,
   onOpenDoor,
@@ -52,6 +57,9 @@ export function DoorDialog({
   // every tile a new key, so React unmounts them: they leave the stream and
   // subscribe again from zero.
   const [reloadToken, setReloadToken] = useState(0);
+  const [showTelemetry, setShowTelemetry] = useState(false);
+  // The hardware is staff business, and the API only answers it to SUPER_USER.
+  const isSuperUser = useSessionStore(selectIsSuperUser);
 
   const cameras = door?.cameras ?? [];
   const hasCameras = cameras.length > 0;
@@ -85,96 +93,112 @@ export function DoorDialog({
   };
 
   return (
-    <Dialog
-      open={door !== null}
-      onClose={onClose}
-      onKeyDown={handleKeyDown}
-      size="xl"
-      title={door?.name ?? 'Puerta'}
-      description={door?.floor?.name ?? undefined}
-      headerAside={
-        // In the header and not in the body: the body scrolls, and the status
-        // and the reload button have to stay reachable while it does.
-        <div className="flex items-center gap-2">
-          <Badge tone={meta.tone} dot pulse={meta.pulse} className="whitespace-nowrap">
-            {meta.label}
-          </Badge>
-          {hasCameras ? (
-            <>
-              {cameras.length > 1 ? (
-                <RadioGroup
-                  options={columnOptions}
-                  value={columns}
-                  onChange={setColumns}
-                  label="Cámaras por fila"
-                  appearance="segmented"
-                  size="sm"
-                  hideLabels
-                  className="hidden sm:inline-flex"
-                />
-              ) : null}
-              <IconButton label="Recargar cámaras" onClick={() => setReloadToken((current) => current + 1)}>
-                <RefreshCw size={16} />
+    <>
+      <Dialog
+        open={door !== null}
+        onClose={onClose}
+        onKeyDown={handleKeyDown}
+        size="xl"
+        title={door?.name ?? 'Puerta'}
+        description={door?.floor?.name ?? undefined}
+        headerAside={
+          // In the header and not in the body: the body scrolls, and the status
+          // and the reload button have to stay reachable while it does.
+          <div className="flex items-center gap-2">
+            <Badge tone={meta.tone} dot pulse={meta.pulse} className="whitespace-nowrap">
+              {meta.label}
+            </Badge>
+            {hasCameras ? (
+              <>
+                {cameras.length > 1 ? (
+                  <RadioGroup
+                    options={columnOptions}
+                    value={columns}
+                    onChange={setColumns}
+                    label="Cámaras por fila"
+                    appearance="segmented"
+                    size="sm"
+                    hideLabels
+                    className="hidden sm:inline-flex"
+                  />
+                ) : null}
+                <IconButton label="Recargar cámaras" onClick={() => setReloadToken((current) => current + 1)}>
+                  <RefreshCw size={16} />
+                </IconButton>
+              </>
+            ) : null}
+            {isSuperUser && door?.localId !== null && door?.localId !== undefined ? (
+              <IconButton label="Estado del equipo" onClick={() => setShowTelemetry(true)}>
+                <Cpu size={16} />
               </IconButton>
-            </>
-          ) : null}
-        </div>
-      }
-      footer={
-        door === null ? null : (
-          // Reversed on mobile so the events sit above the primary action,
-          // while the DOM keeps "Abrir puerta" first for keyboard order.
-          <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:items-center">
-            <Button
-              size="lg"
-              onClick={() => onOpenDoor(door)}
-              loading={isOpening}
-              className="w-full sm:w-auto sm:flex-[2]"
-            >
-              {isOpening ? null : <DoorOpen size={18} />}
-              {isOpening ? 'Abriendo...' : 'Abrir puerta'}
-            </Button>
-            <UserEventActions controller={events} className="sm:flex-[3]" />
+            ) : null}
           </div>
-        )
-      }
-    >
-      {door === null ? null : (
-        <div className="flex touch-pan-y flex-col gap-4" {...swipe}>
-          {previousDoor === null && nextDoor === null ? null : (
-            // Each arrow on its own edge, so the thumb finds them where the
-            // swipe would take it.
-            <div className="flex items-center justify-between gap-2">
-              {previousDoor === null ? (
-                <span />
-              ) : (
-                <Button intent="neutral" appearance="ghost" size="sm" onClick={goPrevious} className="min-w-0">
-                  <ArrowLeft size={16} />
-                  <span className="truncate">{previousDoor.name ?? 'Anterior'}</span>
-                </Button>
-              )}
-              {nextDoor === null ? (
-                <span />
-              ) : (
-                <Button intent="neutral" appearance="ghost" size="sm" onClick={goNext} className="min-w-0">
-                  <span className="truncate">{nextDoor.name ?? 'Siguiente'}</span>
-                  <ArrowRight size={16} />
-                </Button>
-              )}
+        }
+        footer={
+          door === null ? null : (
+            // Reversed on mobile so the events sit above the primary action,
+            // while the DOM keeps "Abrir puerta" first for keyboard order.
+            <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:items-center">
+              <Button
+                size="lg"
+                onClick={() => onOpenDoor(door)}
+                loading={isOpening}
+                className="w-full sm:w-auto sm:flex-[2]"
+              >
+                {isOpening ? null : <DoorOpen size={18} />}
+                {isOpening ? 'Abriendo...' : 'Abrir puerta'}
+              </Button>
+              <UserEventActions controller={events} className="sm:flex-[3]" />
             </div>
-          )}
+          )
+        }
+      >
+        {door === null ? null : (
+          <div className="flex touch-pan-y flex-col gap-4" {...swipe}>
+            {previousDoor === null && nextDoor === null ? null : (
+              // Each arrow on its own edge, so the thumb finds them where the
+              // swipe would take it.
+              <div className="flex items-center justify-between gap-2">
+                {previousDoor === null ? (
+                  <span />
+                ) : (
+                  <Button intent="neutral" appearance="ghost" size="sm" onClick={goPrevious} className="min-w-0">
+                    <ArrowLeft size={16} />
+                    <span className="truncate">{previousDoor.name ?? 'Anterior'}</span>
+                  </Button>
+                )}
+                {nextDoor === null ? (
+                  <span />
+                ) : (
+                  <Button intent="neutral" appearance="ghost" size="sm" onClick={goNext} className="min-w-0">
+                    <span className="truncate">{nextDoor.name ?? 'Siguiente'}</span>
+                    <ArrowRight size={16} />
+                  </Button>
+                )}
+              </div>
+            )}
 
-          {hasCameras ? (
-            <div className={cn('grid gap-3', columnClasses[columns])}>
-              {cameras.map((camera) => (
-                <CameraTile key={`${camera.id}-${reloadToken}`} camera={camera} buildingId={buildingId} />
-              ))}
-            </div>
-          ) : (
-            <Text tone="secondary">Esta puerta no tiene cámaras asociadas.</Text>
-          )}
-        </div>
-      )}
-    </Dialog>
+            {hasCameras ? (
+              <div className={cn('grid gap-3', columnClasses[columns])}>
+                {cameras.map((camera) => (
+                  <CameraTile key={`${camera.id}-${reloadToken}`} camera={camera} buildingId={buildingId} />
+                ))}
+              </div>
+            ) : (
+              <Text tone="secondary">Esta puerta no tiene cámaras asociadas.</Text>
+            )}
+          </div>
+        )}
+      </Dialog>
+
+      {/* A sibling and not a child: nesting one dialog inside another mixes
+          their close events and both would go away at once. */}
+      <ReaderTelemetryDialog
+        open={showTelemetry}
+        doorName={door?.name ?? 'Puerta'}
+        telemetry={telemetry}
+        onClose={() => setShowTelemetry(false)}
+      />
+    </>
   );
 }
