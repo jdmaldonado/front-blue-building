@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { TowerSchema } from '../buildings';
 import { ReaderStateSchema } from '../readers/schemas';
 import { IdSchema } from '../shared';
-import { DoorType } from './constants';
+import { DoorType, LiveOrigin } from './constants';
 
 export const DoorTypeSchema = z.enum(DoorType);
 
@@ -60,3 +60,11 @@ export type DoorUpdate = z.infer<typeof DoorUpdateSchema>;
 // Live state by door id. A door with no entry has no reported state.
 export const DoorStatusesSchema = z.record(z.string(), DoorEventDataSchema);
 export type DoorStatuses = z.infer<typeof DoorStatusesSchema>;
+
+// What the live screen can be opened with. `doorName` and not a door id because
+// that is what a critical event carries (see `findDoorByName`).
+export const LiveSearchSchema = z.object({
+  doorName: z.string().optional(),
+  from: z.enum(LiveOrigin).optional(),
+});
+export type LiveSearch = z.infer<typeof LiveSearchSchema>;

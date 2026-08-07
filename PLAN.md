@@ -4,7 +4,7 @@ Estado vivo de la migración de `front` (React 16, viejo) a `front-bluebuilding`
 Se actualiza al cerrar cada fase. Para entender el sistema, leer antes
 `../bluebuilding-docs/` (empezar por `CLAUDE.md` y `README.md`).
 
-**Última actualización:** 2026-08-05
+**Última actualización:** 2026-08-06
 
 ## Cómo se trabaja
 
@@ -240,6 +240,56 @@ deshabilitado.
   deshace editando otra vez; y emergencia, por la decisión previa de que
   preguntar dos veces cuesta segundos que importan.
 
+### Fase 8 — Monitoreo de eventos
+
+Una pantalla con tres lentes en vez de las tres pantallas sueltas del panel
+viejo. Dos entradas: `/admin/monitor` global y
+`/admin/buildings/$id/events` con el edificio fijo.
+
+- Dominio en `packages/core/src/events`: `EVENT_META` traduce **los 31 tipos** de
+  evento con su gravedad; el panel viejo traducía 7 y el resto salía como
+  "Evento desconocido". Más `EventOrigin`, `IncidentStatus` y los schemas.
+- Estos tres endpoints devuelven objetos **planos**, sin el envoltorio
+  `{ user: … }` / `{ card: … }` del resto de la API. Tercera convención distinta
+  en el mismo backend; queda anotado en el schema.
+- `EventsGateway` con las tres lecturas y el ciclo de incidente. Lectura fila a
+  fila con conteo de descartadas, como residentes y tarjetas.
+- Una sola función de fecha, con zona horaria fija. Había tres formatos y dos
+  usaban la hora local del navegador.
+- `useNewEventsSignal`: avisa de novedades sin mover la lista bajo el cursor.
+  Escucha la sala de puertas, que es la única viva, e ignora la telemetría.
+- El ciclo de incidente toma el usuario de la sesión, no de `localStorage`, y el
+  comentario de solución es por evento. En el panel viejo hay una sola caja
+  compartida: escribir en una tarjeta lo replica en todas.
+- Contactar residente y abrir incidente van separados. Iban en el mismo clic.
+- Arreglado de paso: la columna de origen de puertas abiertas. El DTO manda
+  `eventOrigin` y el panel viejo lee `origin`, así que sale siempre vacía.
+
+**Filtros solo donde no mienten**: críticos filtra en cliente porque los 15
+registros están en pantalla. Intrusiones y puertas abiertas paginan en servidor y
+no aceptan filtros por tipo ni fecha, así que solo se ofrece el de edificio, que
+el endpoint sí entiende.
+
+**Del evento a la cámara.** Un evento crítico ya no deja solo en el edificio:
+
+- "Ver cámara" abre las cámaras de la puerta del evento en un diálogo sobre la
+  lista, sin salir del monitoreo. Es el camino corto, el de mirar y seguir.
+- "Ver edificio" lleva al plano con esa puerta ya seleccionada y con un "Volver a
+  eventos" que solo aparece si vienes del monitor.
+- El evento **no identifica su puerta**: la API manda el nombre y nada más
+  (`RecentEventDto.ts:35`), así que se cruza por nombre con las puertas del
+  edificio (`findDoorByName`). Si renombran una puerta, los eventos viejos se
+  quedan sin cámara. Pedir `doorId` es la propuesta 1d.
+- **Hay dos endpoints de puertas y solo uno trae cámaras.** `POST
+/api/bluebuilding/doors` devuelve filas peladas: une piso y torre sin
+  seleccionarlos y nunca carga `doorCameras` (`DoorServiceV2.ts:12-18`), así que
+  `cameras` siempre llega vacío. Las cámaras salen de `GET
+/api/buildings/:id/doors`, el mismo que usa la pantalla del edificio. El
+  diálogo lee de ahí, y por eso muestra exactamente lo que se ve al pinchar la
+  puerta en el plano.
+- Los eventos sin puerta —emergencia médica desde la app— no ofrecen cámara. No
+  hay ninguna que ofrecer.
+
 ## Fases siguientes
 
 ### Barrido visual pendiente
@@ -257,12 +307,6 @@ radios, y dos cosas que no se pueden comprobar en el emulador.
   `POST /api/bluebuilding/doors` responde una lista pelada o envuelta en `doors`
   (hoy se aceptan las dos formas porque no había manera de saberlo).
 
-### Fase 8 — Monitoreo de eventos
-
-Eventos críticos con ciclo de incidente, intrusos con galería y cámara en vivo,
-puertas abiertas.
-Doc: `bluebuilding-docs/03-panel-admin/monitoreo-eventos.md`.
-
 ### Fase 9 — Cierre
 
 Revisión de movimiento reducido, accesibilidad, responsive a 390 / 768 / 1280 y
@@ -272,18 +316,34 @@ PWA.
 
 Detalle y tamaño en `bluebuilding-docs/07-abierto/propuestas-panel-admin.md`.
 
-1. **Que `subscribe:door_status` conteste con la telemetría actual.** La API ya
-   tiene el estado de todas las lectoras en memoria
-   (`api/src/2.0/state/buildingTelemetryState.ts`); solo falta volcarlo al que se
-   suscribe. Hoy solo se empuja cuando algo cambia, y la RPI filtra los repetidos,
-   así que una lectora estable no reporta nada: al abrir la pantalla no hay estado
-   que mostrar hasta que algo se mueva. Es más barato que un `GET` nuevo y arregla
-   el arranque en frío de la tabla de lectoras y del punto del panorama.
-2. `GET /buildings/overview` privado con metadata de estado, separado del listado
+1. **La sala `.events` no recibe a nadie.** La API emite `new_event_${buildingId}`
+   a `${buildingId}.events` (`api/src/hardware/index.ts:394`, `:907`), pero
+   `subscribe:building_events` une el socket a `${buildingId}.doors`, porque
+   `getBuildingDoorsEventsRoomId` devuelve `.doors`. Esos emits se pierden. Es
+   una línea, y sin ella no hay monitoreo en vivo de verdad: los eventos sin
+   puerta —edificio desconectado, emergencia médica— no llegan nunca. Ojo: el
+   camino de la app (`:900`) carga `door.doorCameras` sin `doorCameras.camera` y
+   el DTO accede a `dc.camera.name`, así que arreglar solo la suscripción
+   destaparía ese fallo.
+2. **El endpoint de intrusiones carga la tabla entera en memoria** y pagina con
+   `slice`, sin ordenar en servidor: la paginación devuelve grupos arbitrarios.
+3. **El incidente toma el usuario del cuerpo, no del token.** Cualquiera puede
+   atribuir un incidente a otra persona.
+4. **`createEventIncident` no comprueba duplicados** pese a ser `OneToOne`.
+5. **Filtros de servidor por tipo y por fecha** en intrusiones y puertas
+   abiertas. Hoy solo se puede acotar por edificio.
+6. **`doorId` en el DTO de eventos** (propuesta 1d): hoy el evento solo nombra su
+   puerta, y sin id hay que cruzar por nombre para llegar a su cámara.
+7. **Telemetría en `GET .../doors/statuses`.** El arranque en frío ya está
+   resuelto por otro lado: `POST /api/bluebuilding/doors` devuelve la telemetría
+   mezclada en cada puerta (`DoorControllerV2.ts:17-28`). El endpoint que suena a
+   estado, en cambio, solo trae eventos de puerta. Falta también que
+   `subscribe:door_status` conteste algo al suscribirse, hoy solo une a la sala.
+8. `GET /buildings/overview` privado con metadata de estado, separado del listado
    público que llena los selects.
-3. Paginación, búsqueda y filtro por edificio en `usersV2/ResidentUserDetails`.
-4. Guardar la última configuración enviada a una lectora.
-5. `init:success` en el socket, para quitar la espera fija de 600 ms.
+9. Paginación, búsqueda y filtro por edificio en `usersV2/ResidentUserDetails`.
+10. Guardar la última configuración enviada a una lectora.
+11. `init:success` en el socket, para quitar la espera fija de 600 ms.
 
 ## Deuda conocida en la app nueva
 

@@ -70,3 +70,10 @@ export const DoorStatus = {
   Unknown: 'UNKNOWN',
 } as const;
 export type DoorStatus = (typeof DoorStatus)[keyof typeof DoorStatus];
+
+// Where the live screen was opened from. Only set when the visitor has a place
+// to go back to, so the screen knows whether to offer the way back.
+export const LiveOrigin = {
+  Monitor: 'monitor',
+} as const;
+export type LiveOrigin = (typeof LiveOrigin)[keyof typeof LiveOrigin];

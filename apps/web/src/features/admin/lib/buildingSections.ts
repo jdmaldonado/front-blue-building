@@ -1,4 +1,4 @@
-import { Cpu, CreditCard, DoorOpen, Home, Settings, Users, type LucideIcon } from 'lucide-react';
+import { Cpu, CreditCard, DoorOpen, Home, Settings, ShieldAlert, Users, type LucideIcon } from 'lucide-react';
 import { AppRoute } from '../../../app/navigation';
 
 export type BuildingSection = {
@@ -14,6 +14,7 @@ export const BUILDING_SECTIONS: readonly BuildingSection[] = [
   { to: AppRoute.AdminBuildingApartments, label: 'Apartamentos', icon: Home },
   { to: AppRoute.AdminBuildingUsers, label: 'Usuarios', icon: Users },
   { to: AppRoute.AdminBuildingReaders, label: 'Lectoras', icon: Cpu },
+  { to: AppRoute.AdminBuildingEvents, label: 'Monitoreo', icon: ShieldAlert },
   { to: AppRoute.AdminBuildingSettings, label: 'Ajustes', icon: Settings },
 ];
 

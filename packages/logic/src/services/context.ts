@@ -3,6 +3,7 @@ import type {
   AuthGateway,
   BuildingsGateway,
   CardsGateway,
+  EventsGateway,
   SocketClient,
   UsersGateway,
 } from '@bb/api-client';
@@ -14,6 +15,7 @@ export interface Services {
   accessGateway: AccessGateway;
   buildingsGateway: BuildingsGateway;
   cardsGateway: CardsGateway;
+  eventsGateway: EventsGateway;
   usersGateway: UsersGateway;
   socketClient: SocketClient;
   logger: Logger;

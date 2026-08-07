@@ -12,6 +12,13 @@ import {
   LoginMode,
   NoSpacesAssignedError,
   CardEntrySchema,
+  CriticalEventSchema,
+  EventsContractError,
+  EventsNetworkError,
+  IncidentNotFoundError,
+  IntrusionEventSchema,
+  OpenDoorEventSchema,
+  PagedEventsResponseSchema,
   CardsContractError,
   CardsNetworkError,
   CardsResponseSchema,
@@ -22,6 +29,7 @@ import {
   UnknownAuthError,
   UnknownBuildingsError,
   UnknownCardsError,
+  UnknownEventsError,
   UnknownUsersError,
   UserAccountResponseSchema,
   UserNotFoundError,
@@ -34,6 +42,12 @@ import {
   type Building,
   type Card,
   type CardList,
+  type CriticalEventList,
+  type EventPage,
+  type IntrusionEvent,
+  type OpenDoorEvent,
+  type ResolveIncidentInput,
+  type StartIncidentInput,
   type CreateCardInput,
   type Door,
   type DoorStatuses,
@@ -258,6 +272,11 @@ export class AccessGateway {
 
   // Every door of the building, not only the ones the user can open. The card
   // screen needs them all to pick which reader goes into register mode.
+  //
+  // Careful: this one returns bare door rows. It joins floor and tower without
+  // selecting them and never loads the cameras (DoorServiceV2.ts:12-18), so
+  // `cameras` always parses to [] and `floor` to null. For cameras or floors,
+  // use `getAccessibleDoors`.
   async listBuildingDoors(buildingId: string): Promise<Door[]> {
     const raw = await this.http.post({ path: AccessPath.BuildingDoors, body: { buildingId } });
     return BuildingDoorsResponseSchema.parse(raw);
@@ -516,4 +535,137 @@ function toCardsError(error: unknown): Error {
 function isUserNotVerified(error: HttpError): boolean {
   const body = z.object({ error: z.string() }).catch({ error: '' }).parse(error.body);
   return body.error.includes('UserNotVerified');
+}
+
+const EventsPath = {
+  Critical: '/api/bluebuilding/events/critical/recent',
+  Intrusions: '/api/bluebuilding/events/event-intrusion',
+  OpenDoor: '/api/bluebuilding/events/open-door',
+  IncidentStart: '/api/bluebuilding/event-incident/start',
+  IncidentResolve: '/api/bluebuilding/event-incident/resolve',
+} as const;
+
+export interface EventPageInput {
+  buildingId?: string | null;
+  page: number;
+  limit: number;
+}
+
+function eventsQuery(input: EventPageInput): string {
+  const query = new URLSearchParams({ page: String(input.page), limit: String(input.limit) });
+  if (input.buildingId !== null && input.buildingId !== undefined && input.buildingId !== '') {
+    query.set('buildingId', input.buildingId);
+  }
+  return query.toString();
+}
+
+export class EventsGateway {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly logger: Logger,
+  ) {}
+
+  // Fifteen most recent, no paging and no filters: the API decides what counts
+  // as critical with a fixed blacklist (api/.../EventService.ts:15-17).
+  async listCriticalEvents(): Promise<CriticalEventList> {
+    try {
+      const raw = await this.http.get({ path: EventsPath.Critical });
+      const rows = z.array(z.unknown()).parse(raw);
+      const { items, skipped } = this.readRows(rows, CriticalEventSchema, EventsPath.Critical);
+      return { events: items, skipped };
+    } catch (error) {
+      throw toEventsError(error);
+    }
+  }
+
+  async listIntrusions(input: EventPageInput): Promise<EventPage<IntrusionEvent>> {
+    const path = `${EventsPath.Intrusions}?${eventsQuery(input)}`;
+    try {
+      const raw = await this.http.get({ path });
+      return this.readPage(raw, 'eventIntrusionDetails', IntrusionEventSchema, path);
+    } catch (error) {
+      throw toEventsError(error);
+    }
+  }
+
+  async listOpenDoorEvents(input: EventPageInput): Promise<EventPage<OpenDoorEvent>> {
+    const path = `${EventsPath.OpenDoor}?${eventsQuery(input)}`;
+    try {
+      const raw = await this.http.get({ path });
+      return this.readPage(raw, 'eventOpenDoorDetails', OpenDoorEventSchema, path);
+    } catch (error) {
+      throw toEventsError(error);
+    }
+  }
+
+  async startIncident(input: StartIncidentInput): Promise<void> {
+    try {
+      await this.http.put({ path: EventsPath.IncidentStart, body: input });
+    } catch (error) {
+      throw toEventsError(error);
+    }
+  }
+
+  async resolveIncident(input: ResolveIncidentInput): Promise<void> {
+    try {
+      await this.http.put({ path: EventsPath.IncidentResolve, body: input });
+    } catch (error) {
+      throw toEventsError(error);
+    }
+  }
+
+  private readPage<TItem>(raw: unknown, key: string, schema: z.ZodType<TItem>, path: string): EventPage<TItem> {
+    const envelope = PagedEventsResponseSchema.parse(raw);
+    const rows = z.object({ [key]: z.array(z.unknown()).catch([]) }).parse(raw)[key] as unknown[];
+    const { items, skipped } = this.readRows(rows, schema, path);
+
+    return {
+      items,
+      page: envelope.page,
+      totalPages: envelope.totalPages,
+      totalRecords: envelope.totalRecords,
+      skipped,
+    };
+  }
+
+  // Row by row, like residents and cards: one unreadable record costs that
+  // record, and its reason goes to the log.
+  private readRows<TItem>(
+    rows: unknown[],
+    schema: z.ZodType<TItem>,
+    path: string,
+  ): { items: TItem[]; skipped: number } {
+    const items: TItem[] = [];
+    let skipped = 0;
+
+    for (const row of rows) {
+      const parsed = schema.safeParse(row);
+      if (parsed.success) {
+        items.push(parsed.data);
+        continue;
+      }
+      skipped += 1;
+      this.logger.warn('Event record dropped', { path, issues: parsed.error.issues });
+    }
+
+    return { items, skipped };
+  }
+}
+
+function toEventsError(error: unknown): Error {
+  if (error instanceof z.ZodError) {
+    return new EventsContractError('Events response does not match the contract', { cause: error });
+  }
+  if (error instanceof HttpError) {
+    if (error.status === null) {
+      return new EventsNetworkError('Network error while reading events', { cause: error });
+    }
+    if (error.status === 401) {
+      return new SessionExpiredError('Session is no longer valid', { cause: error });
+    }
+    if (error.status === NOT_FOUND_STATUS) {
+      return new IncidentNotFoundError('There is no incident for that event', { cause: error });
+    }
+  }
+  return new UnknownEventsError('Unexpected error while reading events', { cause: error });
 }

@@ -20,10 +20,12 @@ import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminCardsRouteImport } from './routes/admin/cards'
+import { Route as AdminMonitorRouteImport } from './routes/admin/monitor'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminBuildingsBuildingIdRouteImport } from './routes/admin/buildings.$buildingId'
 import { Route as AdminBuildingsBuildingIdIndexRouteImport } from './routes/admin/buildings.$buildingId/index'
 import { Route as AdminBuildingsBuildingIdApartmentsRouteImport } from './routes/admin/buildings.$buildingId/apartments'
+import { Route as AdminBuildingsBuildingIdEventsRouteImport } from './routes/admin/buildings.$buildingId/events'
 import { Route as AdminBuildingsBuildingIdLiveRouteImport } from './routes/admin/buildings.$buildingId/live'
 import { Route as AdminBuildingsBuildingIdReadersRouteImport } from './routes/admin/buildings.$buildingId/readers'
 import { Route as AdminBuildingsBuildingIdSettingsRouteImport } from './routes/admin/buildings.$buildingId/settings'
@@ -85,6 +87,11 @@ const AdminCardsRoute = AdminCardsRouteImport.update({
   path: '/cards',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMonitorRoute = AdminMonitorRouteImport.update({
+  id: '/monitor',
+  path: '/monitor',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -106,6 +113,12 @@ const AdminBuildingsBuildingIdApartmentsRoute =
   AdminBuildingsBuildingIdApartmentsRouteImport.update({
     id: '/apartments',
     path: '/apartments',
+    getParentRoute: () => AdminBuildingsBuildingIdRoute,
+  } as any)
+const AdminBuildingsBuildingIdEventsRoute =
+  AdminBuildingsBuildingIdEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
     getParentRoute: () => AdminBuildingsBuildingIdRoute,
   } as any)
 const AdminBuildingsBuildingIdLiveRoute =
@@ -155,10 +168,12 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/admin/cards': typeof AdminCardsRoute
+  '/admin/monitor': typeof AdminMonitorRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
   '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
+  '/admin/buildings/$buildingId/events': typeof AdminBuildingsBuildingIdEventsRoute
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
   '/admin/buildings/$buildingId/readers': typeof AdminBuildingsBuildingIdReadersRoute
   '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
@@ -176,8 +191,10 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/admin/cards': typeof AdminCardsRoute
+  '/admin/monitor': typeof AdminMonitorRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/buildings/$buildingId/events': typeof AdminBuildingsBuildingIdEventsRoute
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
   '/admin/buildings/$buildingId/readers': typeof AdminBuildingsBuildingIdReadersRoute
   '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
@@ -198,10 +215,12 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/admin/cards': typeof AdminCardsRoute
+  '/admin/monitor': typeof AdminMonitorRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
   '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
+  '/admin/buildings/$buildingId/events': typeof AdminBuildingsBuildingIdEventsRoute
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
   '/admin/buildings/$buildingId/readers': typeof AdminBuildingsBuildingIdReadersRoute
   '/admin/buildings/$buildingId/settings': typeof AdminBuildingsBuildingIdSettingsRoute
@@ -222,10 +241,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/admin/cards'
+    | '/admin/monitor'
     | '/admin/users'
     | '/admin/'
     | '/admin/buildings/$buildingId'
     | '/admin/buildings/$buildingId/apartments'
+    | '/admin/buildings/$buildingId/events'
     | '/admin/buildings/$buildingId/live'
     | '/admin/buildings/$buildingId/readers'
     | '/admin/buildings/$buildingId/settings'
@@ -243,8 +264,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/admin/cards'
+    | '/admin/monitor'
     | '/admin/users'
     | '/admin'
+    | '/admin/buildings/$buildingId/events'
     | '/admin/buildings/$buildingId/live'
     | '/admin/buildings/$buildingId/readers'
     | '/admin/buildings/$buildingId/settings'
@@ -264,10 +287,12 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/reset-password'
     | '/admin/cards'
+    | '/admin/monitor'
     | '/admin/users'
     | '/admin/'
     | '/admin/buildings/$buildingId'
     | '/admin/buildings/$buildingId/apartments'
+    | '/admin/buildings/$buildingId/events'
     | '/admin/buildings/$buildingId/live'
     | '/admin/buildings/$buildingId/readers'
     | '/admin/buildings/$buildingId/settings'
@@ -365,6 +390,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCardsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/monitor': {
+      id: '/admin/monitor'
+      path: '/monitor'
+      fullPath: '/admin/monitor'
+      preLoaderRoute: typeof AdminMonitorRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
@@ -391,6 +423,13 @@ declare module '@tanstack/react-router' {
       path: '/apartments'
       fullPath: '/admin/buildings/$buildingId/apartments'
       preLoaderRoute: typeof AdminBuildingsBuildingIdApartmentsRouteImport
+      parentRoute: typeof AdminBuildingsBuildingIdRoute
+    }
+    '/admin/buildings/$buildingId/events': {
+      id: '/admin/buildings/$buildingId/events'
+      path: '/events'
+      fullPath: '/admin/buildings/$buildingId/events'
+      preLoaderRoute: typeof AdminBuildingsBuildingIdEventsRouteImport
       parentRoute: typeof AdminBuildingsBuildingIdRoute
     }
     '/admin/buildings/$buildingId/live': {
@@ -472,6 +511,7 @@ const AdminBuildingsBuildingIdApartmentsRouteWithChildren =
 
 interface AdminBuildingsBuildingIdRouteChildren {
   AdminBuildingsBuildingIdApartmentsRoute: typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
+  AdminBuildingsBuildingIdEventsRoute: typeof AdminBuildingsBuildingIdEventsRoute
   AdminBuildingsBuildingIdLiveRoute: typeof AdminBuildingsBuildingIdLiveRoute
   AdminBuildingsBuildingIdReadersRoute: typeof AdminBuildingsBuildingIdReadersRoute
   AdminBuildingsBuildingIdSettingsRoute: typeof AdminBuildingsBuildingIdSettingsRoute
@@ -483,6 +523,7 @@ const AdminBuildingsBuildingIdRouteChildren: AdminBuildingsBuildingIdRouteChildr
   {
     AdminBuildingsBuildingIdApartmentsRoute:
       AdminBuildingsBuildingIdApartmentsRouteWithChildren,
+    AdminBuildingsBuildingIdEventsRoute: AdminBuildingsBuildingIdEventsRoute,
     AdminBuildingsBuildingIdLiveRoute: AdminBuildingsBuildingIdLiveRoute,
     AdminBuildingsBuildingIdReadersRoute: AdminBuildingsBuildingIdReadersRoute,
     AdminBuildingsBuildingIdSettingsRoute:
@@ -498,6 +539,7 @@ const AdminBuildingsBuildingIdRouteWithChildren =
 
 interface AdminRouteChildren {
   AdminCardsRoute: typeof AdminCardsRoute
+  AdminMonitorRoute: typeof AdminMonitorRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminBuildingsBuildingIdRoute: typeof AdminBuildingsBuildingIdRouteWithChildren
@@ -505,6 +547,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCardsRoute: AdminCardsRoute,
+  AdminMonitorRoute: AdminMonitorRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminBuildingsBuildingIdRoute: AdminBuildingsBuildingIdRouteWithChildren,

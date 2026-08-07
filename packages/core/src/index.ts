@@ -5,4 +5,5 @@ export * from './cameras';
 export * from './buildings';
 export * from './cards';
 export * from './readers';
+export * from './events';
 export * from './users';

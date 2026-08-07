@@ -4,9 +4,14 @@ import { Alert, Loading, Tabs, Text } from '../../ui';
 import { DoorDialog, FloorPlan } from './components';
 import { useDoorsDashboard } from './hooks';
 
-export function DoorsDashboardPage() {
+type DoorsDashboardPageProps = {
+  // Name of the door to open with, when someone arrives here pointed at one.
+  initialDoorName?: string;
+};
+
+export function DoorsDashboardPage({ initialDoorName }: DoorsDashboardPageProps) {
   const building = useBuilding();
-  const dashboard = useDoorsDashboard(building.id);
+  const dashboard = useDoorsDashboard(building.id, initialDoorName);
 
   if (dashboard.isPending) {
     return <Loading layout="screen" size="lg" label="Cargando puertas..." />;

@@ -19,12 +19,14 @@ export const AppRoute = {
   AdminBuildingApartments: '/admin/buildings/$buildingId/apartments',
   AdminBuildingApartmentUsers: '/admin/buildings/$buildingId/apartments/$apartmentId/users',
   AdminBuildingUsers: '/admin/buildings/$buildingId/users',
+  AdminBuildingEvents: '/admin/buildings/$buildingId/events',
   AdminBuildingReaders: '/admin/buildings/$buildingId/readers',
   AdminBuildingSettings: '/admin/buildings/$buildingId/settings',
   AdminUsers: '/admin/users',
   // Cards accept `document`, `buildingId` and `doorId` in the query, so the
   // screen can be opened from a user, from a building, or from scratch.
   AdminCards: '/admin/cards',
+  AdminMonitor: '/admin/monitor',
 } as const;
 export type AppRoute = (typeof AppRoute)[keyof typeof AppRoute];
 

@@ -1,4 +1,4 @@
-import { DoorStatus, type Door, type DomainError, type Floor } from '@bb/core';
+import { DoorStatus, findDoorByName, type Door, type DomainError, type Floor } from '@bb/core';
 import {
   selectDoorStatus,
   selectReaderTelemetry,
@@ -50,10 +50,14 @@ export interface DoorsDashboardController {
 
 // Everything the doors screen needs: which floor is on screen, which doors are
 // on it, and their live status. The components only render the result.
-export function useDoorsDashboard(buildingId: string): DoorsDashboardController {
+//
+// `initialDoorName` opens the screen with that door already selected, which is
+// how the monitor sends someone to the camera of an event.
+export function useDoorsDashboard(buildingId: string, initialDoorName?: string): DoorsDashboardController {
   const [floorId, setFloorId] = useState<string | null>(null);
   const [selectedDoorId, setSelectedDoorId] = useState<string | null>(null);
   const [pendingOpen, setPendingOpen] = useState<PendingOpen | null>(null);
+  const [initialDoorApplied, setInitialDoorApplied] = useState(false);
   const toast = useToast();
 
   const doors = useAccessibleDoors(buildingId);
@@ -74,6 +78,26 @@ export function useDoorsDashboard(buildingId: string): DoorsDashboardController 
     buildingId,
     useMemo(() => ({ onError }), [onError]),
   );
+
+  // Runs once, when the doors arrive. After that the screen belongs to whoever
+  // is using it: reselecting on every render would fight their clicks. A door
+  // the user cannot reach simply does not match, and the screen opens as usual.
+  useEffect(() => {
+    if (initialDoorApplied || initialDoorName === undefined || doors.data === undefined) {
+      return;
+    }
+    setInitialDoorApplied(true);
+
+    const target = findDoorByName(doors.data, initialDoorName);
+    if (target === null) {
+      return;
+    }
+    const targetFloorId = target.floor?.id ?? null;
+    if (targetFloorId !== null) {
+      setFloorId(targetFloorId);
+    }
+    setSelectedDoorId(target.id);
+  }, [doors.data, initialDoorName, initialDoorApplied]);
 
   // A new event on the door is the building saying it acted.
   useEffect(() => {
