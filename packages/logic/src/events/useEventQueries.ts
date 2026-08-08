@@ -20,6 +20,15 @@ export interface EventPageQuery {
   limit: number;
 }
 
+// These two lists are expensive on the server: intrusions loads its whole table
+// and open doors counts millions of rows. Refetching them every time the window
+// regains focus meant a click could relaunch both at once. The screen has an
+// explicit refresh button, so freshness stays in the reader's hands.
+const EXPENSIVE_LIST_OPTIONS = {
+  refetchOnWindowFocus: false,
+  staleTime: 60_000,
+} as const;
+
 // `keepPreviousData` on purpose: paging through a monitor should not blank the
 // table on every step.
 export function useIntrusionEvents(input: EventPageQuery): UseQueryResult<EventPage<IntrusionEvent>> {
@@ -29,6 +38,7 @@ export function useIntrusionEvents(input: EventPageQuery): UseQueryResult<EventP
     queryKey: eventKeys.intrusions(input.buildingId ?? '', input.page),
     queryFn: () => eventsGateway.listIntrusions(input),
     placeholderData: (previous) => previous,
+    ...EXPENSIVE_LIST_OPTIONS,
   });
 }
 
@@ -39,5 +49,6 @@ export function useOpenDoorEvents(input: EventPageQuery): UseQueryResult<EventPa
     queryKey: eventKeys.openDoor(input.buildingId ?? '', input.page),
     queryFn: () => eventsGateway.listOpenDoorEvents(input),
     placeholderData: (previous) => previous,
+    ...EXPENSIVE_LIST_OPTIONS,
   });
 }

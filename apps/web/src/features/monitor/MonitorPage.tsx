@@ -2,6 +2,7 @@ import { MonitorLens, type MonitorSearch } from '@bb/core';
 import { eventKeys, useBuildings, useNewEventsSignal } from '@bb/logic';
 import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
+import { useMemo } from 'react';
 import { IconButton, Select, Tabs, type TabItem } from '../../ui';
 import { CriticalEventsLens, IntrusionsLens, NewEventsBanner, OpenDoorLens } from './components';
 
@@ -31,10 +32,15 @@ export function MonitorPage({ search, onSearchChange, lockedBuildingId }: Monito
     void queryClient.invalidateQueries({ queryKey: eventKeys.all });
   };
 
-  const buildingOptions = [
-    { value: '', label: 'Todos los edificios' },
-    ...(buildings.data ?? []).map((building) => ({ value: building.id, label: building.name })),
-  ];
+  // Rebuilt on every render this list looks new to `Select` even when nothing
+  // changed, and React re-renders it and every option with it.
+  const buildingOptions = useMemo(
+    () => [
+      { value: '', label: 'Todos los edificios' },
+      ...(buildings.data ?? []).map((building) => ({ value: building.id, label: building.name })),
+    ],
+    [buildings.data],
+  );
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-4">

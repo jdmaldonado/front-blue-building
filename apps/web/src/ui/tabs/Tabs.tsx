@@ -43,7 +43,10 @@ export function Tabs<TValue extends string>({
 
     const update = () => {
       const remaining = list.scrollWidth - list.clientWidth - list.scrollLeft;
-      setReach({ start: list.scrollLeft > 1, end: remaining > 1 });
+      const next = { start: list.scrollLeft > 1, end: remaining > 1 };
+      // Compare the values, not the object. A fresh object every scroll frame
+      // and every resize notification would re-render even when nothing moved.
+      setReach((current) => (current.start === next.start && current.end === next.end ? current : next));
     };
 
     update();

@@ -582,7 +582,7 @@ export class EventsGateway {
     const path = `${EventsPath.Intrusions}?${eventsQuery(input)}`;
     try {
       const raw = await this.http.get({ path });
-      return this.readPage(raw, 'eventIntrusionDetails', IntrusionEventSchema, path);
+      return this.readPage(raw, 'eventIntrusionDetails', IntrusionEventSchema, path, input.limit);
     } catch (error) {
       throw toEventsError(error);
     }
@@ -592,7 +592,7 @@ export class EventsGateway {
     const path = `${EventsPath.OpenDoor}?${eventsQuery(input)}`;
     try {
       const raw = await this.http.get({ path });
-      return this.readPage(raw, 'eventOpenDoorDetails', OpenDoorEventSchema, path);
+      return this.readPage(raw, 'eventOpenDoorDetails', OpenDoorEventSchema, path, input.limit);
     } catch (error) {
       throw toEventsError(error);
     }
@@ -614,13 +614,29 @@ export class EventsGateway {
     }
   }
 
-  private readPage<TItem>(raw: unknown, key: string, schema: z.ZodType<TItem>, path: string): EventPage<TItem> {
+  private readPage<TItem>(
+    raw: unknown,
+    key: string,
+    schema: z.ZodType<TItem>,
+    path: string,
+    limit: number,
+  ): EventPage<TItem> {
     const envelope = PagedEventsResponseSchema.parse(raw);
-    const rows = z.object({ [key]: z.array(z.unknown()).catch([]) }).parse(raw)[key] as unknown[];
+    const all = z.object({ [key]: z.array(z.unknown()).catch([]) }).parse(raw)[key] as unknown[];
+
+    // Never render more than a page worth of rows, whatever the API sends. A
+    // list of tens of thousands of rows freezes the tab on the next render, and
+    // the screen cannot page through what it never asked for.
+    const rows = all.length > limit ? all.slice(0, limit) : all;
+    if (all.length > limit) {
+      this.logger.warn('Paged endpoint ignored its limit', { path, limit, received: all.length });
+    }
+
     const { items, skipped } = this.readRows(rows, schema, path);
 
     return {
       items,
+      received: all.length,
       page: envelope.page,
       totalPages: envelope.totalPages,
       totalRecords: envelope.totalRecords,

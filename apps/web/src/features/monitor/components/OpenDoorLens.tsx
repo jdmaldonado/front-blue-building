@@ -13,9 +13,17 @@ type OpenDoorLensProps = {
 
 const PAGE_SIZE = 40;
 
+// Same array on every render, so the table does not rebuild its rows while the
+// first page is still loading.
+const NO_ROWS: OpenDoorEvent[] = [];
+
 export function OpenDoorLens({ buildingId }: OpenDoorLensProps) {
   const pagination = useServerPagination(PAGE_SIZE);
-  const events = useOpenDoorEvents({ buildingId, page: pagination.page, limit: pagination.limit });
+  const events = useOpenDoorEvents({
+    buildingId,
+    page: pagination.page,
+    limit: pagination.limit,
+  });
   const [photo, setPhoto] = useState<OpenDoorEvent | null>(null);
 
   const columns = useMemo<Array<ColumnDef<OpenDoorEvent, unknown>>>(
@@ -121,9 +129,16 @@ export function OpenDoorLens({ buildingId }: OpenDoorLensProps) {
         </Alert>
       ) : null}
 
+      {page !== undefined && page.received > PAGE_SIZE ? (
+        <Alert variant="warning" title="El servidor mandó la lista entera">
+          Pedimos {PAGE_SIZE} aperturas y llegaron {page.received}. Mostramos solo las primeras {PAGE_SIZE} para que la
+          pantalla siga respondiendo, pero el problema está en el endpoint.
+        </Alert>
+      ) : null}
+
       <DataTable
         columns={columns}
-        data={page?.items ?? []}
+        data={page?.items ?? NO_ROWS}
         isPending={events.isPending}
         total={page === undefined ? undefined : `${page.totalRecords} aperturas`}
         empty={

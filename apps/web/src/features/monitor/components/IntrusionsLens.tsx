@@ -16,9 +16,17 @@ type IntrusionsLensProps = {
 // so asking for more only makes it slower.
 const PAGE_SIZE = 10;
 
+// Same array on every render, so the table does not rebuild its rows while the
+// first page is still loading.
+const NO_ROWS: IntrusionEvent[] = [];
+
 export function IntrusionsLens({ buildingId }: IntrusionsLensProps) {
   const pagination = useServerPagination(PAGE_SIZE);
-  const intrusions = useIntrusionEvents({ buildingId, page: pagination.page, limit: pagination.limit });
+  const intrusions = useIntrusionEvents({
+    buildingId,
+    page: pagination.page,
+    limit: pagination.limit,
+  });
   const [selected, setSelected] = useState<IntrusionEvent | null>(null);
 
   const columns = useMemo<Array<ColumnDef<IntrusionEvent, unknown>>>(
@@ -74,7 +82,7 @@ export function IntrusionsLens({ buildingId }: IntrusionsLensProps) {
           <div className="flex justify-end">
             <Button intent="neutral" appearance="outline" size="sm" onClick={() => setSelected(row.original)}>
               <Images size={16} />
-              {row.original.imageUrls.length} fotos
+              {row.original.imageCount} fotos
             </Button>
           </div>
         ),
@@ -103,7 +111,7 @@ export function IntrusionsLens({ buildingId }: IntrusionsLensProps) {
 
       <DataTable
         columns={columns}
-        data={page?.items ?? []}
+        data={page?.items ?? NO_ROWS}
         isPending={intrusions.isPending}
         getRowId={(row) => row.id}
         total={page === undefined ? undefined : `${page.totalRecords} secuencias`}

@@ -6,6 +6,7 @@ import {
   getSortedRowModel,
   useReactTable,
   type ColumnDef,
+  type ColumnFiltersState,
   type RowData,
   type SortingState,
 } from '@tanstack/react-table';
@@ -71,6 +72,12 @@ type DataTableProps<TData> = {
 
 const SKELETON_ROWS = 5;
 
+// Same array on every render. A fresh `[]` here is a different dependency for
+// the table's filtered row model, which recomputes, asks to reset the page
+// index, writes state, and renders again: a loop that never lets go of the
+// thread.
+const NO_COLUMN_FILTERS: ColumnFiltersState = [];
+
 export function DataTable<TData>({
   columns,
   data,
@@ -106,7 +113,7 @@ export function DataTable<TData>({
     state: {
       sorting,
       globalFilter: filters?.search,
-      columnFilters: filters?.columnFilters ?? [],
+      columnFilters: filters?.columnFilters ?? NO_COLUMN_FILTERS,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: filters?.setColumnFilters,
@@ -116,6 +123,10 @@ export function DataTable<TData>({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: paginated ? getPaginationRowModel() : undefined,
     initialState: paginated ? { pagination: { pageIndex: 0, pageSize } } : undefined,
+    // Without `pageSize` the caller pages on the server and owns the page
+    // number. Saying so stops the table from resetting a page index that is not
+    // its own after every change to the rows.
+    manualPagination: !paginated,
   });
 
   const rows = table.getRowModel().rows;

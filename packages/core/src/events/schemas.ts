@@ -37,38 +37,73 @@ export type CriticalEvent = z.infer<typeof CriticalEventSchema>;
 
 // A row here is not one event: it is every photo of the same episode, grouped
 // by camera and motion sequence.
-export const IntrusionEventSchema = z.object({
-  id: IdSchema,
+//
+// The grouping has no ceiling, and when `intrusionMotionSequenceId` is missing
+// every capture of a camera lands in the same row
+// (api/src/2.0/cameras/controller/EventIntrusionController.ts:15). Keeping all
+// of them alive in the query cache is what makes the screen stop responding, so
+// the row keeps a page worth of photos and remembers how many there were.
+const MAX_SEQUENCE_URLS = 60;
 
-  cameraId: IdSchema.nullish().catch(null),
-  cameraName: z.string().nullish().catch(null),
-  buildingId: IdSchema.nullish().catch(null),
-  buildingName: z.string().nullish().catch(null),
-  eventType: z.string().nullish().catch(null),
-  intrusionSequenceId: z.union([z.string(), z.number()]).nullish().catch(null),
-  imageUrls: z.array(z.string()).catch([]),
-  startTime: z.string().nullish().catch(null),
-  endTime: z.string().nullish().catch(null),
-});
+export const IntrusionEventSchema = z
+  .object({
+    id: IdSchema,
+
+    cameraId: IdSchema.nullish().catch(null),
+    cameraName: z.string().nullish().catch(null),
+    buildingId: IdSchema.nullish().catch(null),
+    buildingName: z.string().nullish().catch(null),
+    eventType: z.string().nullish().catch(null),
+    intrusionSequenceId: z.union([z.string(), z.number()]).nullish().catch(null),
+    imageUrls: z.array(z.string()).catch([]),
+    startTime: z.string().nullish().catch(null),
+    endTime: z.string().nullish().catch(null),
+  })
+  .transform((row) => ({
+    ...row,
+    imageUrls: row.imageUrls.length > MAX_SEQUENCE_URLS ? row.imageUrls.slice(0, MAX_SEQUENCE_URLS) : row.imageUrls,
+    imageCount: row.imageUrls.length,
+  }));
 export type IntrusionEvent = z.infer<typeof IntrusionEventSchema>;
 
-export const OpenDoorEventSchema = z.object({
-  // Null when the capture failed: the API still returns the row.
-  id: IdSchema.nullish().catch(null),
+// Half of this row comes in snake_case and half in camelCase: the DTO mixes both
+// (api/src/2.0/cameras/dtos/EventOpenDoor.dto.ts). Reading only camelCase left
+// the photo and both timestamps empty on every row, quietly, because each field
+// falls back to null on its own.
+export const OpenDoorEventSchema = z
+  .object({
+    // Null when the capture failed: the API still returns the row.
+    id: IdSchema.nullish().catch(null),
 
-  imageUrl: z.string().nullish().catch(null),
-  peopleDetected: z.number().nullish().catch(null),
-  timestampCamera: z.string().nullish().catch(null),
-  timestampEvent: z.string().nullish().catch(null),
-  createdAt: z.string().nullish().catch(null),
-  eventType: z.string().nullish().catch(null),
-  eventOrigin: EventOriginSchema.nullish().catch(null),
-  doorName: z.string().nullish().catch(null),
-  userName: z.string().nullish().catch(null),
-  apartment: z.string().nullish().catch(null),
-  buildingId: IdSchema.nullish().catch(null),
-  buildingName: z.string().nullish().catch(null),
-});
+    image_url: z.string().nullish().catch(null),
+    people_detected: z.number().nullish().catch(null),
+    timestamp_camera: z.string().nullish().catch(null),
+    timestamp_event: z.string().nullish().catch(null),
+    created_at: z.string().nullish().catch(null),
+
+    eventType: z.string().nullish().catch(null),
+    eventOrigin: EventOriginSchema.nullish().catch(null),
+    doorName: z.string().nullish().catch(null),
+    userName: z.string().nullish().catch(null),
+    apartment: z.string().nullish().catch(null),
+    buildingId: IdSchema.nullish().catch(null),
+    buildingName: z.string().nullish().catch(null),
+  })
+  .transform((row) => ({
+    id: row.id,
+    imageUrl: row.image_url,
+    peopleDetected: row.people_detected,
+    timestampCamera: row.timestamp_camera,
+    timestampEvent: row.timestamp_event,
+    createdAt: row.created_at,
+    eventType: row.eventType,
+    eventOrigin: row.eventOrigin,
+    doorName: row.doorName,
+    userName: row.userName,
+    apartment: row.apartment,
+    buildingId: row.buildingId,
+    buildingName: row.buildingName,
+  }));
 export type OpenDoorEvent = z.infer<typeof OpenDoorEventSchema>;
 
 // The envelope both paged endpoints share. The rows come as `unknown` so each
@@ -82,6 +117,9 @@ export const PagedEventsResponseSchema = z.object({
 
 export interface EventPage<TItem> {
   items: TItem[];
+  // Rows the API actually sent, before we cut the list down to one page. More
+  // than `limit` means the endpoint ignored it.
+  received: number;
   page: number;
   totalPages: number;
   totalRecords: number;
