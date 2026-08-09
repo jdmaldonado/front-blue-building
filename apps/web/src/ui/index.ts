@@ -114,6 +114,15 @@ export { Pagination, paginationStatusVariants, paginationVariants } from './pagi
 export type { PaginationVariants } from './pagination';
 
 export {
+  PhotoInput,
+  photoInputHintVariants,
+  photoInputSizes,
+  photoInputTriggerVariants,
+  photoInputVariants,
+} from './photo-input';
+export type { PhotoInputSize, PhotoInputVariants } from './photo-input';
+
+export {
   RadioGroup,
   radioGroupAppearances,
   radioGroupDotVariants,

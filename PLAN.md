@@ -4,7 +4,7 @@ Estado vivo de la migración de `front` (React 16, viejo) a `front-bluebuilding`
 Se actualiza al cerrar cada fase. Para entender el sistema, leer antes
 `../bluebuilding-docs/` (empezar por `CLAUDE.md` y `README.md`).
 
-**Última actualización:** 2026-08-06
+**Última actualización:** 2026-08-09
 
 ## Cómo se trabaja
 
@@ -290,6 +290,52 @@ el endpoint sí entiende.
 - Los eventos sin puerta —emergencia médica desde la app— no ofrecen cámara. No
   hay ninguna que ofrecer.
 
+### Fase 9 — Registro de propietarios y residentes
+
+Las dos pantallas públicas con las que alguien entra al sistema por primera vez:
+`/register/owner` y `/register/resident`. Enlazadas desde el login, solo en modo
+residente. Las de visitante se dejan para el bloque de portería, que es su
+contexto real.
+
+En el panel viejo son dos archivos de 557 y 554 líneas casi idénticos. Aquí es un
+solo formulario con tres diferencias, que salen del rol: el endpoint
+(`/owner` contra `/users`), qué apartamentos lista (`active=false` para el
+propietario, que reclama uno sin líder; `active=true` para el residente) y quién
+aprueba después.
+
+- Dominio en `packages/core/src/registration`: los ocho `DocumentType` que la API
+  acepta (`api/src/entity/User.ts:28-37`), `ApartmentRole`, `APARTMENT_LIST_ACTIVE`
+  y los schemas del formulario. Los límites son los mismos que valida el backend
+  (`register_apartment_user_form.ts:5-31`), así que nada pasa aquí para caer allá.
+- `RegistrationGateway` con la cascada y el alta. Las cinco rutas son públicas
+  (`api/src/routes/api.ts:83-115`): ninguna lleva `checkJwt`.
+- Primitivo `PhotoInput` en `ui`: la foto con vista previa. El `File` no cabe en
+  `core`, que no tiene tipos del DOM, así que viaja en el input del gateway, como
+  ya hacía `ValidateUserInput`.
+- `RegistrationForm` recibe el apartamento como unión: `{ mode: 'pick' }` pinta la
+  cascada, `{ mode: 'fixed', apartmentId }` la esconde. La pantalla lee
+  `apartmentId` de la query, igual que `/admin/cards`. Es el gancho para que
+  mañana un residente inscriba desde dentro: cambia de dónde sale ese id, no el
+  formulario.
+- Los términos y condiciones se copiaron palabra por palabra a `TermsContent`. Es
+  un texto legal: se reformatea, no se reescribe.
+
+Tres arreglos sobre el viejo: hay pantalla de éxito que explica que la solicitud
+queda pendiente de aprobación —antes empujaba a `/login` en silencio
+(`ownerRegister.js:420`)—, el "ya existe" se marca sobre el campo que lo causó, y
+el prefijo `+57` se anuncia en vez de pegarse a escondidas (`ownerRegister.js:379`).
+
+**Avisos que vienen del backend**: `passwordConfirmation` viaja porque la API lo
+declara, pero nunca lo compara; la comparación es solo nuestra. Y el registro de
+residente **falla si el apartamento no tiene líder**
+(`api/src/controllers/apartments/users/controller.ts:52-56`), con un 500 y un
+mensaje en español, sin código que distinguirlo: por eso ese caso se explica desde
+el apartamento inactivo, no desde el error.
+
+**Pendiente**: el formulario cuelga de `_auth`, que redirige a quien ya tiene
+sesión. El día que un residente inscriba desde dentro de la app, esa ruta tendrá
+que salir de ahí.
+
 ## Fases siguientes
 
 ### Barrido visual pendiente
@@ -303,11 +349,31 @@ radios, y dos cosas que no se pueden comprobar en el emulador.
   cada pantalla, no solo las que se estaban tocando esos días.
 - En un teléfono real: los `<select>` nativos, para decidir si hace falta un
   desplegable propio, y el paso `field` de 16px que evita el zoom de Safari.
+- Las dos pantallas de registro: se cerraron con typecheck, lint y build, pero
+  nadie las ha abierto todavía en el navegador ni ha enviado un registro real.
 - Con una lectora real: el ciclo `card:setup` → `read_tag` de punta a punta, y si
   `POST /api/bluebuilding/doors` responde una lista pelada o envuelta en `doors`
   (hoy se aceptan las dos formas porque no había manera de saberlo).
 
-### Fase 9 — Cierre
+### Lo que queda del front viejo
+
+Con el registro dentro, lo que sigue sin migrar son las pantallas que no son ni
+del panel de admin ni del residente:
+
+- Registro de visitante y visitante express (`/apartment/visitor/register`,
+  `.../express/register`), junto a la portería.
+- Panel del edificio: aprobar solicitudes de acceso, que es el aterrizaje de
+  `ADMINISTRADOR` y `RESIDENTE_LIDER` (`bluebuilding-docs/05-panel-edificio/`).
+- Códigos de visita (`/visits/code`, `/building/visits/code/confirm`).
+- Portería: `/acceso` y `/acceso-visitante`.
+- Citófono y WebRTC (`/llamada`, `/llamada-visitante/...`, `components/Call/`).
+  Antes de tocarlo hay que decidir qué pasa con el proveedor externo que hoy lo
+  reemplaza (`bluebuilding-docs/02-flujos/llamadas-citofono.md:11`).
+- `landingPathFor` solo reparte Admin y Usuario. El viejo `getLoggedPath`
+  (`front/src/utils/services/authService.js:87`) reparte doce roles, y sin esa
+  rama las cuatro primeras no tienen entrada.
+
+### Fase 10 — Cierre
 
 Revisión de movimiento reducido, accesibilidad, responsive a 390 / 768 / 1280 y
 PWA.

@@ -31,7 +31,10 @@ export function Tabs<TValue extends string>({
   className,
 }: TabsProps<TValue>) {
   const listRef = useRef<HTMLDivElement>(null);
-  const [reach, setReach] = useState<{ start: boolean; end: boolean }>({ start: false, end: false });
+  const [reach, setReach] = useState<{ start: boolean; end: boolean }>({
+    start: false,
+    end: false,
+  });
 
   // A scrollable strip looks exactly like a full one until you try it. Measure
   // what is left on each side and fade only that side.

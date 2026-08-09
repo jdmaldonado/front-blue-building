@@ -4,6 +4,10 @@ export const AppRoute = {
   Login: '/login',
   ForgotPassword: '/forgot-password',
   ResetPassword: '/reset-password',
+  // Two doors into the same form. Both accept `apartmentId` in the query, so a
+  // link can carry the apartment already chosen.
+  RegisterOwner: '/register/owner',
+  RegisterResident: '/register/resident',
   // The API email still links here (api/src/services/EmailService.ts:181).
   // The route only forwards to ResetPassword with the token.
   LegacyResetPassword: '/reset_password',

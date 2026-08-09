@@ -22,6 +22,8 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminCardsRouteImport } from './routes/admin/cards'
 import { Route as AdminMonitorRouteImport } from './routes/admin/monitor'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AuthRegisterOwnerRouteImport } from './routes/_auth/register.owner'
+import { Route as AuthRegisterResidentRouteImport } from './routes/_auth/register.resident'
 import { Route as AdminBuildingsBuildingIdRouteImport } from './routes/admin/buildings.$buildingId'
 import { Route as AdminBuildingsBuildingIdIndexRouteImport } from './routes/admin/buildings.$buildingId/index'
 import { Route as AdminBuildingsBuildingIdApartmentsRouteImport } from './routes/admin/buildings.$buildingId/apartments'
@@ -97,6 +99,16 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AdminRoute,
 } as any)
+const AuthRegisterOwnerRoute = AuthRegisterOwnerRouteImport.update({
+  id: '/register/owner',
+  path: '/register/owner',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthRegisterResidentRoute = AuthRegisterResidentRouteImport.update({
+  id: '/register/resident',
+  path: '/register/resident',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AdminBuildingsBuildingIdRoute =
   AdminBuildingsBuildingIdRouteImport.update({
     id: '/buildings/$buildingId',
@@ -171,6 +183,8 @@ export interface FileRoutesByFullPath {
   '/admin/monitor': typeof AdminMonitorRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/register/owner': typeof AuthRegisterOwnerRoute
+  '/register/resident': typeof AuthRegisterResidentRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
   '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
   '/admin/buildings/$buildingId/events': typeof AdminBuildingsBuildingIdEventsRoute
@@ -194,6 +208,8 @@ export interface FileRoutesByTo {
   '/admin/monitor': typeof AdminMonitorRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
+  '/register/owner': typeof AuthRegisterOwnerRoute
+  '/register/resident': typeof AuthRegisterResidentRoute
   '/admin/buildings/$buildingId/events': typeof AdminBuildingsBuildingIdEventsRoute
   '/admin/buildings/$buildingId/live': typeof AdminBuildingsBuildingIdLiveRoute
   '/admin/buildings/$buildingId/readers': typeof AdminBuildingsBuildingIdReadersRoute
@@ -218,6 +234,8 @@ export interface FileRoutesById {
   '/admin/monitor': typeof AdminMonitorRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/_auth/register/owner': typeof AuthRegisterOwnerRoute
+  '/_auth/register/resident': typeof AuthRegisterResidentRoute
   '/admin/buildings/$buildingId': typeof AdminBuildingsBuildingIdRouteWithChildren
   '/admin/buildings/$buildingId/apartments': typeof AdminBuildingsBuildingIdApartmentsRouteWithChildren
   '/admin/buildings/$buildingId/events': typeof AdminBuildingsBuildingIdEventsRoute
@@ -244,6 +262,8 @@ export interface FileRouteTypes {
     | '/admin/monitor'
     | '/admin/users'
     | '/admin/'
+    | '/register/owner'
+    | '/register/resident'
     | '/admin/buildings/$buildingId'
     | '/admin/buildings/$buildingId/apartments'
     | '/admin/buildings/$buildingId/events'
@@ -267,6 +287,8 @@ export interface FileRouteTypes {
     | '/admin/monitor'
     | '/admin/users'
     | '/admin'
+    | '/register/owner'
+    | '/register/resident'
     | '/admin/buildings/$buildingId/events'
     | '/admin/buildings/$buildingId/live'
     | '/admin/buildings/$buildingId/readers'
@@ -290,6 +312,8 @@ export interface FileRouteTypes {
     | '/admin/monitor'
     | '/admin/users'
     | '/admin/'
+    | '/_auth/register/owner'
+    | '/_auth/register/resident'
     | '/admin/buildings/$buildingId'
     | '/admin/buildings/$buildingId/apartments'
     | '/admin/buildings/$buildingId/events'
@@ -404,6 +428,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_auth/register/owner': {
+      id: '/_auth/register/owner'
+      path: '/register/owner'
+      fullPath: '/register/owner'
+      preLoaderRoute: typeof AuthRegisterOwnerRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/register/resident': {
+      id: '/_auth/register/resident'
+      path: '/register/resident'
+      fullPath: '/register/resident'
+      preLoaderRoute: typeof AuthRegisterResidentRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/admin/buildings/$buildingId': {
       id: '/admin/buildings/$buildingId'
       path: '/buildings/$buildingId'
@@ -481,12 +519,16 @@ interface AuthRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthRegisterOwnerRoute: typeof AuthRegisterOwnerRoute
+  AuthRegisterResidentRoute: typeof AuthRegisterResidentRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthRegisterOwnerRoute: AuthRegisterOwnerRoute,
+  AuthRegisterResidentRoute: AuthRegisterResidentRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)

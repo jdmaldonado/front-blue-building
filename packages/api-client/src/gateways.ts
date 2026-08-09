@@ -1,9 +1,19 @@
 import {
   AdminLoginResponseSchema,
+  ApartmentClosedError,
+  ApartmentNotFoundError,
+  ApartmentRole,
   ApartmentSchema,
   AuthNetworkError,
   BuildingSchema,
   BuildingsNetworkError,
+  DuplicateRegistrationError,
+  PHONE_COUNTRY_PREFIX,
+  RegistrationContractError,
+  RegistrationNetworkError,
+  RegistrationRejectedError,
+  TowerSchema,
+  UnknownRegistrationError,
   InvalidResetTokenError,
   DoorSchema,
   DoorStatusesSchema,
@@ -55,9 +65,11 @@ import {
   type ForgotPasswordInput,
   type LoginInput,
   type MaintenanceInput,
+  type RegistrationDetails,
   type ResetPasswordInput,
   type ResidentDetails,
   type ResidentList,
+  type Tower,
   type UpdateCardInput,
   type UserAccount,
   type SetResidentActiveInput,
@@ -684,4 +696,158 @@ function toEventsError(error: unknown): Error {
     }
   }
   return new UnknownEventsError('Unexpected error while reading events', { cause: error });
+}
+
+// The registration lives outside the session: every one of these routes is
+// public (api/src/routes/api.ts:83-115), which is also what lets a logged-in
+// resident open the same form later on.
+const RegistrationPath = {
+  Buildings: '/api/buildings',
+} as const;
+
+function towersPath(buildingId: string): string {
+  return `/api/buildings/${buildingId}/towers`;
+}
+
+function floorsPath(towerId: string): string {
+  return `/api/towers/${towerId}/floors`;
+}
+
+function floorApartmentsPath(towerId: string, active: boolean): string {
+  return `/api/floors/${towerId}/apartments?active=${String(active)}`;
+}
+
+function registerPath(role: ApartmentRole, apartmentId: string): string {
+  switch (role) {
+    case ApartmentRole.Owner:
+      return `/api/apartments/${apartmentId}/owner`;
+    case ApartmentRole.Resident:
+      return `/api/apartments/${apartmentId}/users`;
+  }
+}
+
+// The photo is a `File`, so this input cannot live in `core`: that package has
+// no DOM types.
+export interface RegisterApartmentUserInput extends RegistrationDetails {
+  role: ApartmentRole;
+  apartmentId: string;
+  photo: File;
+}
+
+// `{ buildings: [...] }` here, unlike the admin list, which answers the array
+// directly (api/src/controllers/buildings/list_buildings_dto.ts:3).
+const PublicBuildingsResponseSchema = z.object({ buildings: z.array(BuildingSchema) });
+
+const UNPROCESSABLE_STATUS = 422;
+const FORBIDDEN_STATUS = 403;
+
+// What the API sends when it refuses a form: a list of properties, either from
+// class-validator or from a unique index (api/src/errors/ValidationError.ts:1,
+// api/src/errors/UniqueConstraintError.ts:1).
+const ApiFieldErrorsSchema = z.object({
+  errors: z.array(z.object({ property: z.string(), message: z.string() })),
+});
+
+export class RegistrationGateway {
+  constructor(private readonly http: HttpClient) {}
+
+  async listBuildings(): Promise<Building[]> {
+    try {
+      const raw = await this.http.get({ path: RegistrationPath.Buildings });
+      return PublicBuildingsResponseSchema.parse(raw).buildings;
+    } catch (error) {
+      throw toRegistrationError(error);
+    }
+  }
+
+  async listTowers(buildingId: string): Promise<Tower[]> {
+    try {
+      const raw = await this.http.get({ path: towersPath(buildingId) });
+      return z.array(TowerSchema).parse(raw);
+    } catch (error) {
+      throw toRegistrationError(error);
+    }
+  }
+
+  // Same endpoint as `AccessGateway.getTowerFloors`, on purpose: this one turns
+  // a failure into a registration error, and the person filling this form has
+  // no session to lose.
+  async listFloors(towerId: string): Promise<Floor[]> {
+    try {
+      const raw = await this.http.get({ path: floorsPath(towerId) });
+      return z.array(FloorSchema).parse(raw);
+    } catch (error) {
+      throw toRegistrationError(error);
+    }
+  }
+
+  // An owner claims an apartment that has no leader yet, so that form asks for
+  // the inactive ones. See APARTMENT_LIST_ACTIVE.
+  async listApartments(input: { floorId: string; active: boolean }): Promise<Apartment[]> {
+    try {
+      const raw = await this.http.get({ path: floorApartmentsPath(input.floorId, input.active) });
+      return z.array(ApartmentSchema).parse(raw);
+    } catch (error) {
+      throw toRegistrationError(error);
+    }
+  }
+
+  // Multipart, because the photo travels with the form. The confirmation field
+  // goes out too: the API declares it, and leaving it out of a form it expects
+  // is asking for a surprise, even though it never compares the two.
+  async register(input: RegisterApartmentUserInput): Promise<void> {
+    const body = new FormData();
+    body.set('name', input.name);
+    body.set('cedula', input.cedula);
+    body.set('documentType', input.documentType);
+    body.set('email', input.email);
+    body.set('phone', `${PHONE_COUNTRY_PREFIX}${input.phone}`);
+    body.set('password', input.password);
+    body.set('passwordConfirmation', input.password);
+    body.set('apartmentId', input.apartmentId);
+    body.set('photo', input.photo);
+
+    try {
+      await this.http.post({ path: registerPath(input.role, input.apartmentId), body });
+    } catch (error) {
+      throw toRegistrationError(error);
+    }
+  }
+}
+
+function toRegistrationError(error: unknown): Error {
+  if (error instanceof z.ZodError) {
+    return new RegistrationContractError('Registration response does not match the contract', { cause: error });
+  }
+  if (error instanceof HttpError) {
+    if (error.status === null) {
+      return new RegistrationNetworkError('Network error while registering', { cause: error });
+    }
+    if (error.status === NOT_FOUND_STATUS) {
+      return new ApartmentNotFoundError('That apartment no longer exists', { cause: error });
+    }
+    if (error.status === FORBIDDEN_STATUS) {
+      return new ApartmentClosedError('The apartment is not taking requests', { cause: error });
+    }
+    if (error.status === UNPROCESSABLE_STATUS) {
+      return toFieldError(error);
+    }
+  }
+  return new UnknownRegistrationError('Unexpected error while registering', { cause: error });
+}
+
+function toFieldError(error: HttpError): Error {
+  const body = ApiFieldErrorsSchema.safeParse(error.body);
+  if (!body.success) {
+    return new RegistrationRejectedError([], 'The API rejected the form', { cause: error });
+  }
+
+  const duplicate = body.data.errors.find((item) => item.message.includes('already exists'));
+  if (duplicate) {
+    const field = duplicate.property === 'cedula' || duplicate.property === 'email' ? duplicate.property : null;
+    return new DuplicateRegistrationError(field, 'Somebody registered with that value already', { cause: error });
+  }
+
+  const fields = body.data.errors.map((item) => item.property);
+  return new RegistrationRejectedError(fields, 'The API rejected the form', { cause: error });
 }

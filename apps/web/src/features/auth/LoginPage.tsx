@@ -3,7 +3,7 @@ import { useLogin } from '@bb/logic';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useState, type SubmitEvent } from 'react';
 import { AppRoute, landingPathFor } from '../../app/navigation';
-import { Alert, Button, Field, Input, RadioGroup, linkVariants, type RadioOption } from '../../ui';
+import { Alert, Button, Field, Input, RadioGroup, Text, linkVariants, type RadioOption } from '../../ui';
 import { AuthHeading } from './components';
 import { loginErrorMessage } from './lib';
 
@@ -131,6 +131,24 @@ export function LoginPage() {
           {login.isSuccess ? 'Acceso concedido' : login.isPending ? 'Entrando...' : 'Entrar'}
         </Button>
       </form>
+
+      {/* Registration is for residents only: an admin account is created by
+          Blue Building, never from here. */}
+      {mode === LoginMode.Usuario ? (
+        <div className="flex flex-col gap-2 border-(--border-default) border-t pt-5">
+          <Text as="span" size="body-sm" tone="secondary">
+            ¿Es la primera vez? Regístrate como...
+          </Text>
+          <div className="flex flex-wrap gap-x-5 gap-y-1">
+            <Link to={AppRoute.RegisterOwner} className={linkVariants()}>
+              Propietario o líder
+            </Link>
+            <Link to={AppRoute.RegisterResident} className={linkVariants()}>
+              Residente o colaborador
+            </Link>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

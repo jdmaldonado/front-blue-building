@@ -131,6 +131,13 @@ export const componentTokens = {
   'avatar-foreground': 'accent',
   'avatar-radius': 'radius-1',
 
+  // The frame that holds a picked photo, and the empty box before there is one.
+  'photo-input-bg': 'surface-sunken',
+  'photo-input-border': 'border-default',
+  'photo-input-border-focus': 'border-focus',
+  'photo-input-foreground': 'text-muted',
+  'photo-input-radius': 'radius-1',
+
   'icon-button-foreground': 'text-secondary',
   'icon-button-bg-hover': 'surface-sunken',
   'icon-button-radius': 'radius-1',
