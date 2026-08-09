@@ -400,6 +400,30 @@ espera un `buildingId` (`front/src/utils/services/authService.js:71`), la llamad
 falla y el `catch` devuelve `false`. Aquí no hay aterrizaje automático: hay un
 enlace con el contador.
 
+### Dos puertas de entrada
+
+El selector "Residente / Administrador" del login confundía a los residentes, que
+no tienen por qué saber que existe un panel de staff. Ahora hay dos puertas:
+
+- `/login` es la del residente y ya no menciona la otra. `/admin/login` es la del
+  equipo, con el modo fijo. `LoginPage` recibe el modo por prop en vez de
+  preguntarlo.
+- Quien pide una pantalla de `/admin` sin sesión aterriza en `/admin/login`, no en
+  la puerta del residente.
+- El guard del panel hace una excepción con su propio login, que si no sería
+  inalcanzable: la ruta padre `/admin` protege todo lo que cuelga de ella.
+- `AuthFrame` sale de `AuthLayout` para que el login del staff use el mismo marco
+  sin colgar del árbol de rutas de auth.
+
+**No se partió la app**, que era la otra opción sobre la mesa. El código del panel
+ya viaja en trozos aparte (`autoCodeSplitting` en `vite.config.ts:12`): `admin`,
+`monitor` y `readers` solo se descargan al entrar en `/admin`, así que separar en
+dos aplicaciones no le ahorraría nada a un residente. Lo que sí costaría son los
+109 archivos de `ui`, importados desde 82 sitios, y `layouts` y `app`, importados
+desde 45: eso es lo que hoy amarra las dos mitades. Si algún día hay una razón de
+verdad —equipos o despliegues separados—, el primer paso es sacar `ui` a un
+paquete propio, y ese paso vale la pena por sí solo.
+
 ## Fases siguientes
 
 ### Barrido visual pendiente

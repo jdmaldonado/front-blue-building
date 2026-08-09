@@ -22,7 +22,8 @@ export function requireMode(mode: LoginMode) {
 export function requireSuperUser(): void {
   const state = useSessionStore.getState();
   if (state.session === null) {
-    throw redirect({ to: AppRoute.Login });
+    // Its own door, not the resident one: whoever asked for /admin belongs here.
+    throw redirect({ to: AppRoute.AdminLogin });
   }
   if (!selectIsSuperUser(state)) {
     // An admin session without SUPER_USER has no area of its own: the API

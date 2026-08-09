@@ -3,25 +3,34 @@ import { useLogin } from '@bb/logic';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useState, type SubmitEvent } from 'react';
 import { AppRoute, landingPathFor } from '../../app/navigation';
-import { Alert, Button, Field, Input, RadioGroup, Text, linkVariants, type RadioOption } from '../../ui';
+import { Alert, Button, Field, Input, Text, linkVariants } from '../../ui';
 import { AuthHeading } from './components';
 import { loginErrorMessage } from './lib';
-
-// The two login endpoints are different (resident vs super admin), so the user
-// picks which one before submitting.
-const modeOptions: ReadonlyArray<RadioOption<LoginMode>> = [
-  { value: LoginMode.Usuario, label: 'Residente' },
-  { value: LoginMode.Admin, label: 'Administrador' },
-];
 
 type FieldErrors = {
   cedula?: string;
   password?: string;
 };
 
-export function LoginPage() {
+// Each door calls a different endpoint, so the mode comes from the route and
+// nobody has to pick it. A resident never reads the word "administrador".
+const headings: Record<LoginMode, { title: string; description: string }> = {
+  [LoginMode.Usuario]: {
+    title: 'Acceso al edificio',
+    description: 'Ingresa con tu documento y contraseña.',
+  },
+  [LoginMode.Admin]: {
+    title: 'Panel de administración',
+    description: 'Acceso del equipo de Blue Building.',
+  },
+};
+
+type LoginPageProps = {
+  mode: LoginMode;
+};
+
+export function LoginPage({ mode }: LoginPageProps) {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<LoginMode>(LoginMode.Usuario);
   const [cedula, setCedula] = useState('');
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -58,18 +67,9 @@ export function LoginPage() {
 
   return (
     <>
-      <AuthHeading title="Acceso al edificio" description="Ingresa con tu documento y contraseña." />
+      <AuthHeading title={headings[mode].title} description={headings[mode].description} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <RadioGroup
-          appearance="segmented"
-          label="Tipo de acceso"
-          options={modeOptions}
-          value={mode}
-          disabled={disabled}
-          onChange={setMode}
-        />
-
         {alert ? (
           <Alert variant={alert.variant} title={alert.title}>
             {alert.description}

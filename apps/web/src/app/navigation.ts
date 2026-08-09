@@ -19,6 +19,8 @@ export const AppRoute = {
   // Where the leader of an apartment and the building admin answer who gets in.
   AccessRequests: '/access-requests',
   Admin: '/admin',
+  // The staff door, kept out of the resident login on purpose.
+  AdminLogin: '/admin/login',
   AdminBuilding: '/admin/buildings/$buildingId',
   // The doors and cameras screen, the same one a resident sees.
   AdminBuildingLive: '/admin/buildings/$buildingId/live',
