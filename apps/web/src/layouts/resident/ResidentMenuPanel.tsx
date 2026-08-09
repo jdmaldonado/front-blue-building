@@ -1,11 +1,11 @@
-import { LoginMode } from '@bb/core';
+import { listApprovalPlaces, LoginMode } from '@bb/core';
 import { duration } from '@bb/design-tokens';
-import { useSessionStore } from '@bb/logic';
+import { selectSpaces, usePendingApprovals, useSessionStore } from '@bb/logic';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { LogOut, User, X, type LucideIcon } from 'lucide-react';
-import type { MouseEvent, ReactNode } from 'react';
+import { LogOut, ShieldCheck, User, X, type LucideIcon } from 'lucide-react';
+import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { AppRoute } from '../../app/navigation';
-import { Avatar, Drawer, Logo, Text } from '../../ui';
+import { Avatar, Badge, Drawer, Logo, Text } from '../../ui';
 import { useSignOut } from '../app/useSignOut';
 
 type ResidentMenuPanelProps = {
@@ -28,13 +28,16 @@ function OptionIcon({ icon: Icon }: { icon: LucideIcon }): ReactNode {
 // login panel: dark surface, honeycomb, cyan only as an accent.
 export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
   const session = useSessionStore((state) => state.session);
+  const spaces = useSessionStore(selectSpaces);
+  const approvalPlaces = useMemo(() => listApprovalPlaces(spaces), [spaces]);
+  const pending = usePendingApprovals(approvalPlaces);
   const signOut = useSignOut();
   const navigate = useNavigate();
 
   // Changing route unmounts this panel, and an unmounted element has no way to
   // animate itself out. So the panel closes first and the route follows. The
   // link stays a link: a click with a modifier still opens a new tab.
-  const goToAccount = (event: MouseEvent<HTMLAnchorElement>) => {
+  const closeThenGo = (to: AppRoute) => (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
       return;
     }
@@ -43,7 +46,7 @@ export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
     // The global CSS rule cancels the animation for whoever asked for less
     // motion, but it cannot cancel a timer: without this they would just wait.
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.setTimeout(() => void navigate({ to: AppRoute.Account }), reduced ? 0 : duration.slow);
+    window.setTimeout(() => void navigate({ to }), reduced ? 0 : duration.slow);
   };
 
   const caption =
@@ -94,7 +97,18 @@ export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
 
         {/* Pinned to the bottom: on a phone this is where the thumb already is. */}
         <nav aria-label="Menú" className="mt-auto flex flex-col items-end gap-1">
-          <Link to={AppRoute.Account} onClick={goToAccount} className={optionClassName}>
+          {approvalPlaces.length === 0 ? null : (
+            <Link
+              to={AppRoute.AccessRequests}
+              onClick={closeThenGo(AppRoute.AccessRequests)}
+              className={optionClassName}
+            >
+              Solicitudes
+              {pending === 0 ? null : <Badge tone="accent">{pending}</Badge>}
+              <OptionIcon icon={ShieldCheck} />
+            </Link>
+          )}
+          <Link to={AppRoute.Account} onClick={closeThenGo(AppRoute.Account)} className={optionClassName}>
             Perfil
             <OptionIcon icon={User} />
           </Link>

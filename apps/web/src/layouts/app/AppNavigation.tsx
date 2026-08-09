@@ -1,7 +1,8 @@
-import { LoginMode } from '@bb/core';
-import { selectCurrentSpace, useSessionStore } from '@bb/logic';
-import { Building2, CreditCard, ShieldAlert, Users } from 'lucide-react';
+import { listApprovalPlaces, LoginMode } from '@bb/core';
+import { selectCurrentSpace, selectSpaces, usePendingApprovals, useSessionStore } from '@bb/logic';
+import { Building2, CreditCard, ShieldAlert, ShieldCheck, Users } from 'lucide-react';
 import { AppRoute } from '../../app/navigation';
+import { useMemo } from 'react';
 import { AppNavigationItem } from './AppNavigationItem';
 
 type AppNavigationProps = {
@@ -15,6 +16,9 @@ type AppNavigationProps = {
 export function AppNavigation({ collapsed, onNavigate }: AppNavigationProps) {
   const session = useSessionStore((state) => state.session);
   const space = useSessionStore(selectCurrentSpace);
+  const spaces = useSessionStore(selectSpaces);
+  const approvalPlaces = useMemo(() => listApprovalPlaces(spaces), [spaces]);
+  const pending = usePendingApprovals(approvalPlaces);
 
   if (session === null) {
     return null;
@@ -56,12 +60,24 @@ export function AppNavigation({ collapsed, onNavigate }: AppNavigationProps) {
   }
 
   return (
-    <AppNavigationItem
-      link={{ to: AppRoute.Dashboard }}
-      icon={Building2}
-      label={space?.building.name ?? 'Mi edificio'}
-      collapsed={collapsed}
-      onNavigate={onNavigate}
-    />
+    <>
+      <AppNavigationItem
+        link={{ to: AppRoute.Dashboard }}
+        icon={Building2}
+        label={space?.building.name ?? 'Mi edificio'}
+        collapsed={collapsed}
+        onNavigate={onNavigate}
+      />
+      {approvalPlaces.length === 0 ? null : (
+        <AppNavigationItem
+          link={{ to: AppRoute.AccessRequests }}
+          icon={ShieldCheck}
+          label="Solicitudes"
+          badge={pending === 0 ? undefined : pending}
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+      )}
+    </>
   );
 }

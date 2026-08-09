@@ -1,0 +1,37 @@
+import {
+  AccessRequestFailedError,
+  AccessRequestGoneError,
+  AccessRequestsBadResponseError,
+  AccessRequestsNetworkError,
+  ApproverNotVerifiedError,
+  UnknownAccessRequestsError,
+} from '@bb/core';
+import { z } from 'zod';
+import type { HttpError } from '../http';
+import { createErrorMapper, HttpStatus } from '../shared';
+
+// The API serialises its errors with a `name` and nothing else useful
+// (api/src/errors/ApartmentAccessRequestError.ts:5-11).
+const NamedErrorSchema = z.object({ name: z.string() }).catch({ name: '' });
+
+const INTERNAL_ERROR = 500;
+
+export const toAccessRequestsError = createErrorMapper({
+  network: (cause) => new AccessRequestsNetworkError('Network error while reading access requests', { cause }),
+  badResponse: (cause) => new AccessRequestsBadResponseError('The answer has an unexpected shape', { cause }),
+  unknown: (cause) => new UnknownAccessRequestsError('Unexpected error with an access request', { cause }),
+  byStatus: {
+    // Two different things answer 403 here, and only the body tells them apart.
+    [HttpStatus.Forbidden]: (error) =>
+      isNamed(error, 'UserNotVerifiedError')
+        ? new ApproverNotVerifiedError('The approver is not verified yet', { cause: error })
+        : new AccessRequestGoneError('That request is no longer available', { cause: error }),
+    // A full apartment lands here, with its reason only in the message.
+    [INTERNAL_ERROR]: (error) =>
+      new AccessRequestFailedError('The API refused to resolve the request', { cause: error }),
+  },
+});
+
+function isNamed(error: HttpError, name: string): boolean {
+  return NamedErrorSchema.parse(error.body).name === name;
+}

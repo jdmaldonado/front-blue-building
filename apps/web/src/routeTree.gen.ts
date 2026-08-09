@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/_auth'
+import { Route as AccessRequestsRouteImport } from './routes/access-requests'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -42,6 +43,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessRequestsRoute = AccessRequestsRouteImport.update({
+  id: '/access-requests',
+  path: '/access-requests',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRoute = AccountRouteImport.update({
@@ -172,6 +178,7 @@ const AdminBuildingsBuildingIdApartmentsApartmentIdUsersRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/access-requests': typeof AccessRequestsRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/access-requests': typeof AccessRequestsRoute
   '/account': typeof AccountRoute
   '/dashboard': typeof DashboardRoute
   '/reset_password': typeof Reset_passwordRoute
@@ -223,6 +231,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
+  '/access-requests': typeof AccessRequestsRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRoute
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/access-requests'
     | '/account'
     | '/admin'
     | '/dashboard'
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/access-requests'
     | '/account'
     | '/dashboard'
     | '/reset_password'
@@ -301,6 +312,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_auth'
+    | '/access-requests'
     | '/account'
     | '/admin'
     | '/dashboard'
@@ -329,6 +341,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
+  AccessRequestsRoute: typeof AccessRequestsRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRouteWithChildren
   DashboardRoute: typeof DashboardRoute
@@ -349,6 +362,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/access-requests': {
+      id: '/access-requests'
+      path: '/access-requests'
+      fullPath: '/access-requests'
+      preLoaderRoute: typeof AccessRequestsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account': {
@@ -600,6 +620,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
+  AccessRequestsRoute: AccessRequestsRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRouteWithChildren,
   DashboardRoute: DashboardRoute,

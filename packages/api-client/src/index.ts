@@ -2,6 +2,7 @@ export * from './http';
 export * from './shared';
 export * from './auth';
 export * from './access';
+export * from './access-requests';
 export * from './buildings';
 export * from './cards';
 export * from './events';

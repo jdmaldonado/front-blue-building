@@ -1,5 +1,5 @@
-import { LoginMode } from '@bb/core';
-import { selectIsSuperUser, useSessionStore } from '@bb/logic';
+import { listApprovalPlaces, LoginMode } from '@bb/core';
+import { selectIsSuperUser, selectSpaces, useSessionStore } from '@bb/logic';
 import { redirect } from '@tanstack/react-router';
 import { AppRoute, landingPathFor } from './navigation';
 
@@ -29,6 +29,18 @@ export function requireSuperUser(): void {
     // answers 401 to the whole panel. The profile is the only screen left.
     const to = state.session.mode === LoginMode.Admin ? AppRoute.Account : landingPathFor(state.session);
     throw redirect({ to });
+  }
+}
+
+// Only the leader of an apartment and the administrator of a building answer
+// access requests. Anyone else lands back on their own screen.
+export function requireApprover(): void {
+  const state = useSessionStore.getState();
+  if (state.session === null) {
+    throw redirect({ to: AppRoute.Login });
+  }
+  if (listApprovalPlaces(selectSpaces(state)).length === 0) {
+    throw redirect({ to: landingPathFor(state.session) });
   }
 }
 

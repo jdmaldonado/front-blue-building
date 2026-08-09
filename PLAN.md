@@ -365,6 +365,41 @@ Las skills recogen todo esto: `crear-gateway-api` se reescribió con la
 estructura nueva, y `reglas-generales` y `verificar-cambios` ganaron la
 convención de nombres y una regla de comentarios más dura.
 
+### Fase 10 — Aprobar solicitudes de acceso
+
+La salida de los registros de la fase 9: quien ya está dentro decide quién entra.
+`/access-requests`, en la app del residente. Sustituye las dos pantallas del panel
+del edificio viejo (`EmployeesApartmentRequests`, `OwnersApartmentRequests`).
+
+- Dominio en `packages/core/src/access-requests`: `ApprovalScope` (apartamento o
+  edificio), los schemas de la solicitud y `listApprovalPlaces`, que saca de los
+  espacios de la sesión dónde puede aprobar esta persona. El panel viejo leía el
+  apartamento y el edificio de `localStorage`.
+- Una sola pantalla para los dos casos, con pestañas si alguien lidera un
+  apartamento y además administra el edificio.
+- Aprobar y rechazar piden confirmación: las dos son difíciles de deshacer, porque
+  la API marca la solicitud como borrada en ambos casos.
+- Entrada desde la barra lateral y desde el menú del residente, con el número de
+  pendientes. `usePendingApprovals` comparte las claves de caché con la pantalla,
+  así que abrirla no cuesta una petición extra.
+- El guard `requireApprover` deja fuera a quien no aprueba nada, redirigiendo a su
+  propia pantalla en vez de mostrar un error.
+
+**Del backend, no nuestro**: la lista del edificio **ignora el `buildingId` de la
+URL** y filtra solo por el usuario (`buildings/access/controller.ts:107-110`), así
+que quien administre dos edificios ve lo mismo en los dos; el `apartmentId` que el
+front viejo mandaba al aprobar se descarta en el formulario
+(`apartment_access_form.ts:6-10`); aprobar exige que **el aprobador** esté
+verificado, no el solicitante (`apartments/access/controller.ts:23-26`); y el
+apartamento lleno sale como 500 con el motivo solo en el texto (`:52-54`), así que
+el mensaje nombra la causa probable sin leer ese texto.
+
+**Arreglado de paso**: el aterrizaje del administrador del panel viejo nunca
+funcionó. `hasAccessRequests('owners')` pasa `user.apartment.id` al endpoint que
+espera un `buildingId` (`front/src/utils/services/authService.js:71`), la llamada
+falla y el `catch` devuelve `false`. Aquí no hay aterrizaje automático: hay un
+enlace con el contador.
+
 ## Fases siguientes
 
 ### Barrido visual pendiente
@@ -378,8 +413,9 @@ radios, y dos cosas que no se pueden comprobar en el emulador.
   cada pantalla, no solo las que se estaban tocando esos días.
 - En un teléfono real: los `<select>` nativos, para decidir si hace falta un
   desplegable propio, y el paso `field` de 16px que evita el zoom de Safari.
-- Las dos pantallas de registro: se cerraron con typecheck, lint y build, pero
-  nadie las ha abierto todavía en el navegador ni ha enviado un registro real.
+- Las pantallas de registro y la de solicitudes: se cerraron con typecheck, lint
+  y build, pero nadie las ha abierto todavía en el navegador, ni se ha enviado un
+  registro ni aprobado una solicitud de verdad.
 - Con una lectora real: el ciclo `card:setup` → `read_tag` de punta a punta, y si
   `POST /api/bluebuilding/doors` responde una lista pelada o envuelta en `doors`
   (hoy se aceptan las dos formas porque no había manera de saberlo).
@@ -391,8 +427,6 @@ del panel de admin ni del residente:
 
 - Registro de visitante y visitante express (`/apartment/visitor/register`,
   `.../express/register`), junto a la portería.
-- Panel del edificio: aprobar solicitudes de acceso, que es el aterrizaje de
-  `ADMINISTRADOR` y `RESIDENTE_LIDER` (`bluebuilding-docs/05-panel-edificio/`).
 - Códigos de visita (`/visits/code`, `/building/visits/code/confirm`).
 - Portería: `/acceso` y `/acceso-visitante`.
 - Citófono y WebRTC (`/llamada`, `/llamada-visitante/...`, `components/Call/`).
@@ -402,7 +436,7 @@ del panel de admin ni del residente:
   (`front/src/utils/services/authService.js:87`) reparte doce roles, y sin esa
   rama las cuatro primeras no tienen entrada.
 
-### Fase 10 — Cierre
+### Fase 11 — Cierre
 
 Revisión de movimiento reducido, accesibilidad, responsive a 390 / 768 / 1280 y
 PWA.
@@ -439,6 +473,13 @@ Detalle y tamaño en `bluebuilding-docs/07-abierto/propuestas-panel-admin.md`.
 9. Paginación, búsqueda y filtro por edificio en `usersV2/ResidentUserDetails`.
 10. Guardar la última configuración enviada a una lectora.
 11. `init:success` en el socket, para quitar la espera fija de 600 ms.
+12. **Foto en el DTO de solicitudes de acceso.** El registro obliga a subir una
+    foto y la guarda en S3, pero quien aprueba solo ve nombre, cédula, teléfono y
+    correo (`apartments/access/list_access_requests_dto.ts:8-16`). Se aprueba a
+    alguien a quien no se puede mirar.
+13. **`buildingId` en la lista de solicitudes del edificio**, que hoy se ignora.
+14. **Código propio para el apartamento lleno**, que hoy viaja como 500 con el
+    motivo en el texto.
 
 ## Deuda conocida en la app nueva
 

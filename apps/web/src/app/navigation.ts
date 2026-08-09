@@ -16,6 +16,8 @@ export const AppRoute = {
   // root and works the same for a resident and for an admin.
   Account: '/account',
   Dashboard: '/dashboard',
+  // Where the leader of an apartment and the building admin answer who gets in.
+  AccessRequests: '/access-requests',
   Admin: '/admin',
   AdminBuilding: '/admin/buildings/$buildingId',
   // The doors and cameras screen, the same one a resident sees.

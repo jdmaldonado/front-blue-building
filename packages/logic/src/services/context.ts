@@ -1,5 +1,6 @@
 import type {
   AccessGateway,
+  AccessRequestsGateway,
   AuthGateway,
   BuildingsGateway,
   CardsGateway,
@@ -14,6 +15,7 @@ import { createContext, useContext } from 'react';
 export interface Services {
   authGateway: AuthGateway;
   accessGateway: AccessGateway;
+  accessRequestsGateway: AccessRequestsGateway;
   buildingsGateway: BuildingsGateway;
   cardsGateway: CardsGateway;
   eventsGateway: EventsGateway;

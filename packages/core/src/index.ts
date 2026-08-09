@@ -8,3 +8,4 @@ export * from './readers';
 export * from './events';
 export * from './users';
 export * from './registration';
+export * from './access-requests';

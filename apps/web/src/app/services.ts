@@ -1,5 +1,6 @@
 import {
   AccessGateway,
+  AccessRequestsGateway,
   AuthGateway,
   BuildingsGateway,
   CardsGateway,
@@ -29,6 +30,7 @@ export function createServices(): Services {
     logger,
     authGateway: new AuthGateway(http),
     accessGateway: new AccessGateway(http),
+    accessRequestsGateway: new AccessRequestsGateway(http, logger),
     buildingsGateway: new BuildingsGateway(http),
     cardsGateway: new CardsGateway(http, logger),
     eventsGateway: new EventsGateway(http, logger),
