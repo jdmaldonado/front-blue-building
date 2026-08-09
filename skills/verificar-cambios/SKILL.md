@@ -44,6 +44,10 @@ TypeScript:
 
 Consistencia:
 
+- [ ] Archivos que se repetirían por dominio, con el dominio delante:
+      `auth.schemas.ts`, `cards.errors.ts`, `buildings.keys.ts`.
+- [ ] Nada copiado de otro archivo: si dos sitios hacen lo mismo, se comparte.
+- [ ] Comentarios: solo los que explican un porqué, tres líneas como mucho.
 - [ ] Todo lo público exportado en su barrel.
 - [ ] Sin `console.*` fuera de `packages/logger`.
 - [ ] Sin colores literales en componentes; solo tokens.

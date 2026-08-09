@@ -1,7 +1,7 @@
 import type { ResolveIncidentInput, StartIncidentInput } from '@bb/core';
 import { useMutation, useQueryClient, type UseMutationResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
-import { eventKeys } from './keys';
+import { eventKeys } from './events.keys';
 
 export interface IncidentMutations {
   start: UseMutationResult<void, Error, StartIncidentInput>;

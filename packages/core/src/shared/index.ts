@@ -1,2 +1,2 @@
-export * from './errors';
-export * from './schemas';
+export * from './shared.errors';
+export * from './shared.schemas';

@@ -36,7 +36,11 @@ export const DoorType = {
 export type DoorType = (typeof DoorType)[keyof typeof DoorType];
 ```
 
-Referencia: `packages/core/src/access/constants.ts:1-6`.
+Referencia: `packages/core/src/access/access.constants.ts:1-6`.
+
+Los tres archivos de cada dominio llevan el dominio delante
+(`access.constants.ts`, `access.schemas.ts`, `access.errors.ts`) y se exportan
+desde su `index.ts`. Ver `reglas-generales`, sección 6.
 
 - Clave en PascalCase (uso en código), valor tal como lo manda el backend.
 - El tipo se llama igual que la constante: se puede usar como valor
@@ -59,14 +63,14 @@ export const UserSchema = z.object({
 export type User = z.infer<typeof UserSchema>;
 ```
 
-Referencia: `packages/core/src/auth/schemas.ts:6-18`.
+Referencia: `packages/core/src/auth/auth.schemas.ts:6-18`.
 
 - Un schema por entidad, con el tipo inferido justo debajo. Nunca se escribe la
   `interface` a mano en paralelo: se deriva con `z.infer`.
 - Nombres: `XSchema` para el schema, `X` para el tipo.
 - Campos que el backend puede omitir o mandar `null`: `.nullish()`.
 - Ids: se usa `IdSchema`, que normaliza número o string a string
-  (`packages/core/src/shared/schemas.ts:3`). No se inventa otro tipo de id.
+  (`packages/core/src/shared/shared.schemas.ts:3`). No se inventa otro tipo de id.
 - Schemas que se componen se importan del barrel del otro dominio
   (`schemas.ts:2-3`), no del archivo interno.
 
@@ -78,8 +82,8 @@ export class InvalidCredentialsError extends DomainError {
 }
 ```
 
-Referencia: `packages/core/src/auth/errors.ts:3-5`, base en
-`packages/core/src/shared/errors.ts:1-8`.
+Referencia: `packages/core/src/auth/auth.errors.ts:3-5`, base en
+`packages/core/src/shared/shared.errors.ts:1-8`.
 
 - Extienden `DomainError` y declaran `code` como `DOMINIO/CAUSA`.
 - Un error por causa distinguible por la UI. Si la UI muestra el mismo mensaje

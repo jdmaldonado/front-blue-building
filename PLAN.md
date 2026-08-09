@@ -4,7 +4,7 @@ Estado vivo de la migración de `front` (React 16, viejo) a `front-bluebuilding`
 Se actualiza al cerrar cada fase. Para entender el sistema, leer antes
 `../bluebuilding-docs/` (empezar por `CLAUDE.md` y `README.md`).
 
-**Última actualización:** 2026-08-09
+**Última actualización:** 2026-08-10
 
 ## Cómo se trabaja
 
@@ -335,6 +335,35 @@ el apartamento inactivo, no desde el error.
 **Pendiente**: el formulario cuelga de `_auth`, que redirige a quien ya tiene
 sesión. El día que un residente inscriba desde dentro de la app, esa ruta tendrá
 que salir de ahí.
+
+### Refactor de estructura
+
+Antes de seguir migrando pantallas, una pasada para que el código se lea sin
+ayuda. Ninguna pantalla cambió de comportamiento.
+
+- **Nombres buscables**: los archivos que se repetían en cada dominio llevan el
+  dominio delante (`auth.schemas.ts`, `cards.errors.ts`, `buildings.keys.ts`).
+  Eran 10 `schemas.ts`, 9 `errors.ts`, 7 `constants.ts` y 6 `keys.ts`
+  indistinguibles al buscar por nombre.
+- **`api-client` partido**: `gateways.ts` tenía 853 líneas con siete gateways,
+  sus rutas, sus errores y sus tipos mezclados. Ahora es una carpeta por dominio
+  con `gateway`, `paths` y `errors` separados; el archivo más largo tiene 102
+  líneas.
+- **Lo repetido, en un sitio**: las siete funciones `toXError` casi calcadas
+  pasan a `createErrorMapper`, que resuelve los cuatro casos comunes y deja que
+  cada dominio declare solo los suyos; los tres bucles de lectura fila a fila
+  pasan a `readRows`; los cinco sitios que armaban opciones de `Select` a mano
+  pasan a `toSelectOptions`, que además ordena; el aviso de "sin conexión" y el
+  tipo `AlertMessage` viven en `features/shared/`.
+- **Vocabulario llano**: `ContractError` pasa a `BadResponseError`, y las skills
+  dejan de hablar de "capa anticorrupción".
+- **Menos comentarios**: los archivos del registro eran los más comentados del
+  repo (31% y 27% de líneas). Se quedaron los que citan una rareza del backend
+  con `archivo:línea`; el resto se fue al plan, que es donde se busca.
+
+Las skills recogen todo esto: `crear-gateway-api` se reescribió con la
+estructura nueva, y `reglas-generales` y `verificar-cambios` ganaron la
+convención de nombres y una regla de comentarios más dura.
 
 ## Fases siguientes
 

@@ -1,7 +1,7 @@
 import type { Door } from '@bb/core';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
-import { accessKeys } from './keys';
+import { accessKeys } from './access.keys';
 
 export function useAccessibleDoors(buildingId: string | null): UseQueryResult<Door[]> {
   const { accessGateway } = useServices();

@@ -1,3 +1,3 @@
-export * from './constants';
-export * from './schemas';
-export * from './errors';
+export * from './events.constants';
+export * from './events.schemas';
+export * from './events.errors';

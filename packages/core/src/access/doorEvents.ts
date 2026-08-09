@@ -1,5 +1,5 @@
-import { DoorStatus, EventType } from './constants';
-import type { DoorEventData } from './schemas';
+import { DoorStatus, EventType } from './access.constants';
+import type { DoorEventData } from './access.schemas';
 
 // Reading a door event: what it means, and how to keep it without losing the
 // reader telemetry that shares the same message.

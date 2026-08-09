@@ -10,7 +10,7 @@ import {
 } from '@bb/logic';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useToast } from '../../../app/ToastProvider';
-import type { TabItem } from '../../../ui';
+import { toSelectOptions, type TabItem } from '../../../ui';
 import { DOOR_NOT_WIRED_MESSAGE, DOOR_NO_ANSWER_MESSAGE, doorErrorMessage } from '../lib';
 
 // The API never says "the door opened". What it does send is the new state of
@@ -126,9 +126,10 @@ export function useDoorsDashboard(buildingId: string, initialDoorName?: string):
   // A floor with no doors has nothing to offer here, not even a plan to look at.
   const floorOptions: ReadonlyArray<TabItem<string>> = useMemo(
     () =>
-      (floors.data ?? [])
-        .filter((floor) => (doors.data ?? []).some((door) => door.floor?.id === floor.id))
-        .map((floor) => ({ value: floor.id, label: floor.name ?? `Piso ${floor.id}` })),
+      toSelectOptions(
+        (floors.data ?? []).filter((floor) => (doors.data ?? []).some((door) => door.floor?.id === floor.id)),
+        { fallbackLabel: (floor) => `Piso ${floor.id}` },
+      ),
     [floors.data, doors.data],
   );
 

@@ -26,8 +26,7 @@ export function RegisterPage({ role, search }: RegisterPageProps) {
   const [done, setDone] = useState(false);
   const heading = headings[role];
 
-  // An apartment in the query skips the picker: that is what a link shared by
-  // someone who already lives there carries.
+  // An apartment in the query skips the picker.
   const apartment: ApartmentContext =
     search.apartmentId === undefined || search.apartmentId === ''
       ? { mode: 'pick' }

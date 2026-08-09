@@ -1,7 +1,7 @@
 import type { CriticalEventList, EventPage, IntrusionEvent, OpenDoorEvent } from '@bb/core';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
-import { eventKeys } from './keys';
+import { eventKeys } from './events.keys';
 
 // The API decides what counts as critical and returns the last fifteen. No
 // paging, no filters.

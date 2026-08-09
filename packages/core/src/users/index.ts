@@ -1,2 +1,2 @@
-export * from './schemas';
-export * from './errors';
+export * from './users.schemas';
+export * from './users.errors';

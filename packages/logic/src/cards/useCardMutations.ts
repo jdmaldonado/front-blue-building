@@ -1,7 +1,7 @@
 import type { CreateCardInput, UpdateCardInput } from '@bb/core';
 import { useMutation, useQueryClient, type UseMutationResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
-import { cardKeys } from './keys';
+import { cardKeys } from './cards.keys';
 
 export interface CardMutations {
   create: UseMutationResult<void, Error, CreateCardInput>;

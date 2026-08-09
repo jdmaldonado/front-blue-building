@@ -10,14 +10,24 @@ import {
 } from '@bb/core';
 import { useRegister } from '@bb/logic';
 import { useState, type SubmitEvent } from 'react';
-import { Alert, Button, Checkbox, Field, Input, PhotoInput, Select, Text, type SelectOption } from '../../../ui';
-import { registrationErrorMessage, sortByLabel } from '../lib';
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Field,
+  Input,
+  PhotoInput,
+  Select,
+  Text,
+  sortOptionsByLabel,
+  type SelectOption,
+} from '../../../ui';
+import { registrationErrorMessage } from '../lib';
 import { ApartmentPicker, EMPTY_SELECTION, type ApartmentSelection } from './ApartmentPicker';
 import { TermsDialog } from './TermsDialog';
 
-// Where the person is registering. `pick` walks the four selects; `fixed` is
-// handed the apartment and hides them, which is what a link shared by a
-// resident, or a screen inside the app, needs.
+// `pick` walks the four selects; `fixed` is handed the apartment and hides
+// them, which is what a shared link needs.
 export type ApartmentContext = { mode: 'pick' } | { mode: 'fixed'; apartmentId: string; label?: string };
 
 type RegistrationFormProps = {
@@ -28,7 +38,7 @@ type RegistrationFormProps = {
 
 type FieldErrors = Partial<Record<keyof RegistrationFormValues | 'photo' | 'apartmentId', string>>;
 
-const documentOptions: ReadonlyArray<SelectOption<DocumentType>> = sortByLabel(
+const documentOptions: ReadonlyArray<SelectOption<DocumentType>> = sortOptionsByLabel(
   Object.entries(DOCUMENT_TYPE_LABELS).map(([value, label]) => ({ value: value as DocumentType, label })),
 );
 
@@ -73,8 +83,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
         }
       }
     }
-    // The photo is a File, so it is checked here and not in the schema: `core`
-    // has no DOM types.
+    // Checked here and not in the schema: `core` has no DOM types.
     if (photo === null) {
       errors.photo = 'Agrega una foto tuya.';
     } else if (photo.size > PHOTO_MAX_BYTES) {
@@ -90,8 +99,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
     }
 
     setFieldErrors({});
-    // Field by field: `passwordConfirm` and `acceptTerms` are ours and have no
-    // business travelling to the API.
+    // Field by field: `passwordConfirm` and `acceptTerms` never leave the app.
     register.mutate({
       role,
       apartmentId,

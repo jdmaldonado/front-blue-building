@@ -1,7 +1,7 @@
 import type { Floor } from '@bb/core';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
-import { accessKeys } from './keys';
+import { accessKeys } from './access.keys';
 
 // Each floor carries the plan image where the door pins go.
 export function useTowerFloors(towerId: string | null): UseQueryResult<Floor[]> {

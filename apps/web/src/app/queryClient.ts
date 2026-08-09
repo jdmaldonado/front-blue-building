@@ -1,4 +1,4 @@
-import { ContractError } from '@bb/core';
+import { BadResponseError } from '@bb/core';
 import { NoopLogger, type Logger } from '@bb/logger';
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 
@@ -6,9 +6,9 @@ import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 // row looks like the app is calling it four times, and it buries the real error.
 const RETRY_COUNT = 1;
 
-// A broken contract answers the same however many times we ask.
+// A bad answer stays bad however many times we ask.
 function shouldRetry(failureCount: number, error: Error): boolean {
-  return !(error instanceof ContractError) && failureCount < RETRY_COUNT;
+  return !(error instanceof BadResponseError) && failureCount < RETRY_COUNT;
 }
 
 // The client is a singleton because `endSession` clears it from outside React,

@@ -51,18 +51,18 @@ de dominio (`packages/api-client/src/gateways.ts:36-46`).
 **`.safeParse()` cuando el fallo debe degradar, no romper.** Es el caso de un
 evento de stream: llega un `door_update` con forma rara, se registra y se ignora;
 el resto de eventos sigue funcionando
-(`packages/api-client/src/socket.ts:58-70`).
+(`packages/api-client/src/socket/socket.client.ts:58-70`).
 
 **`.catch(fallback)` cuando siempre hay un valor razonable por defecto.** Es el
 caso del payload de error del socket, que se normaliza a `{ error: 'UNKNOWN' }`
-antes de mapearlo (`packages/api-client/src/socket.ts:14`).
+antes de mapearlo (`packages/api-client/src/socket/socket.client.ts:14`).
 
 Nunca `.parse()` dentro de un handler de socket que se dispara en bucle: una
 excepción ahí mata el listener.
 
 ## Dónde viven los schemas
 
-En `packages/core/src/<dominio>/schemas.ts`, junto al tipo que infieren
+En `packages/core/src/<dominio>/<dominio>.schemas.ts`, junto al tipo que infieren
 (`crear-modelo-dominio`). El gateway los importa; no define los suyos.
 
 Única excepción: el envoltorio puntual de una respuesta, que es forma del
@@ -81,7 +81,7 @@ Cuando se agregue validación de formularios, el schema del input va en `core`
 junto al resto del dominio, no en el componente:
 
 ```ts
-// packages/core/src/auth/schemas.ts
+// packages/core/src/auth/auth.schemas.ts
 export const LoginInputSchema = z.object({
   cedula: z.string().min(1, 'Ingresa tu cédula'),
   password: z.string().min(1, 'Ingresa tu contraseña'),

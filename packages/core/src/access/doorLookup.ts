@@ -1,4 +1,4 @@
-import type { Door } from './schemas';
+import type { Door } from './access.schemas';
 
 // Critical events name their door but never identify it: `RecentEventDto` sends
 // `event.door.name` and no id (api/src/2.0/events/dtos/RecentEvent.dto.ts:35).

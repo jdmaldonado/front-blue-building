@@ -76,7 +76,10 @@ Reglas:
   eso es un primitivo que falta en `ui/` (ver `crear-componente-ui`). La vista
   solo compone.
 - Si una pieza sirve a dos features, se promueve: a `ui/` si no tiene dominio, a
-  `layouts/` si es armazón, o a una feature compartida si sí lo tiene.
+  `layouts/` si es armazón, o a `features/shared/` si sí lo tiene. Ahí viven, por
+  ejemplo, el tipo `AlertMessage` y el aviso de "sin conexión", que son iguales en
+  todas las pantallas (`apps/web/src/features/shared/lib/alertMessages.ts`).
+  `features/shared/` es la única feature sin pantallas.
 - Los textos visibles van en español, junto al componente que los muestra.
 
 ## Estados obligatorios
@@ -203,6 +206,22 @@ Reglas:
   (`apps/web/src/ui/field/Field.tsx`).
 - El envío llama una mutación de `logic` y reacciona en sus callbacks, no en un
   `useEffect` que observa `isSuccess`.
+
+## Listas de opciones
+
+Un `Select` no se llena mapeando a mano. `toSelectOptions` convierte cualquier
+lista de `{ id, name }` en opciones, ordenadas por nombre y con la opción fija
+delante (`apps/web/src/ui/select/select-options.ts`):
+
+```tsx
+const buildingOptions = useMemo(
+  () => toSelectOptions(buildings.data ?? [], { first: { value: '', label: 'Todos los edificios' } }),
+  [buildings.data],
+);
+```
+
+El orden es alfabético natural, así que "Piso 2" va antes que "Piso 10". Se apaga
+con `sorted: false` solo si la lista ya viene en un orden que significa algo.
 
 ## Layout
 

@@ -6,15 +6,9 @@ import {
   RegistrationNetworkError,
   RegistrationRejectedError,
 } from '@bb/core';
-import type { AlertVariant } from '../../../ui';
+import { NETWORK_ALERT, type AlertMessage } from '../../shared';
 
-export interface RegistrationErrorMessage {
-  variant: AlertVariant;
-  title: string;
-  description: string;
-}
-
-export function registrationErrorMessage(error: unknown, role: ApartmentRole): RegistrationErrorMessage {
+export function registrationErrorMessage(error: unknown, role: ApartmentRole): AlertMessage {
   if (error instanceof DuplicateRegistrationError) {
     return {
       variant: 'error',
@@ -56,11 +50,7 @@ export function registrationErrorMessage(error: unknown, role: ApartmentRole): R
   }
 
   if (error instanceof RegistrationNetworkError) {
-    return {
-      variant: 'error',
-      title: 'Sin conexión con el servidor',
-      description: 'Revisa tu conexión e intenta de nuevo.',
-    };
+    return NETWORK_ALERT;
   }
 
   return {

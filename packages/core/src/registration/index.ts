@@ -1,3 +1,3 @@
-export * from './constants';
-export * from './schemas';
-export * from './errors';
+export * from './registration.constants';
+export * from './registration.schemas';
+export * from './registration.errors';

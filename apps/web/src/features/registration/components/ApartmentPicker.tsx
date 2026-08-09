@@ -6,8 +6,7 @@ import {
   useRegistrationTowers,
 } from '@bb/logic';
 import { useEffect } from 'react';
-import { Alert, Field, Loading, Select, Text, type SelectOption } from '../../../ui';
-import { sortByLabel } from '../lib';
+import { Alert, Field, Loading, Select, Text, toSelectOptions } from '../../../ui';
 
 // The four ids the picker walks through. Only `apartmentId` reaches the API;
 // the other three are how it gets there.
@@ -69,7 +68,7 @@ export function ApartmentPicker({ role, value, onChange, disabled = false, error
       <Field label="Edificio" htmlFor="buildingId" required>
         <Select
           id="buildingId"
-          options={toOptions(buildings.data, 'Selecciona el edificio')}
+          options={toSelectOptions(buildings.data, { first: { value: '', label: 'Selecciona el edificio' } })}
           value={value.buildingId}
           disabled={disabled}
           onChange={(buildingId) => onChange({ ...EMPTY_SELECTION, buildingId })}
@@ -79,7 +78,7 @@ export function ApartmentPicker({ role, value, onChange, disabled = false, error
       <Field label="Torre" htmlFor="towerId" required>
         <Select
           id="towerId"
-          options={toOptions(towers.data ?? [], 'Selecciona la torre')}
+          options={toSelectOptions(towers.data ?? [], { first: { value: '', label: 'Selecciona la torre' } })}
           value={value.towerId}
           disabled={disabled || value.buildingId === '' || towers.isPending}
           onChange={(towerId) => onChange({ ...value, towerId, floorId: '', apartmentId: '' })}
@@ -89,7 +88,7 @@ export function ApartmentPicker({ role, value, onChange, disabled = false, error
       <Field label="Piso" htmlFor="floorId" required>
         <Select
           id="floorId"
-          options={toOptions(floors.data ?? [], 'Selecciona el piso')}
+          options={toSelectOptions(floors.data ?? [], { first: { value: '', label: 'Selecciona el piso' } })}
           value={value.floorId}
           disabled={disabled || value.towerId === '' || floors.isPending}
           onChange={(floorId) => onChange({ ...value, floorId, apartmentId: '' })}
@@ -99,7 +98,7 @@ export function ApartmentPicker({ role, value, onChange, disabled = false, error
       <Field label="Apartamento" htmlFor="apartmentId" required error={error}>
         <Select
           id="apartmentId"
-          options={toOptions(apartments.data ?? [], 'Selecciona el apartamento')}
+          options={toSelectOptions(apartments.data ?? [], { first: { value: '', label: 'Selecciona el apartamento' } })}
           value={value.apartmentId}
           disabled={disabled || value.floorId === '' || apartments.isPending}
           aria-invalid={error !== undefined}
@@ -117,13 +116,4 @@ export function ApartmentPicker({ role, value, onChange, disabled = false, error
       ) : null}
     </div>
   );
-}
-
-type Named = { id: string; name?: string | null };
-
-// A row without a name still has to be pickable: the id is what the API needs.
-// The placeholder stays first; only the real options get sorted.
-function toOptions(items: readonly Named[], placeholder: string): ReadonlyArray<SelectOption<string>> {
-  const options = items.map((item) => ({ value: item.id, label: item.name ?? `Sin nombre (${item.id})` }));
-  return [{ value: '', label: placeholder }, ...sortByLabel(options)];
 }

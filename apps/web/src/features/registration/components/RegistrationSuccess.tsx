@@ -8,8 +8,7 @@ type RegistrationSuccessProps = {
 };
 
 // The old app pushed straight to the login and said nothing
-// (front/src/views/Apartment/ownerRegister.js:420), so nobody knew their
-// account was waiting for someone else to approve it.
+// (front/src/views/Apartment/ownerRegister.js:420).
 export function RegistrationSuccess({ role }: RegistrationSuccessProps) {
   return (
     <div className="flex flex-col gap-4">

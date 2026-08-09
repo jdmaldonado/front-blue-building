@@ -1,3 +1,3 @@
-export * from './constants';
-export * from './schemas';
-export * from './errors';
+export * from './auth.constants';
+export * from './auth.schemas';
+export * from './auth.errors';

@@ -1,13 +1,10 @@
 import type { Apartment, Building, Floor, Tower } from '@bb/core';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
-import { registrationKeys } from './keys';
+import { registrationKeys } from './registration.keys';
 
-// The four steps of the picker. Each one waits for the one above it, so a
-// person can only choose an apartment that exists in the floor they picked.
-//
-// They read the public endpoints, not the admin ones: this runs with no session
-// (api/src/routes/api.ts:83-111).
+// The four steps of the picker, each one waiting for the one above it. They
+// read the public endpoints, because this runs with no session.
 export function useRegistrationBuildings(): UseQueryResult<Building[]> {
   const { registrationGateway } = useServices();
 
@@ -47,8 +44,6 @@ export function useRegistrationFloors(towerId: string | null): UseQueryResult<Fl
   });
 }
 
-// `active` splits the two forms: an owner claims an apartment that has no
-// leader yet, a resident joins one that already has it.
 export function useRegistrationApartments(floorId: string | null, active: boolean): UseQueryResult<Apartment[]> {
   const { registrationGateway } = useServices();
 

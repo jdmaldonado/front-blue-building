@@ -4,7 +4,7 @@ import { Radio } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useConfirm } from '../../../app/ConfirmProvider';
 import { useToast } from '../../../app/ToastProvider';
-import { Button, Dialog, Field, Input, Select, Text } from '../../../ui';
+import { Button, Dialog, Field, Input, Select, Text, toSelectOptions } from '../../../ui';
 import { CARD_TYPE_OPTIONS, cardErrorMessage } from '../lib';
 import { CardScanArea } from './CardScanArea';
 
@@ -58,21 +58,17 @@ export function CardRegisterDialog({
   }, [open, stopReader]);
 
   const buildingOptions = useMemo(
-    () => [
-      { value: '', label: 'Elige un edificio' },
-      ...(buildings.data ?? []).map((building) => ({ value: building.id, label: building.name })),
-    ],
+    () => toSelectOptions(buildings.data ?? [], { first: { value: '', label: 'Elige un edificio' } }),
     [buildings.data],
   );
 
   // Only doors wired to a reader can go into register mode.
   const doorOptions = useMemo(
-    () => [
-      { value: '', label: 'Elige una puerta' },
-      ...(doors.data ?? [])
-        .filter((door) => door.localId !== null && door.localId !== undefined)
-        .map((door) => ({ value: door.id, label: door.name ?? door.id })),
-    ],
+    () =>
+      toSelectOptions(
+        (doors.data ?? []).filter((door) => door.localId !== null && door.localId !== undefined),
+        { first: { value: '', label: 'Elige una puerta' } },
+      ),
     [doors.data],
   );
 

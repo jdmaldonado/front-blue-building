@@ -5,21 +5,9 @@ import {
   NoSpacesAssignedError,
   WeakPasswordError,
 } from '@bb/core';
-import type { AlertVariant } from '../../../ui';
+import { NETWORK_ALERT, type AlertMessage } from '../../shared';
 
-export interface AuthErrorMessage {
-  variant: AlertVariant;
-  title: string;
-  description: string;
-}
-
-const NETWORK_MESSAGE: AuthErrorMessage = {
-  variant: 'error',
-  title: 'Sin conexión con el servidor',
-  description: 'Revisa tu conexión e intenta de nuevo.',
-};
-
-const UNKNOWN_MESSAGE: AuthErrorMessage = {
+const UNKNOWN_MESSAGE: AlertMessage = {
   variant: 'error',
   title: 'Algo salió mal',
   description: 'Intenta de nuevo en unos segundos.',
@@ -27,7 +15,7 @@ const UNKNOWN_MESSAGE: AuthErrorMessage = {
 
 // The view decides what the user reads, from the domain error. It never looks at
 // HTTP status codes: the gateway already translated them.
-export function loginErrorMessage(error: unknown): AuthErrorMessage {
+export function loginErrorMessage(error: unknown): AlertMessage {
   if (error instanceof InvalidCredentialsError) {
     return {
       variant: 'error',
@@ -45,13 +33,13 @@ export function loginErrorMessage(error: unknown): AuthErrorMessage {
   }
 
   if (error instanceof AuthNetworkError) {
-    return NETWORK_MESSAGE;
+    return NETWORK_ALERT;
   }
 
   return UNKNOWN_MESSAGE;
 }
 
-export function recoveryErrorMessage(error: unknown): AuthErrorMessage {
+export function recoveryErrorMessage(error: unknown): AlertMessage {
   if (error instanceof InvalidResetTokenError) {
     return {
       variant: 'error',
@@ -69,7 +57,7 @@ export function recoveryErrorMessage(error: unknown): AuthErrorMessage {
   }
 
   if (error instanceof AuthNetworkError) {
-    return NETWORK_MESSAGE;
+    return NETWORK_ALERT;
   }
 
   return UNKNOWN_MESSAGE;

@@ -74,8 +74,8 @@ export function PhotoInput({
   );
 }
 
-// The preview is a blob URL, so it has to be released when the file changes or
-// the field goes away: the browser holds the file alive until then.
+// The preview is a blob URL: the browser holds the file alive until it is
+// released.
 function usePreviewUrl(file: File | null): string | null {
   const [url, setUrl] = useState<string | null>(null);
 

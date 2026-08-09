@@ -3,7 +3,7 @@ import { eventKeys, useBuildings, useNewEventsSignal } from '@bb/logic';
 import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
 import { useMemo } from 'react';
-import { IconButton, Select, Tabs, type TabItem } from '../../ui';
+import { IconButton, Select, Tabs, toSelectOptions, type TabItem } from '../../ui';
 import { CriticalEventsLens, IntrusionsLens, NewEventsBanner, OpenDoorLens } from './components';
 
 type MonitorPageProps = {
@@ -35,10 +35,7 @@ export function MonitorPage({ search, onSearchChange, lockedBuildingId }: Monito
   // Rebuilt on every render this list looks new to `Select` even when nothing
   // changed, and React re-renders it and every option with it.
   const buildingOptions = useMemo(
-    () => [
-      { value: '', label: 'Todos los edificios' },
-      ...(buildings.data ?? []).map((building) => ({ value: building.id, label: building.name })),
-    ],
+    () => toSelectOptions(buildings.data ?? [], { first: { value: '', label: 'Todos los edificios' } }),
     [buildings.data],
   );
 

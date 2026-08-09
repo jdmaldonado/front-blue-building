@@ -9,7 +9,7 @@ import {
 import { useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useServices } from '../services/context';
-import { accessKeys } from './keys';
+import { accessKeys } from './access.keys';
 
 // First an HTTP read, then socket updates merged into the same cache entry.
 export function useDoorStatuses(buildingId: string | null): UseQueryResult<DoorStatuses> {

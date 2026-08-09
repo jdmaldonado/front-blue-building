@@ -1,7 +1,7 @@
 import type { Building, MaintenanceInput } from '@bb/core';
 import { useMutation, useQueryClient, type UseMutationResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
-import { buildingKeys } from './keys';
+import { buildingKeys } from './buildings.keys';
 
 export interface BuildingMaintenance {
   enable: UseMutationResult<Building, Error, MaintenanceInput>;

@@ -1,7 +1,7 @@
 import type { SetResidentActiveInput, UpdateResidentInput } from '@bb/core';
 import { useMutation, useQueryClient, type UseMutationResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
-import { userKeys } from './keys';
+import { userKeys } from './users.keys';
 
 export interface ResidentMutations {
   update: UseMutationResult<void, Error, UpdateResidentInput>;

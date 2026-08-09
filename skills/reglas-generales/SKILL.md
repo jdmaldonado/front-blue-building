@@ -20,8 +20,8 @@ apps/web  ->  packages/logic  ->  packages/api-client  ->  packages/core
 - `apps/web` no contiene lógica de negocio: llama hooks de `@bb/logic`.
 - `packages/logic` no importa UI. Ni componentes, ni toast, ni modal, ni router.
   Expone estado y callbacks; quien lo usa decide qué pinta.
-- `packages/api-client` es la capa anticorrupción: absorbe la forma real del
-  backend actual y entrega tipos de `@bb/core`.
+- `packages/api-client` es la única capa que conoce cómo habla el backend de
+  verdad: absorbe su forma real y entrega tipos de `@bb/core`.
 - `packages/core` no importa nada del repo salvo a sí mismo.
 
 Prueba rápida: si un archivo de `logic` importa algo de `react-dom`, `lucide-react`
@@ -30,7 +30,8 @@ o `@tanstack/react-router`, está mal ubicado.
 ## 2. TypeScript
 
 - **`any` prohibido.** Lo desconocido entra como `unknown` y se valida con zod en
-  el borde (`packages/api-client/src/gateways.ts:42`). Tampoco `as unknown as X`.
+  el borde (`packages/api-client/src/cards/cards.gateway.ts:25-30`). Tampoco
+  `as unknown as X`.
   Qué es un borde y qué método usar: `validar-con-zod/SKILL.md`.
 - **`enum` prohibido**, forzado en pre-commit (`lefthook.yml:11-17`). Se usa
   objeto `as const` + tipo derivado:
@@ -41,7 +42,7 @@ o `@tanstack/react-router`, está mal ubicado.
   export const DoorTypeSchema = z.enum(DoorType);
   ```
 
-  Ejemplo real: `packages/core/src/access/constants.ts:1-5`.
+  Ejemplo real: `packages/core/src/access/access.constants.ts:1-5`.
   El `as const` es obligatorio: sin él zod infiere `string` y se pierden los literales.
 
 - **`import type` para tipos.** `verbatimModuleSyntax` está activo, un import de
@@ -52,13 +53,15 @@ o `@tanstack/react-router`, está mal ubicado.
   arregla el tipo o se valida en runtime (`apps/web/src/main.tsx:13-16`).
 - Retornos públicos anotados explícitamente en `packages/*` (los hooks declaran
   `UseQueryResult<Door[]>`, ver `packages/logic/src/access/useAccessibleDoors.ts:7`).
-- Uniones discriminadas en lugar de booleanos sueltos cuando hay estados excluyentes.
+- Cuando dos estados no pueden darse a la vez, se modelan como una unión con un
+  campo que los distingue, no con booleanos sueltos:
+  `{ mode: 'pick' } | { mode: 'fixed'; apartmentId: string }`.
 
 ## 3. Valores y constantes
 
 - **Sin magic strings ni magic numbers.** Todo valor con significado va a una
   constante nombrada en el dominio que le corresponde
-  (`packages/core/src/access/constants.ts:9-13` para los códigos de puerta).
+  (`packages/core/src/access/access.constants.ts:9-13` para los códigos de puerta).
 - Rutas de API, códigos de acción, nombres de eventos de socket: constantes, no
   literales repartidos.
 - Excepción: clases de Tailwind, que deben quedar literales para que el compilador
@@ -67,9 +70,9 @@ o `@tanstack/react-router`, está mal ubicado.
 ## 4. Errores
 
 - Los errores de dominio extienden `DomainError` y declaran `code`
-  (`packages/core/src/shared/errors.ts:1`, `packages/core/src/auth/errors.ts:3-5`).
+  (`packages/core/src/shared/shared.errors.ts:1`, `packages/core/src/auth/auth.errors.ts:3-5`).
 - La traducción de error de transporte a error de dominio ocurre en el gateway
-  (`packages/api-client/src/gateways.ts:49-59`), nunca en la UI.
+  (`packages/api-client/src/cards/cards.errors.ts`), nunca en la UI.
 - La UI decide el mensaje visible a partir del error de dominio; no lee `status`
   HTTP ni cuerpos crudos.
 
@@ -92,16 +95,23 @@ o `@tanstack/react-router`, está mal ubicado.
 
 - Un componente por archivo. Nada de `utils.ts` genéricos: la utilidad vive donde
   se usa o en el paquete que le corresponde.
+- **Los nombres que se repetirían en cada dominio llevan delante el dominio**,
+  separado por punto: `auth.schemas.ts`, `cards.errors.ts`, `buildings.keys.ts`,
+  `users.gateway.ts`, `access.constants.ts`. Sin el prefijo, buscar `schemas` por
+  nombre de archivo devuelve diez resultados idénticos. El `index.ts` es la
+  excepción: se queda igual en todas partes.
 - Barrel (`index.ts`) por dominio y por componente. Se importa del barrel, no del
   archivo interno: `import { Button } from '../../ui'`.
 - Código, identificadores, comentarios **y rutas (URLs)** en inglés.
   Documentación y textos de UI en español. Una URL nunca lleva español:
   `/forgot-password`, no `/recuperar-contrasena`.
-- **Comentarios: solo si hacen falta, y cortos.** Un comentario se escribe cuando
-  el código no puede explicar el _por qué_: una rareza del backend, una decisión
-  que parece un error, un límite conocido. Nunca para repetir lo que el código ya
-  dice. Inglés simple: frases cortas, palabras comunes, sin florituras; el equipo
-  no es nativo.
+- **Comentarios: pocos, cortos y con motivo.** Se escribe uno cuando el código no
+  puede explicar el _por qué_: una rareza del backend (con `archivo:línea`), una
+  decisión que parece un error, un límite conocido. Tres líneas como mucho.
+  Nunca para repetir lo que el código ya dice, y nunca para contar la historia de
+  una decisión de diseño: eso va al `PLAN.md`, que es donde alguien lo va a
+  buscar. Inglés simple: frases cortas, palabras comunes; el equipo no es
+  nativo.
 
   ```ts
   // Bien: explica algo que el código no dice.
@@ -113,8 +123,10 @@ o `@tanstack/react-router`, está mal ubicado.
 
 - El inglés del código es el estándar y simple: nombres que un equipo no nativo
   reconoce sin buscarlos. `RadioGroup`, no `SegmentedControl`; `Modal`, no
-  `Overlay`. La variación visual se expresa con variantes, no inventando nombres
-  (ver `crear-componente-ui`).
+  `Overlay`; `BadResponseError`, no `ContractError`. La variación visual se
+  expresa con variantes, no inventando nombres (ver `crear-componente-ui`).
+- Lo mismo vale para la prosa de comentarios y skills: se explica con palabras
+  comunes. Quien mantenga esto no tiene por qué conocer la jerga.
 
 ## 7. React
 

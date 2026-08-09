@@ -51,7 +51,7 @@ Reglas:
 
 ## Query keys
 
-Una fábrica por dominio, en `keys.ts`, con `as const` en cada nivel:
+Una fábrica por dominio, en `<dominio>.keys.ts`, con `as const` en cada nivel:
 
 ```ts
 export const accessKeys = {
@@ -60,7 +60,7 @@ export const accessKeys = {
 };
 ```
 
-Referencia: `packages/logic/src/access/keys.ts:1-6`.
+Referencia: `packages/logic/src/access/access.keys.ts:1-6`.
 
 - Prohibido escribir un array de key a mano en un `useQuery` o en un
   `invalidateQueries`.

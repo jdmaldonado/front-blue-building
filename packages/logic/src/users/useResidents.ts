@@ -1,7 +1,7 @@
 import type { ResidentList } from '@bb/core';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
-import { userKeys } from './keys';
+import { userKeys } from './users.keys';
 
 export function useResidents(): UseQueryResult<ResidentList> {
   const { usersGateway } = useServices();

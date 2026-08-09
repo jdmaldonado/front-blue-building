@@ -1,6 +1,6 @@
 import { ReaderHealth, readerHealthFromState, type DoorStatuses } from '@bb/core';
 import { useQueryClient } from '@tanstack/react-query';
-import { accessKeys } from '../access/keys';
+import { accessKeys } from '../access/access.keys';
 
 // Worst first: one reader in alert decides how the whole building reads.
 const SEVERITY: readonly ReaderHealth[] = [

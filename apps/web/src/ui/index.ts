@@ -133,8 +133,8 @@ export {
 } from './radio-group';
 export type { RadioGroupAppearance, RadioGroupSize, RadioGroupVariants, RadioOption } from './radio-group';
 
-export { Select, selectSizes, selectVariants } from './select';
-export type { SelectOption, SelectSize, SelectVariants } from './select';
+export { Select, selectSizes, selectVariants, sortOptionsByLabel, toSelectOptions } from './select';
+export type { NamedItem, SelectOption, SelectOptionsConfig, SelectSize, SelectVariants } from './select';
 
 export {
   Sidebar,
