@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { RoleTypeSchema } from '../auth';
 import { IdSchema } from '../shared';
+import { DocumentTypeSchema } from './users.constants';
 
 export const CardTagSchema = z.object({
   tag: z.string(),
@@ -22,7 +23,7 @@ export const ResidentDetailsSchema = z.object({
   cedula: z.string(),
   name: z.string(),
 
-  documentType: z.string().nullish().catch(null),
+  documentType: DocumentTypeSchema.nullish().catch(null),
   phone: z.string().nullish().catch(null),
   email: z.string().nullish().catch(null),
   active: z.boolean().nullish().catch(null),

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { PASSWORD_MIN_LENGTH } from '../auth';
-import { DocumentTypeSchema, PHONE_DIGITS } from './registration.constants';
+import { DocumentTypeSchema } from '../users';
+import { PHONE_DIGITS } from './registration.constants';
 
 // Limits mirror what the API validates
 // (api/src/controllers/apartments/users/register_apartment_user_form.ts:5-31).
