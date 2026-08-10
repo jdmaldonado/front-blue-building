@@ -3,6 +3,16 @@ export const UsersPath = {
   Validate: '/api/bluebuilding/userv2',
 } as const;
 
+// The endpoint keeps answering the plain list while no page is asked for
+// (api/src/2.0/users/controllers/UserControllerV2.ts:152-158), so only the
+// filter travels here.
+export function residentsPath(buildingId?: string | null): string {
+  if (buildingId === null || buildingId === undefined || buildingId === '') {
+    return UsersPath.Residents;
+  }
+  return `${UsersPath.Residents}?buildingId=${encodeURIComponent(buildingId)}`;
+}
+
 export function apartmentUsersPath(apartmentId: string): string {
   return `/api/bluebuilding/apartments/${apartmentId}/users`;
 }

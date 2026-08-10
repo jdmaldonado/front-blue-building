@@ -3,17 +3,16 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useServices } from '../services/context';
 import { userKeys } from './users.keys';
 
-export function useResidents(): UseQueryResult<ResidentList> {
+// Every resident, or only those of one building when the screen belongs to one.
+export function useResidents(buildingId?: string | null): UseQueryResult<ResidentList> {
   const { usersGateway } = useServices();
 
   return useQuery({
-    queryKey: userKeys.residents(),
-    queryFn: () => usersGateway.listResidents(),
+    queryKey: userKeys.residents(buildingId),
+    queryFn: () => usersGateway.listResidents(buildingId),
   });
 }
 
-// Same table, narrower source. The API has no "users of a building" endpoint,
-// so a building screen filters the full list by name.
 export function useApartmentResidents(apartmentId: string): UseQueryResult<ResidentList> {
   const { usersGateway } = useServices();
 

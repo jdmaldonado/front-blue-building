@@ -469,10 +469,16 @@ PWA.
 
 Detalle y tamaño en `bluebuilding-docs/07-abierto/propuestas-panel-admin.md`.
 Se están atacando por fases, en `api`, con la regla de que ningún cambio rompa
-lo que ya funciona. **Hechas: 4, 6, 12 y 14** (fases 1 y 2), con su lado del
-front ya sincronizado: la foto del solicitante se ve en la tarjeta de
+lo que ya funciona. **Hechas: 4, 5, 6, 9, 12, 13 y 14** (fases 1 a 3), con su
+lado del front ya sincronizado: la foto del solicitante se ve en la tarjeta de
 aprobación, el diálogo de cámara usa el `doorId` y deja el cruce por nombre solo
-como respaldo, y el apartamento lleno se reconoce por su nombre de error.
+como respaldo, el apartamento lleno se reconoce por su nombre de error, y la
+lista de residentes de un edificio la filtra el servidor.
+
+De la 5 solo entró el filtro por fecha: los dos endpoints ya fijan su tipo en la
+consulta, así que un filtro por tipo no tendría nada que filtrar ahí. La 9 dejó
+`page` y `limit` disponibles en la API, que la app todavía no usa: la tabla
+pagina en el navegador y cambiar eso es una decisión de interfaz, no de datos.
 
 1. **La sala `.events` no recibe a nadie.** La API emite `new_event_${buildingId}`
    a `${buildingId}.events` (`api/src/hardware/index.ts:394`, `:907`), pero
@@ -516,8 +522,6 @@ como respaldo, y el apartamento lleno se reconoce por su nombre de error.
   se estaba tocando, no las pantallas que quedaron intactas esos días.
 - El éxito de abrir una puerta se deduce de que llegue un evento nuevo de esa
   puerta. Si el backend expusiera una confirmación, sobra la espera de 8 s.
-- La vista de usuarios de un edificio filtra en el navegador por nombre de
-  edificio, porque la API no da otra cosa. Anotado como `TODO` en el código.
 - La lista de residentes se lee fila a fila: `id`, `cedula` y `name` son
   obligatorios y el resto degrada a null. Las filas descartadas se cuentan en
   pantalla y se detallan en el log. Falta ver qué usuarios reales fallan.

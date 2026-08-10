@@ -11,7 +11,14 @@ import type { Logger } from '@bb/logger';
 import type { HttpClient } from '../http';
 import { readRows } from '../shared';
 import { toUserLookupError, toUsersError } from './users.errors';
-import { UsersPath, apartmentUsersPath, residentActivationPath, residentPath, userByDocumentPath } from './users.paths';
+import {
+  UsersPath,
+  apartmentUsersPath,
+  residentActivationPath,
+  residentPath,
+  residentsPath,
+  userByDocumentPath,
+} from './users.paths';
 
 // Files, so this input cannot live in `core`: that package has no DOM types.
 export interface ValidateUserInput {
@@ -30,10 +37,9 @@ export class UsersGateway {
     private readonly logger: Logger,
   ) {}
 
-  // Reads every resident in every building. There is no filter or paging yet
-  // (docs 07-abierto/propuestas-panel-admin.md).
-  async listResidents(): Promise<ResidentList> {
-    return this.readResidents(UsersPath.Residents);
+  // Every resident, or only those of one building.
+  async listResidents(buildingId?: string | null): Promise<ResidentList> {
+    return this.readResidents(residentsPath(buildingId));
   }
 
   async listApartmentResidents(apartmentId: string): Promise<ResidentList> {
