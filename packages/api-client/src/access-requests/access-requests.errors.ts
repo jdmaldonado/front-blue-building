@@ -22,11 +22,17 @@ export const toAccessRequestsError = createErrorMapper({
   unknown: (cause) => new UnknownAccessRequestsError('Unexpected error with an access request', { cause }),
   byStatus: {
     // Two different things answer 403 here, and only the body tells them apart.
-    [HttpStatus.Forbidden]: (error) =>
-      isNamed(error, 'UserNotVerifiedError')
-        ? new ApproverNotVerifiedError('The approver is not verified yet', { cause: error })
-        : new AccessRequestGoneError('That request is no longer available', { cause: error }),
-    // A full apartment lands here, with its reason only in the message.
+    [HttpStatus.Forbidden]: (error) => {
+      if (isNamed(error, 'UserNotVerifiedError')) {
+        return new ApproverNotVerifiedError('The approver is not verified yet', { cause: error });
+      }
+      if (isNamed(error, 'MaxCapacityReachedError')) {
+        return new AccessRequestFailedError('The apartment is full', { cause: error });
+      }
+      return new AccessRequestGoneError('That request is no longer available', { cause: error });
+    },
+    // An API without the fix still answers 500 for the full apartment, with the
+    // reason only in the text. Kept until every environment is updated.
     [INTERNAL_ERROR]: (error) =>
       new AccessRequestFailedError('The API refused to resolve the request', { cause: error }),
   },

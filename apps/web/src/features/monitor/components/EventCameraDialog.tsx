@@ -1,4 +1,4 @@
-import { findDoorByName, type CriticalEvent, type DoorCamera } from '@bb/core';
+import { findDoorByName, type CriticalEvent, type Door, type DoorCamera } from '@bb/core';
 import { useAccessibleDoors } from '@bb/logic';
 import { Button, Dialog, Loading, Text } from '../../../ui';
 import { CameraTile } from '../../doors';
@@ -10,8 +10,8 @@ type EventCameraDialogProps = {
 };
 
 // The camera of the door that raised the event, without leaving the list. The
-// event only names its door, so the doors of the building are loaded here and
-// the match happens by name.
+// event carries the door id, and the name is only used when it is missing:
+// events stored before the API sent the id, or an API not updated yet.
 //
 // Same source as the live screen on purpose. The other door endpoint (POST
 // /api/bluebuilding/doors) never loads `doorCameras`, so every door came back
@@ -20,7 +20,7 @@ export function EventCameraDialog({ event, onClose }: EventCameraDialogProps) {
   const buildingId = event?.buildingId ?? null;
   const doors = useAccessibleDoors(buildingId);
 
-  const door = findDoorByName(doors.data ?? [], event?.door);
+  const door = findEventDoor(doors.data ?? [], event);
   const cameras = door?.cameras ?? [];
 
   return (
@@ -94,4 +94,13 @@ function Body({ buildingId, cameras, doorFound, isPending, isError }: BodyProps)
       ))}
     </div>
   );
+}
+
+function findEventDoor(doors: readonly Door[], event: CriticalEvent | null): Door | null {
+  if (event === null) {
+    return null;
+  }
+  const wantedId = event.doorId ?? null;
+  const byId = wantedId === null ? null : (doors.find((door) => door.id === wantedId) ?? null);
+  return byId ?? findDoorByName(doors, event.door);
 }

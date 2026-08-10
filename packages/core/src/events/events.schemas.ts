@@ -19,6 +19,9 @@ export const CriticalEventSchema = z.object({
   origin: EventOriginSchema.nullish().catch(null),
   createdAt: z.string().nullish().catch(null),
   door: z.string().nullish().catch(null),
+  // Added later than `door`: an API that has not been updated sends only the
+  // name, so this can be missing.
+  doorId: IdSchema.nullish().catch(null),
   buildingId: IdSchema.nullish().catch(null),
   buildingName: z.string().nullish().catch(null),
   userName: z.string().nullish().catch(null),

@@ -8,7 +8,7 @@ type AccessRequestCardProps = {
   onResolve: (approved: boolean) => void;
 };
 
-// The API sends no photo, so the avatar falls back to the initials.
+// Whoever approves sees the face, not only the name.
 export function AccessRequestCard({ request, disabled, onResolve }: AccessRequestCardProps) {
   const { user, apartment } = request;
   const place = apartment === null || apartment === undefined ? null : apartmentLabel(apartment);
@@ -16,7 +16,7 @@ export function AccessRequestCard({ request, disabled, onResolve }: AccessReques
   return (
     <Card className="flex flex-col gap-4">
       <div className="flex items-start gap-3">
-        <Avatar name={user.name} size="md" />
+        <Avatar name={user.name} src={user.photo} size="md" />
         <div className="flex min-w-0 flex-col">
           <Text as="span" weight="semibold" truncate>
             {user.name}

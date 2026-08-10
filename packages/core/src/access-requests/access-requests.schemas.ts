@@ -3,8 +3,8 @@ import { RoleType, type Space } from '../auth';
 import { IdSchema } from '../shared';
 import { ApprovalScope } from './access-requests.constants';
 
-// Who is asking to get in. The API sends no photo, even though the registration
-// makes it mandatory (api/src/controllers/apartments/access/list_access_requests_dto.ts:8-16).
+// Who is asking to get in. The photo is the one the registration made them
+// upload (api/src/controllers/apartments/access/list_access_requests_dto.ts:17).
 export const RequesterSchema = z.object({
   id: IdSchema,
   name: z.string(),
@@ -12,6 +12,7 @@ export const RequesterSchema = z.object({
 
   phone: z.string().nullish().catch(null),
   email: z.string().nullish().catch(null),
+  photo: z.string().nullish().catch(null),
 });
 export type Requester = z.infer<typeof RequesterSchema>;
 

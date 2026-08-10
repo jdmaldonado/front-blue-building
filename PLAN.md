@@ -468,6 +468,11 @@ PWA.
 ## Pendiente de backend
 
 Detalle y tamaño en `bluebuilding-docs/07-abierto/propuestas-panel-admin.md`.
+Se están atacando por fases, en `api`, con la regla de que ningún cambio rompa
+lo que ya funciona. **Hechas: 4, 6, 12 y 14** (fases 1 y 2), con su lado del
+front ya sincronizado: la foto del solicitante se ve en la tarjeta de
+aprobación, el diálogo de cámara usa el `doorId` y deja el cruce por nombre solo
+como respaldo, y el apartamento lleno se reconoce por su nombre de error.
 
 1. **La sala `.events` no recibe a nadie.** La API emite `new_event_${buildingId}`
    a `${buildingId}.events` (`api/src/hardware/index.ts:394`, `:907`), pero
