@@ -469,11 +469,16 @@ PWA.
 
 Detalle y tamaño en `bluebuilding-docs/07-abierto/propuestas-panel-admin.md`.
 Se están atacando por fases, en `api`, con la regla de que ningún cambio rompa
-lo que ya funciona. **Hechas: 4, 5, 6, 9, 12, 13 y 14** (fases 1 a 3), con su
+lo que ya funciona. **Hechas: 2, 3, 4, 5, 6, 9, 12, 13 y 14** (fases 1 a 5), con su
 lado del front ya sincronizado: la foto del solicitante se ve en la tarjeta de
 aprobación, el diálogo de cámara usa el `doorId` y deja el cruce por nombre solo
 como respaldo, el apartamento lleno se reconoce por su nombre de error, y la
 lista de residentes de un edificio la filtra el servidor.
+
+La 2 pasa a agrupar, ordenar y cortar en la base de datos, contando pares de
+cámara y secuencia; antes traía la tabla entera y la cortaba sin ordenar. La 3
+toma del token quién atiende el incidente, y los campos del cuerpo se siguen
+aceptando e ignorando, así que ningún cliente se entera.
 
 De la 5 solo entró el filtro por fecha: los dos endpoints ya fijan su tipo en la
 consulta, así que un filtro por tipo no tendría nada que filtrar ahí. La 9 dejó

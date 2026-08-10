@@ -135,6 +135,10 @@ export interface CriticalEventList {
   skipped: number;
 }
 
+// TODO: drop `supportUserId` and `supportUserName` once every environment runs
+// an API that takes the person from the token
+// (api/src/2.0/events/controllers/EventController.ts:30-36). An older API still
+// rejects the request without them, so they keep travelling for now.
 export const StartIncidentInputSchema = z.object({
   eventId: IdSchema,
   supportUserId: IdSchema,
