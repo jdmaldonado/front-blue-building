@@ -2,9 +2,8 @@ import { z } from 'zod';
 import { IdSchema } from '../shared';
 import { EventOriginSchema, IncidentStatusSchema, MonitorLensSchema } from './events.constants';
 
-// These endpoints answer flat objects, unlike the rest of the API, which wraps
-// each row in `{ user: ... }` or `{ card: ... }`. Third convention in the same
-// backend, so it is written down here and not discovered again.
+// These endpoints answer flat objects. Other parts of the API wrap each row in
+// `{ user: ... }` or `{ card: ... }`.
 
 // Numbers arrive as strings on the open-door endpoint: `page` and `limit` come
 // straight from the query string with no `Number()` on the way out.
@@ -38,14 +37,8 @@ export const CriticalEventSchema = z.object({
 });
 export type CriticalEvent = z.infer<typeof CriticalEventSchema>;
 
-// A row here is not one event: it is every photo of the same episode, grouped
-// by camera and motion sequence.
-//
-// The grouping has no ceiling, and when `intrusionMotionSequenceId` is missing
-// every capture of a camera lands in the same row
-// (api/src/2.0/cameras/controller/EventIntrusionController.ts:15). Keeping all
-// of them alive in the query cache is what makes the screen stop responding, so
-// the row keeps a page worth of photos and remembers how many there were.
+// One row holds every photo of the same episode, with no limit
+// (EventIntrusionController.ts:15). We keep this many and count the rest.
 const MAX_SEQUENCE_URLS = 60;
 
 export const IntrusionEventSchema = z
@@ -69,10 +62,8 @@ export const IntrusionEventSchema = z
   }));
 export type IntrusionEvent = z.infer<typeof IntrusionEventSchema>;
 
-// Half of this row comes in snake_case and half in camelCase: the DTO mixes both
-// (api/src/2.0/cameras/dtos/EventOpenDoor.dto.ts). Reading only camelCase left
-// the photo and both timestamps empty on every row, quietly, because each field
-// falls back to null on its own.
+// This row mixes snake_case and camelCase
+// (api/src/2.0/cameras/dtos/EventOpenDoor.dto.ts).
 export const OpenDoorEventSchema = z
   .object({
     // Null when the capture failed: the API still returns the row.
