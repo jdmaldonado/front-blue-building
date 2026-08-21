@@ -29,6 +29,7 @@ está cubierto, se sigue el patrón del código existente en la misma capa.
 | [agregar-design-token](skills/agregar-design-token/SKILL.md)     | Color, radio, sombra o token de componente              |
 | [verificar-cambios](skills/verificar-cambios/SKILL.md)           | Al cerrar cualquier cambio                              |
 | [partir-archivos-largos](skills/partir-archivos-largos/SKILL.md) | Un archivo pasa de 250 líneas o cuesta de leer          |
+| [escribir-comentarios](skills/escribir-comentarios/SKILL.md)     | Antes de escribir o revisar un comentario               |
 
 ## Reglas que nunca se negocian
 

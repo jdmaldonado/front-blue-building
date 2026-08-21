@@ -108,21 +108,9 @@ o `@tanstack/react-router`, está mal ubicado.
 - Código, identificadores, comentarios **y rutas (URLs)** en inglés.
   Documentación y textos de UI en español. Una URL nunca lleva español:
   `/forgot-password`, no `/recuperar-contrasena`.
-- **Comentarios: pocos, cortos y con motivo.** Se escribe uno cuando el código no
-  puede explicar el _por qué_: una rareza del backend (con `archivo:línea`), una
-  decisión que parece un error, un límite conocido. Tres líneas como mucho.
-  Nunca para repetir lo que el código ya dice, y nunca para contar la historia de
-  una decisión de diseño: eso va al `PLAN.md`, que es donde alguien lo va a
-  buscar. Inglés simple: frases cortas, palabras comunes; el equipo no es
-  nativo.
-
-  ```ts
-  // Bien: explica algo que el código no dice.
-  // The API answers 204 even for unknown users, so nobody can guess documents.
-
-  // Mal: repite el código.
-  // Parse the response and return the doors.
-  ```
+- **Comentarios: pocos, cortos y con motivo.** Dos líneas como máximo, y solo
+  cuando el código no puede decirlo solo. Detalle y ejemplos:
+  `escribir-comentarios/SKILL.md`.
 
 - El inglés del código es el estándar y simple: nombres que un equipo no nativo
   reconoce sin buscarlos. `RadioGroup`, no `SegmentedControl`; `Modal`, no

@@ -85,10 +85,7 @@ export const OpenDoorEventSchema = z
     created_at: z.string().nullish().catch(null),
 
     eventType: z.string().nullish().catch(null),
-    // The same value under two names: the API renamed it to `origin` for the old
-    // panel and then put `eventOrigin` back, so today it sends both
-    // (api/src/2.0/cameras/controller/EventOpenDoorController.ts:20-21). We read
-    // whichever arrives.
+    // The API sends the same value twice, as `origin` and as `eventOrigin`.
     eventOrigin: EventOriginSchema.nullish().catch(null),
     origin: EventOriginSchema.nullish().catch(null),
     doorName: z.string().nullish().catch(null),
@@ -140,11 +137,8 @@ export interface CriticalEventList {
   skipped: number;
 }
 
-// TODO: drop `supportUserId` and `supportUserName`. The API already takes the
-// person from the token and ignores both
-// (api/src/2.0/events/controllers/EventController.ts:32-33), but an environment
-// running an older build still rejects the request without them, so they keep
-// travelling until every one is updated.
+// TODO: drop `supportUserId` and `supportUserName`. The API takes the person
+// from the token now, but an older build still needs them in the body.
 export const StartIncidentInputSchema = z.object({
   eventId: IdSchema,
   supportUserId: IdSchema,

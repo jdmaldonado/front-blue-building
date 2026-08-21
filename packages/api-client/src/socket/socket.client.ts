@@ -1,65 +1,25 @@
-import {
-  CardReaderError,
-  DoorAction,
-  READER_REBOOT_TIMEOUT_MS,
-  ReaderTimeoutError,
-  ReaderUnreachableError,
-  DoorUpdateSchema,
-  isStartupState,
-  OutOfScheduleError,
-  UnauthorizedDoorError,
-  type ReaderConfig,
-  type UserEvent,
-} from '@bb/core';
-import type { DomainError, DoorUpdate } from '@bb/core';
+import { DoorAction, DoorUpdateSchema, isStartupState, OutOfScheduleError, UnauthorizedDoorError } from '@bb/core';
+import type { DomainError, DoorUpdate, ReaderConfig, UserEvent } from '@bb/core';
 import type { Logger } from '@bb/logger';
 import { io, type Socket } from 'socket.io-client';
 import { z } from 'zod';
+import { configureReader, rebootReader, setupCardReader } from './socket.readers';
+import type { CardReaderCallbacks, ReaderCallbacks, ReaderTarget } from './socket.readers';
+import { SocketRooms } from './socket.rooms';
+import type { Unsubscribe } from './socket.types';
 
 export interface SocketClientConfig {
   url: string;
   logger: Logger;
 }
 
-export type Unsubscribe = () => void;
-
 const doorActionErrorSchema = z.object({ error: z.string() }).catch({ error: 'UNKNOWN' });
 
-// The reader answers READY once it is in register mode, or an error.
-const cardSetupResponseSchema = z
-  .object({ status: z.string().nullish(), error: z.string().nullish() })
-  .catch({ status: null, error: 'UNKNOWN' });
-
-const CARD_SETUP_READY = 'READY';
-
-// Both reader answers look the same: a success event or an error event with a
-// reason. "No socket found" means the reader is not connected.
-const readerErrorSchema = z.object({ error: z.string().nullish() }).catch({ error: null });
-
-// The tag arrives raw, sometimes as a number.
-const readTagSchema = z.union([z.string(), z.number()]).transform((value) => String(value));
-
-// `init` sets the session on the server socket and every `subscribe:*` needs it
-// (api/src/hardware/index.ts:593, :1072). It answers nothing, so we wait before
-// joining rooms. Too early and the subscription is lost without any error.
+// `init` answers nothing, and a room asked too early is lost in silence
+// (api/src/hardware/index.ts:593). So we wait before joining.
 const SESSION_SETTLE_MS = 600;
 
 type CamSubscription = { buildingId: string; camId: string };
-
-export interface ReaderCallbacks {
-  onSuccess: () => void;
-  onError: (error: DomainError) => void;
-}
-
-export interface CardReaderCallbacks {
-  onReady: () => void;
-  onTag: (tag: string) => void;
-  onError: (error: DomainError) => void;
-}
-
-// How many views asked for the same room. The room is left when the last one
-// goes, so closing one camera does not cut the others.
-type RoomUsers<TInput> = { input: TInput; count: number };
 
 export class SocketClient {
   private readonly socket: Socket;
@@ -67,15 +27,32 @@ export class SocketClient {
   private token: string | null = null;
   private sessionReady = false;
   private settleTimer: ReturnType<typeof setTimeout> | null = null;
-  private readonly camRooms = new Map<string, RoomUsers<CamSubscription>>();
-  private readonly doorStatusRooms = new Map<string, RoomUsers<string>>();
+  private readonly camRooms: SocketRooms<CamSubscription>;
+  private readonly doorStatusRooms: SocketRooms<string>;
 
   constructor(config: SocketClientConfig) {
     this.socket = io(config.url, { autoConnect: false, transports: ['websocket'] });
     this.logger = config.logger.child({ module: 'SocketClient' });
 
-    // A reconnect gives us a new socket on the server, with no session and no
-    // rooms. Nobody else would notice, so we start over here.
+    const isReady = (): boolean => this.sessionReady;
+    this.doorStatusRooms = new SocketRooms<string>({
+      socket: this.socket,
+      joinEvent: 'subscribe:door_status',
+      leaveEvent: 'leave:door_status',
+      keyOf: (buildingId) => buildingId,
+      payloadOf: (buildingId) => ({ buildingId }),
+      isReady,
+    });
+    this.camRooms = new SocketRooms<CamSubscription>({
+      socket: this.socket,
+      joinEvent: 'subscribe:cam_stream',
+      leaveEvent: 'leave:cam_stream',
+      keyOf: (input) => input.camId,
+      payloadOf: (input) => input,
+      isReady,
+    });
+
+    // A reconnect leaves us without session and without rooms.
     this.socket.on('connect', () => this.startSession());
     this.socket.on('disconnect', (reason: string) => {
       this.sessionReady = false;
@@ -108,12 +85,8 @@ export class SocketClient {
     this.clearSettleTimer();
     this.settleTimer = setTimeout(() => {
       this.sessionReady = true;
-      for (const room of this.doorStatusRooms.values()) {
-        this.socket.emit('subscribe:door_status', { buildingId: room.input });
-      }
-      for (const room of this.camRooms.values()) {
-        this.socket.emit('subscribe:cam_stream', room.input);
-      }
+      this.doorStatusRooms.rejoinAll();
+      this.camRooms.rejoinAll();
     }, SESSION_SETTLE_MS);
   }
 
@@ -130,13 +103,7 @@ export class SocketClient {
   }
 
   onUserEventError(callback: (error: DomainError) => void): Unsubscribe {
-    const handler = (payload: unknown): void => {
-      callback(mapDoorActionError(payload));
-    };
-    this.socket.on('user_event:error', handler);
-    return () => {
-      this.socket.off('user_event:error', handler);
-    };
+    return this.listen('user_event:error', (payload: unknown) => callback(mapDoorActionError(payload)));
   }
 
   openDoor(input: { buildingId: string; localId: string }): void {
@@ -147,224 +114,72 @@ export class SocketClient {
     this.emitDoorAction(input.buildingId, input.localId, DoorAction.Close);
   }
 
-  // Puts one reader into register mode. The API answers once; the RPI closes
-  // the mode by itself after a minute or after the first card.
-  setupCardReader(input: { buildingId: string; localId: string }, callbacks: CardReaderCallbacks): Unsubscribe {
-    const onResponse = (payload: unknown): void => {
-      const answer = cardSetupResponseSchema.parse(payload);
-      if (answer.status === CARD_SETUP_READY) {
-        callbacks.onReady();
-        return;
-      }
-      callbacks.onError(new CardReaderError(answer.error ?? 'Reader did not get ready'));
-    };
-
-    // The API registers its own listener with `.on` and never removes it
-    // (HandleCardRegisterRequestParams.ts:30), so after several setups one card
-    // arrives several times. The caller only hears about the first one.
-    let delivered = false;
-    const onTag = (payload: unknown): void => {
-      if (delivered) {
-        return;
-      }
-      const parsed = readTagSchema.safeParse(payload);
-      if (!parsed.success) {
-        this.logger.warn('Unreadable tag from reader', { issues: parsed.error.issues });
-        return;
-      }
-      delivered = true;
-      callbacks.onTag(parsed.data);
-    };
-
-    this.socket.once('card:setup:response', onResponse);
-    this.socket.on('read_tag', onTag);
-    this.socket.emit('card:setup', { buildingId: input.buildingId, door: input.localId });
-
-    return () => {
-      this.socket.off('card:setup:response', onResponse);
-      this.socket.off('read_tag', onTag);
-    };
-  }
-
-  // Reboot answers success or error, and sometimes nothing at all: the panel
-  // cannot wait forever, so the wait is part of the call.
-  rebootReader(input: { buildingId: string; localId: string }, callbacks: ReaderCallbacks): Unsubscribe {
-    return this.commandReader('reader:reboot', 'frontend:reader:reboot', input, callbacks, READER_REBOOT_TIMEOUT_MS);
-  }
-
-  // Success here means the API forwarded the config to the reader, not that the
-  // reader applied it (api/src/hardware/index.ts:1259). No timeout: the current
-  // panel waits indefinitely and nothing says what a fair wait would be.
-  configureReader(
-    input: { buildingId: string; localId: string; config: ReaderConfig },
-    callbacks: ReaderCallbacks,
-  ): Unsubscribe {
-    return this.commandReader('reader:config', 'frontend:reader:config', input, callbacks, null);
-  }
-
-  private commandReader(
-    answer: string,
-    request: string,
-    input: { buildingId: string; localId: string; config?: ReaderConfig },
-    callbacks: ReaderCallbacks,
-    timeoutMs: number | null,
-  ): Unsubscribe {
-    let settled = false;
-    let timer: ReturnType<typeof setTimeout> | null = null;
-
-    const finish = (): void => {
-      settled = true;
-      if (timer !== null) {
-        clearTimeout(timer);
-      }
-      this.socket.off(`${answer}:success`, onSuccess);
-      this.socket.off(`${answer}:error`, onError);
-    };
-
-    const onSuccess = (): void => {
-      if (settled) {
-        return;
-      }
-      finish();
-      callbacks.onSuccess();
-    };
-
-    const onError = (payload: unknown): void => {
-      if (settled) {
-        return;
-      }
-      finish();
-      const reason = readerErrorSchema.parse(payload).error ?? '';
-      callbacks.onError(new ReaderUnreachableError(reason === '' ? 'Reader did not answer' : reason));
-    };
-
-    this.socket.once(`${answer}:success`, onSuccess);
-    this.socket.once(`${answer}:error`, onError);
-    this.socket.emit(request, {
-      buildingId: input.buildingId,
-      localId: input.localId,
-      ...(input.config === undefined ? {} : { config: input.config }),
-    });
-
-    if (timeoutMs !== null) {
-      timer = setTimeout(() => {
-        if (settled) {
-          return;
-        }
-        finish();
-        callbacks.onError(new ReaderTimeoutError('Reader did not answer in time'));
-      }, timeoutMs);
-    }
-
-    return finish;
-  }
-
   onDoorActionError(callback: (error: DomainError) => void): Unsubscribe {
-    const handler = (payload: unknown): void => {
-      callback(mapDoorActionError(payload));
-    };
-    this.socket.on('door_action:error', handler);
-    return () => {
-      this.socket.off('door_action:error', handler);
-    };
+    return this.listen('door_action:error', (payload: unknown) => callback(mapDoorActionError(payload)));
   }
 
-  // A view can mount before the socket is ready, so we keep what it asked for
-  // and send it when the session starts.
-  subscribeDoorStatus(buildingId: string): void {
-    const room = this.doorStatusRooms.get(buildingId);
-    if (room !== undefined) {
-      room.count += 1;
-      return;
-    }
+  setupCardReader(input: ReaderTarget, callbacks: CardReaderCallbacks): Unsubscribe {
+    return setupCardReader(this.socket, this.logger, input, callbacks);
+  }
 
-    this.doorStatusRooms.set(buildingId, { input: buildingId, count: 1 });
-    if (this.sessionReady) {
-      this.socket.emit('subscribe:door_status', { buildingId });
-    }
+  rebootReader(input: ReaderTarget, callbacks: ReaderCallbacks): Unsubscribe {
+    return rebootReader(this.socket, input, callbacks);
+  }
+
+  configureReader(input: ReaderTarget & { config: ReaderConfig }, callbacks: ReaderCallbacks): Unsubscribe {
+    return configureReader(this.socket, input, callbacks);
+  }
+
+  subscribeDoorStatus(buildingId: string): void {
+    this.doorStatusRooms.join(buildingId);
   }
 
   leaveDoorStatus(buildingId: string): void {
-    const room = this.doorStatusRooms.get(buildingId);
-    if (room === undefined) {
-      return;
-    }
-
-    room.count -= 1;
-    if (room.count <= 0) {
-      this.doorStatusRooms.delete(buildingId);
-      this.socket.emit('leave:door_status', { buildingId });
-    }
+    this.doorStatusRooms.leave(buildingId);
   }
 
-  // Returns an unsubscribe so listeners do not pile up (a leak in the old front).
   onDoorUpdate(buildingId: string, callback: (update: DoorUpdate) => void): Unsubscribe {
     const event = `door_update_${buildingId}`;
-    const handler = (payload: unknown): void => {
+    return this.listen(event, (payload: unknown) => {
       const parsed = DoorUpdateSchema.safeParse(payload);
       if (!parsed.success) {
         this.logger.warn('Invalid door_update payload', { event, issues: parsed.error.issues });
         return;
       }
-      // The state the API sends right after subscribing invents what it does not
-      // know, so it cannot be told from a reader that is fine. See isStartupState.
+      // See isStartupState: the first state after subscribing is made up.
       if (isStartupState(parsed.data.event)) {
         return;
       }
       callback(parsed.data);
-    };
-    this.socket.on(event, handler);
-    return () => {
-      this.socket.off(event, handler);
-    };
+    });
   }
 
   subscribeCamStream(input: CamSubscription): void {
-    const room = this.camRooms.get(input.camId);
-    if (room !== undefined) {
-      room.count += 1;
-      return;
-    }
-
-    this.camRooms.set(input.camId, { input, count: 1 });
-    if (this.sessionReady) {
-      this.socket.emit('subscribe:cam_stream', input);
-    }
+    this.camRooms.join(input);
   }
 
   leaveCamStream(input: CamSubscription): void {
-    const room = this.camRooms.get(input.camId);
-    if (room === undefined) {
-      return;
-    }
-
-    room.count -= 1;
-    if (room.count <= 0) {
-      this.camRooms.delete(input.camId);
-      this.socket.emit('leave:cam_stream', input);
-    }
+    this.camRooms.leave(input);
   }
 
-  // Sends raw JPEG bytes. Making an image out of them depends on the platform,
-  // so that happens in the UI layer.
+  // Raw JPEG bytes. The UI layer turns them into an image.
   onCamFrame(camId: string, callback: (frame: ArrayBuffer) => void): Unsubscribe {
-    const event = `cam_streaming_${camId}`;
-    const handler = (frame: ArrayBuffer): void => {
-      callback(frame);
-    };
-    this.socket.on(event, handler);
-    return () => {
-      this.socket.off(event, handler);
-    };
+    return this.listen(`cam_streaming_${camId}`, callback);
   }
 
   private emitDoorAction(buildingId: string, localId: string, action: DoorAction): void {
     this.socket.emit('door_action', { buildingId, door: localId, action });
   }
+
+  private listen<TPayload>(event: string, handler: (payload: TPayload) => void): Unsubscribe {
+    this.socket.on(event, handler);
+    return () => {
+      this.socket.off(event, handler);
+    };
+  }
 }
 
-// The API sends `AuthorizationError` both when the user has no permission and
-// when the RPI is down. We cannot tell them apart yet.
+// The API sends `AuthorizationError` both for no permission and for a dead RPI.
 function mapDoorActionError(payload: unknown): DomainError {
   const { error } = doorActionErrorSchema.parse(payload);
   if (error === 'OutOfScheduleError') {
