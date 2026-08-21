@@ -5,6 +5,7 @@ import {
   ReaderTimeoutError,
   ReaderUnreachableError,
   DoorUpdateSchema,
+  isStartupState,
   OutOfScheduleError,
   UnauthorizedDoorError,
   type ReaderConfig,
@@ -303,6 +304,11 @@ export class SocketClient {
       const parsed = DoorUpdateSchema.safeParse(payload);
       if (!parsed.success) {
         this.logger.warn('Invalid door_update payload', { event, issues: parsed.error.issues });
+        return;
+      }
+      // The state the API sends right after subscribing invents what it does not
+      // know, so it cannot be told from a reader that is fine. See isStartupState.
+      if (isStartupState(parsed.data.event)) {
         return;
       }
       callback(parsed.data);

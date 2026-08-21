@@ -85,7 +85,12 @@ export const OpenDoorEventSchema = z
     created_at: z.string().nullish().catch(null),
 
     eventType: z.string().nullish().catch(null),
+    // The same value under two names: the API renamed it to `origin` for the old
+    // panel and then put `eventOrigin` back, so today it sends both
+    // (api/src/2.0/cameras/controller/EventOpenDoorController.ts:20-21). We read
+    // whichever arrives.
     eventOrigin: EventOriginSchema.nullish().catch(null),
+    origin: EventOriginSchema.nullish().catch(null),
     doorName: z.string().nullish().catch(null),
     userName: z.string().nullish().catch(null),
     apartment: z.string().nullish().catch(null),
@@ -100,7 +105,7 @@ export const OpenDoorEventSchema = z
     timestampEvent: row.timestamp_event,
     createdAt: row.created_at,
     eventType: row.eventType,
-    eventOrigin: row.eventOrigin,
+    eventOrigin: row.eventOrigin ?? row.origin,
     doorName: row.doorName,
     userName: row.userName,
     apartment: row.apartment,
@@ -135,10 +140,11 @@ export interface CriticalEventList {
   skipped: number;
 }
 
-// TODO: drop `supportUserId` and `supportUserName` once every environment runs
-// an API that takes the person from the token
-// (api/src/2.0/events/controllers/EventController.ts:30-36). An older API still
-// rejects the request without them, so they keep travelling for now.
+// TODO: drop `supportUserId` and `supportUserName`. The API already takes the
+// person from the token and ignores both
+// (api/src/2.0/events/controllers/EventController.ts:32-33), but an environment
+// running an older build still rejects the request without them, so they keep
+// travelling until every one is updated.
 export const StartIncidentInputSchema = z.object({
   eventId: IdSchema,
   supportUserId: IdSchema,

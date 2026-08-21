@@ -4,7 +4,7 @@ Estado vivo de la migración de `front` (React 16, viejo) a `front-bluebuilding`
 Se actualiza al cerrar cada fase. Para entender el sistema, leer antes
 `../bluebuilding-docs/` (empezar por `CLAUDE.md` y `README.md`).
 
-**Última actualización:** 2026-08-10
+**Última actualización:** 2026-08-21
 
 ## Cómo se trabaja
 
@@ -505,9 +505,9 @@ pagina en el navegador y cambiar eso es una decisión de interfaz, no de datos.
    puerta, y sin id hay que cruzar por nombre para llegar a su cámara.
 7. **Telemetría en `GET .../doors/statuses`.** El arranque en frío ya está
    resuelto por otro lado: `POST /api/bluebuilding/doors` devuelve la telemetría
-   mezclada en cada puerta (`DoorControllerV2.ts:17-28`). El endpoint que suena a
-   estado, en cambio, solo trae eventos de puerta. Falta también que
-   `subscribe:door_status` conteste algo al suscribirse, hoy solo une a la sala.
+   mezclada en cada puerta. El endpoint que suena a estado, en cambio, solo trae
+   eventos de puerta. Que `subscribe:door_status` conteste al suscribirse ya se
+   hizo en BB-436, pero contestando valores inventados; ver abajo.
 8. `GET /buildings/overview` privado con metadata de estado, separado del listado
    público que llena los selects.
 9. Paginación, búsqueda y filtro por edificio en `usersV2/ResidentUserDetails`.
@@ -520,6 +520,33 @@ pagina en el navegador y cambiar eso es una decisión de interfaz, no de datos.
 13. **`buildingId` en la lista de solicitudes del edificio**, que hoy se ignora.
 14. **Código propio para el apartamento lleno**, que hoy viaja como 500 con el
     motivo en el texto.
+
+## Cambios del backend que no salieron de aquí (2026-08-21)
+
+Entraron en `api` mientras migrábamos, con su lado en el front viejo. Lo nuestro
+quedó sincronizado en el mismo día.
+
+**BB-436 — estado de puertas al suscribirse.** `subscribe:door_status` ahora
+contesta con un `door_update_${buildingId}` por cada puerta del edificio. El
+problema es qué contesta: cuando no hay telemetría en memoria **inventa**
+`CLOSED`, `IDLE` y ambos SPI en `true` (`api/src/2.0/doors/dto/DoorStatusDTO.ts`),
+así que una lectora caída llega como sana. Además manda `readerState` pasado por
+`String()` y el reloj bajo otro nombre.
+
+Nuestro lado: `isStartupState` (`packages/core/src/access/doorEvents.ts`)
+reconoce esos frames —son los únicos con campos de hardware y sin
+`lastTelemetryTimestamp`— y `SocketClient.onDoorUpdate` los ignora. La app queda
+como estaba: la salud de una lectora sale de la telemetría de verdad, y lo que no
+se sabe se muestra como desconocido. Cuando el DTO mande `null` en vez de
+inventar, se vuelve a leer (hay un TODO en el sitio).
+
+**BB-283 — captura y consulta de aperturas.** Tres cosas: la apertura que reporta
+la lectora también captura foto; la cámara de captura ya no tiene que estar
+marcada como tal; y la lista de aperturas dejó de exigir que el evento tenga
+usuario con apartamento, así que ahora salen las aperturas del hardware con el
+residente en blanco. El origen del evento viaja con dos nombres, `origin` y
+`eventOrigin`. `OpenDoorEventSchema` lee el que llegue; el resto ya lo
+soportaba, porque esos campos degradan a null uno por uno.
 
 ## Deuda conocida en la app nueva
 

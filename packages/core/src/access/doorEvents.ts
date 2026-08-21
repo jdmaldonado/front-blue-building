@@ -65,6 +65,25 @@ export function isReaderTelemetry(event: DoorEventData | undefined): boolean {
   );
 }
 
+// The API also sends this event to whoever just subscribed, once per door
+// (api/src/hardware/index.ts:1147-1155). That frame fills in what it does not
+// know instead of leaving it empty: a door with no telemetry arrives as
+// `CLOSED` / `IDLE` with both SPI buses fine (api/src/2.0/doors/dto/
+// DoorStatusDTO.ts:35-41), which reads as a healthy reader. There is no way to
+// tell that apart from a reader that really reported it, so we do not read it.
+//
+// It is the only frame with hardware fields and no `lastTelemetryTimestamp`:
+// real telemetry always carries one (api/src/hardware/handlers/
+// handleTelemetryNotify.ts:57).
+//
+// TODO: read it again once that DTO sends null for what it does not know. It is
+// the only way to see reader health without waiting for something to change.
+export function isStartupState(event: DoorEventData): boolean {
+  return (
+    isReaderTelemetry(event) && (event.lastTelemetryTimestamp === null || event.lastTelemetryTimestamp === undefined)
+  );
+}
+
 // Keeps both halves of the entry alive. Telemetry never replaces what the door
 // last did, and a plain open or close never erases what the reader reported.
 export function mergeDoorEvent(current: DoorEventData | undefined, incoming: DoorEventData): DoorEventData {
