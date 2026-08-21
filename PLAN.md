@@ -550,6 +550,22 @@ soportaba, porque esos campos degradan a null uno por uno.
 
 ## Deuda conocida en la app nueva
 
+- Tres archivos pasan del límite de 250 líneas de código que ahora avisa el lint
+  (`skills/partir-archivos-largos/SKILL.md`). Ninguno urge, pero el corte ya está
+  pensado:
+  - `packages/api-client/src/socket/socket.client.ts` (292): una clase con cinco
+    temas —sesión, puertas, cámaras, lectoras y eventos de usuario—. Es el único
+    con problema de fondo. Un archivo por dominio y la clase de fachada.
+  - `apps/web/src/features/registration/components/RegistrationForm.tsx` (256):
+    se parte por secciones de campos.
+  - `apps/web/src/ui/data-table/DataTable.tsx` (252): primitivo grande; salen la
+    barra de herramientas y la cabecera.
+  - `TermsContent.tsx` (305) es texto legal: la regla está apagada para ese
+    archivo, no hay nada que partir.
+    Rozando el límite, con el mismo patrón de columnas o campos que se pueden
+    extraer: `ResidentsTable` (222), `ReadersPage` (192), `DoorDialog` (176),
+    `CardRegisterDialog` (174), `ReaderConfigDialog` (172).
+
 - Falta el barrido del panel de admin tras el cambio de radios: se revisó lo que
   se estaba tocando, no las pantallas que quedaron intactas esos días.
 - El éxito de abrir una puerta se deduce de que llegue un evento nuevo de esa

@@ -95,6 +95,9 @@ o `@tanstack/react-router`, está mal ubicado.
 
 - Un componente por archivo. Nada de `utils.ts` genéricos: la utilidad vive donde
   se usa o en el paquete que le corresponde.
+- **Un archivo no pasa de 250 líneas de código** (sin contar comentarios ni
+  blancos). Lo avisa `pnpm lint`. Cómo partir el que se pasó:
+  `partir-archivos-largos/SKILL.md`.
 - **Los nombres que se repetirían en cada dominio llevan delante el dominio**,
   separado por punto: `auth.schemas.ts`, `cards.errors.ts`, `buildings.keys.ts`,
   `users.gateway.ts`, `access.constants.ts`. Sin el prefijo, buscar `schemas` por

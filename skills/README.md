@@ -15,18 +15,19 @@ de salida y los errores comunes.
 
 ## Índice
 
-| Skill                                                 | Cuándo                                                      |
-| ----------------------------------------------------- | ----------------------------------------------------------- |
-| [reglas-generales](reglas-generales/SKILL.md)         | Siempre, antes que cualquier otra                           |
-| [crear-componente-ui](crear-componente-ui/SKILL.md)   | Primitivo visual en `apps/web/src/ui`                       |
-| [crear-vista](crear-vista/SKILL.md)                   | Pantalla o feature en `apps/web/src/features` + ruta        |
-| [crear-hook-logica](crear-hook-logica/SKILL.md)       | Query, mutación o store en `packages/logic`                 |
-| [crear-gateway-api](crear-gateway-api/SKILL.md)       | Llamada nueva al backend en `packages/api-client`           |
-| [crear-modelo-dominio](crear-modelo-dominio/SKILL.md) | Tipos, schemas zod, constantes o errores en `packages/core` |
-| [validar-con-zod](validar-con-zod/SKILL.md)           | Duda sobre si un dato hay que validar y con qué método      |
-| [revisar-ui](revisar-ui/SKILL.md)                     | Cerrar cualquier pantalla o componente visual               |
-| [agregar-design-token](agregar-design-token/SKILL.md) | Color, radio, sombra o token de componente                  |
-| [verificar-cambios](verificar-cambios/SKILL.md)       | Al cerrar cualquier cambio                                  |
+| Skill                                                     | Cuándo                                                      |
+| --------------------------------------------------------- | ----------------------------------------------------------- |
+| [reglas-generales](reglas-generales/SKILL.md)             | Siempre, antes que cualquier otra                           |
+| [crear-componente-ui](crear-componente-ui/SKILL.md)       | Primitivo visual en `apps/web/src/ui`                       |
+| [crear-vista](crear-vista/SKILL.md)                       | Pantalla o feature en `apps/web/src/features` + ruta        |
+| [crear-hook-logica](crear-hook-logica/SKILL.md)           | Query, mutación o store en `packages/logic`                 |
+| [crear-gateway-api](crear-gateway-api/SKILL.md)           | Llamada nueva al backend en `packages/api-client`           |
+| [crear-modelo-dominio](crear-modelo-dominio/SKILL.md)     | Tipos, schemas zod, constantes o errores en `packages/core` |
+| [validar-con-zod](validar-con-zod/SKILL.md)               | Duda sobre si un dato hay que validar y con qué método      |
+| [revisar-ui](revisar-ui/SKILL.md)                         | Cerrar cualquier pantalla o componente visual               |
+| [agregar-design-token](agregar-design-token/SKILL.md)     | Color, radio, sombra o token de componente                  |
+| [verificar-cambios](verificar-cambios/SKILL.md)           | Al cerrar cualquier cambio                                  |
+| [partir-archivos-largos](partir-archivos-largos/SKILL.md) | Un archivo pasa de 250 líneas o cuesta de leer              |
 
 ## Feature completa: orden de trabajo
 

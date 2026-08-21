@@ -7,13 +7,20 @@
   },
   "rules": {
     "no-console": "error",
-    "import/no-unassigned-import": "off"
+    "import/no-unassigned-import": "off",
+    "max-lines": ["warn", { "max": 250, "skipBlankLines": true, "skipComments": true }]
   },
   "overrides": [
     {
       "files": ["packages/logger/**"],
       "rules": {
         "no-console": "off"
+      }
+    },
+    {
+      "files": ["apps/web/src/features/registration/components/TermsContent.tsx"],
+      "rules": {
+        "max-lines": "off"
       }
     }
   ],
