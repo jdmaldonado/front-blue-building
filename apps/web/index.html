@@ -7,6 +7,16 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- iOS ignores most of the manifest, so the app needs these to open full
+         screen from the home screen. -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Blue Building" />
+
+    <meta name="theme-color" content="#E9F1F7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#030A11" media="(prefers-color-scheme: dark)" />
     <title>Blue Building</title>
   </head>
   <body>

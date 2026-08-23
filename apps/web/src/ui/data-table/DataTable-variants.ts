@@ -70,7 +70,9 @@ export const dataTableRowVariants = cva(
 // Phones get cards instead. A table with eight columns is unreadable there.
 export const dataTableCardVariants = cva(
   [
-    'flex flex-col gap-2 rounded-(--card-radius) border border-(--card-border) bg-(--card-bg) p-4',
+    // `min-w-0` so a long name truncates instead of widening the card, which
+    // made the whole page scroll sideways.
+    'flex min-w-0 flex-col gap-2 rounded-(--card-radius) border border-(--card-border) bg-(--card-bg) p-4',
     'transition-colors duration-(--duration-instant) ease-standard',
   ],
   {
@@ -91,8 +93,8 @@ export const dataTableCardVariants = cva(
   },
 );
 
-export const dataTableCardRowVariants = cva('flex items-start justify-between gap-3');
-export const dataTableCardLabelVariants = cva('text-caption tracking-wide text-(--text-muted) uppercase');
-export const dataTableCardValueVariants = cva('text-right text-body-sm text-(--text-primary)');
+export const dataTableCardRowVariants = cva('flex min-w-0 items-start justify-between gap-3');
+export const dataTableCardLabelVariants = cva('shrink-0 text-caption tracking-wide text-(--text-muted) uppercase');
+export const dataTableCardValueVariants = cva('min-w-0 text-right text-body-sm text-(--text-primary)');
 
 export type DataTableVariants = VariantProps<typeof dataTableCellVariants>;

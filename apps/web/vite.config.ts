@@ -14,9 +14,14 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
+        // Without an id, changing `start_url` later makes browsers treat this as
+        // a different app.
+        id: '/',
         name: 'Blue Building',
         short_name: 'BlueBuilding',
         description: 'Administración y monitoreo de edificios',
+        lang: 'es',
+        dir: 'ltr',
         // Brand colors, taken from the logo files of the current app.
         theme_color: '#00BCDC',
         background_color: '#16232C',

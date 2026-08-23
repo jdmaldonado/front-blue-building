@@ -182,7 +182,7 @@ export function DataTable<TData>({
       )}
 
       {/* Phones: one card per row. */}
-      <div className="flex flex-col gap-2 md:hidden">
+      <div className="flex min-w-0 flex-col gap-2 md:hidden">
         {rows.map((row) => (
           <div
             key={row.id}
@@ -201,7 +201,7 @@ export function DataTable<TData>({
 
                 if (meta?.primary === true || meta?.actions === true) {
                   return (
-                    <div key={cell.id} className={meta.actions === true ? 'mt-1 flex justify-end' : ''}>
+                    <div key={cell.id} className={meta.actions === true ? 'mt-1 flex justify-end' : 'min-w-0'}>
                       {content}
                     </div>
                   );
