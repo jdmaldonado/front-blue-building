@@ -548,6 +548,35 @@ residente en blanco. El origen del evento viaja con dos nombres, `origin` y
 `eventOrigin`. `OpenDoorEventSchema` lee el que llegue; el resto ya lo
 soportaba, porque esos campos degradan a null uno por uno.
 
+### PWA
+
+Instalable desde el principio: manifest, service worker y precarga de todo el
+build (73 archivos, 870 KB) con las fuentes incluidas, así que arranca sin red.
+Los iconos de 192 y 512 valen también como `maskable`: el logo queda dentro de
+la zona segura sobre fondo sólido.
+
+La actualización es automática (`registerType: 'autoUpdate'`): cuando hay
+versión nueva, el service worker la toma y recarga la página. Se decidió así
+porque no se despliega con trabajo a medias, y quien se quede a medias recarga y
+sigue. Ojo con un efecto: el navegador solo busca versión nueva al cargar la
+página, así que una pestaña que lleva días abierta no se entera hasta que se
+recargue.
+
+Lo que falta, por orden:
+
+- `lang` sale como `en` en el manifest y la app está en español. Faltan también
+  `id` y `screenshots` (sin ellas Android muestra el diálogo de instalación
+  pobre).
+- `index.html` no tiene `<meta name="theme-color">` (van dos, una por tema) ni
+  las metas de iOS, así que en iPhone se abre con la barra del navegador.
+- No hay aviso de "sin conexión": la app abre sin red y se llena de errores por
+  pantalla sin decir cuál es el problema.
+- Las fotos de eventos de S3 se descargan cada vez; faltaría una regla de caché
+  en tiempo de ejecución.
+- El service worker no maneja `push`. Cuando vuelva el citófono habrá que pasar
+  a `injectManifest` y escribir uno propio.
+- Nunca se ha instalado en un teléfono real.
+
 ## Deuda conocida en la app nueva
 
 - Dos archivos pasan del límite de 250 líneas de código que ahora avisa el lint
