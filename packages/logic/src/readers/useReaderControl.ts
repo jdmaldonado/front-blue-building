@@ -1,4 +1,4 @@
-import type { DomainError, ReaderConfig } from '@bb/core';
+import type { DomainError, FirmwareUpdateParams, ReaderConfig } from '@bb/core';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from '../services/context';
 
@@ -10,6 +10,7 @@ export interface ReaderControlCallbacks {
 export const ReaderCommand = {
   Reboot: 'REBOOT',
   Config: 'CONFIG',
+  FirmwareUpdate: 'FIRMWARE_UPDATE',
 } as const;
 export type ReaderCommand = (typeof ReaderCommand)[keyof typeof ReaderCommand];
 
@@ -19,6 +20,7 @@ export interface ReaderControl {
   pending: ReaderCommand | null;
   reboot: (localId: string) => void;
   configure: (localId: string, config: ReaderConfig) => void;
+  updateFirmware: (localId: string, params: FirmwareUpdateParams) => void;
 }
 
 export function useReaderControl(buildingId: string, callbacks: ReaderControlCallbacks): ReaderControl {
@@ -58,5 +60,9 @@ export function useReaderControl(buildingId: string, callbacks: ReaderControlCal
     reboot: (localId) => run(ReaderCommand.Reboot, (done) => socketClient.rebootReader({ buildingId, localId }, done)),
     configure: (localId, config) =>
       run(ReaderCommand.Config, (done) => socketClient.configureReader({ buildingId, localId, config }, done)),
+    updateFirmware: (localId, params) =>
+      run(ReaderCommand.FirmwareUpdate, (done) =>
+        socketClient.updateReaderFirmware({ buildingId, localId, params }, done),
+      ),
   };
 }
