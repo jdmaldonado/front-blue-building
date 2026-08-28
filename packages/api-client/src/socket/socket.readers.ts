@@ -3,6 +3,7 @@ import {
   READER_REBOOT_TIMEOUT_MS,
   ReaderTimeoutError,
   ReaderUnreachableError,
+  type FirmwareUpdateParams,
   type ReaderConfig,
 } from '@bb/core';
 import type { DomainError } from '@bb/core';
@@ -109,10 +110,25 @@ export function configureReader(
   });
 }
 
+// Dispatches OTA firmware update command to the reader microcontroller.
+export function updateReaderFirmware(
+  socket: Socket,
+  input: ReaderTarget & { params: FirmwareUpdateParams },
+  callbacks: ReaderCallbacks,
+): Unsubscribe {
+  return commandReader(socket, {
+    answer: 'reader:firmware_update',
+    request: 'frontend:reader:firmware_update',
+    input,
+    callbacks,
+    timeoutMs: null,
+  });
+}
+
 interface ReaderCommand {
   answer: string;
   request: string;
-  input: ReaderTarget & { config?: ReaderConfig };
+  input: ReaderTarget & { config?: ReaderConfig; params?: FirmwareUpdateParams };
   callbacks: ReaderCallbacks;
   timeoutMs: number | null;
 }
@@ -153,6 +169,7 @@ function commandReader(socket: Socket, command: ReaderCommand): Unsubscribe {
     buildingId: command.input.buildingId,
     localId: command.input.localId,
     ...(command.input.config === undefined ? {} : { config: command.input.config }),
+    ...(command.input.params === undefined ? {} : { params: command.input.params }),
   });
 
   if (command.timeoutMs !== null) {
