@@ -94,3 +94,11 @@ export const FirmwareTarget = {
 } as const;
 export type FirmwareTarget = (typeof FirmwareTarget)[keyof typeof FirmwareTarget];
 export const FirmwareTargetSchema = z.enum(FirmwareTarget);
+
+// Hardware revisions of the ESP32 controller board.
+export const HardwareVersion = {
+  V6: '6.0',
+  V5: '5.1',
+} as const;
+export type HardwareVersion = (typeof HardwareVersion)[keyof typeof HardwareVersion];
+export const HardwareVersionSchema = z.enum(HardwareVersion);
