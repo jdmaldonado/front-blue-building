@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ReaderTargetSchema } from './readers.constants';
+import { FirmwareTargetSchema, FlashSizeSchema, HardwareVersionSchema, ReaderTargetSchema } from './readers.constants';
 
 export const LogicFieldUnit = {
   Seconds: 'sec',
@@ -162,3 +162,11 @@ export const ReaderStateSchema = z.object({
     .catch(null),
 });
 export type ReaderState = z.infer<typeof ReaderStateSchema>;
+
+export const FirmwareUpdateParamsSchema = z.object({
+  url: z.string().trim().min(1, 'La URL del firmware es requerida'),
+  target: FirmwareTargetSchema,
+  hw_version: HardwareVersionSchema,
+  flash_size: FlashSizeSchema,
+});
+export type FirmwareUpdateParams = z.infer<typeof FirmwareUpdateParamsSchema>;
