@@ -111,3 +111,14 @@ export const FlashSize = {
 } as const;
 export type FlashSize = (typeof FlashSize)[keyof typeof FlashSize];
 export const FlashSizeSchema = z.enum(FlashSize);
+
+export const DEFAULT_FIRMWARE_VERSION = 'latest';
+export const DEFAULT_OTA_PORT = 8000;
+
+export interface BuildFirmwareUrlInput {
+  hwVersion: HardwareVersion | string;
+  flashSize: FlashSize | string;
+  version?: string;
+  host?: string;
+  port?: number;
+}
