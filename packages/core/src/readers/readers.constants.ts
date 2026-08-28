@@ -85,3 +85,12 @@ export function readerHealthFromState(state: string | null | undefined): ReaderH
 // The reader restores itself if nothing answers, and the panel gives up here
 // (front/.../ReaderReboot.jsx:50-57).
 export const READER_REBOOT_TIMEOUT_MS = 15_000;
+
+// Which microcontrollers receive the firmware update.
+export const FirmwareTarget = {
+  Master: 'master',
+  Slave: 'slave',
+  Both: 'both',
+} as const;
+export type FirmwareTarget = (typeof FirmwareTarget)[keyof typeof FirmwareTarget];
+export const FirmwareTargetSchema = z.enum(FirmwareTarget);
