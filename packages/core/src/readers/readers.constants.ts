@@ -102,3 +102,12 @@ export const HardwareVersion = {
 } as const;
 export type HardwareVersion = (typeof HardwareVersion)[keyof typeof HardwareVersion];
 export const HardwareVersionSchema = z.enum(HardwareVersion);
+
+// Flash memory sizes of the microcontroller.
+export const FlashSize = {
+  Flash4MB: '4MB',
+  Flash8MB: '8MB',
+  Flash16MB: '16MB',
+} as const;
+export type FlashSize = (typeof FlashSize)[keyof typeof FlashSize];
+export const FlashSizeSchema = z.enum(FlashSize);
