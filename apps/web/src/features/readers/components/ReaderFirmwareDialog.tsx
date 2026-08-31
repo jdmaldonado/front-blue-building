@@ -1,6 +1,6 @@
-import { FirmwareTarget, FlashSize, HardwareVersion, type Door } from '@bb/core';
+import { DEFAULT_FIRMWARE_VERSION, FirmwareTarget, FlashSize, HardwareVersion, type Door } from '@bb/core';
 import { useState } from 'react';
-import { Button, Dialog, RadioGroup, type RadioOption } from '../../../ui';
+import { Button, Dialog, Field, Input, RadioGroup, type RadioOption } from '../../../ui';
 
 type ReaderFirmwareDialogProps = {
   door: Door | null;
@@ -29,6 +29,8 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
   const [target, setTarget] = useState<FirmwareTarget>(FirmwareTarget.Both);
   const [hwVersion, setHwVersion] = useState<HardwareVersion>(HardwareVersion.V6);
   const [flashSize, setFlashSize] = useState<FlashSize>(FlashSize.Flash8MB);
+  const [version, setVersion] = useState<string>(DEFAULT_FIRMWARE_VERSION);
+  const [url, setUrl] = useState<string>('');
 
   return (
     <Dialog
@@ -50,29 +52,57 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
       }
     >
       <div className="flex flex-col gap-5 py-2">
-        <RadioGroup
-          label="Placa destino"
-          value={target}
-          options={targetOptions}
-          onChange={(val) => setTarget(val)}
-          disabled={pending}
-        />
+        <Field htmlFor="target-selection" label="Placa destino">
+          <RadioGroup
+            label="Placa destino"
+            value={target}
+            options={targetOptions}
+            onChange={(val) => setTarget(val)}
+            disabled={pending}
+          />
+        </Field>
 
-        <RadioGroup
-          label="Versión de hardware"
-          value={hwVersion}
-          options={hwOptions}
-          onChange={(val) => setHwVersion(val)}
-          disabled={pending}
-        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Field htmlFor="hw-version-selection" label="Versión de hardware">
+            <RadioGroup
+              label="Versión de hardware"
+              value={hwVersion}
+              options={hwOptions}
+              onChange={(val) => setHwVersion(val)}
+              disabled={pending}
+            />
+          </Field>
 
-        <RadioGroup
-          label="Memoria Flash"
-          value={flashSize}
-          options={flashOptions}
-          onChange={(val) => setFlashSize(val)}
-          disabled={pending}
-        />
+          <Field htmlFor="flash-size-selection" label="Memoria Flash">
+            <RadioGroup
+              label="Memoria Flash"
+              value={flashSize}
+              options={flashOptions}
+              onChange={(val) => setFlashSize(val)}
+              disabled={pending}
+            />
+          </Field>
+        </div>
+
+        <Field htmlFor="firmware-version-input" label="Versión de software">
+          <Input
+            id="firmware-version-input"
+            value={version}
+            onChange={(e) => setVersion(e.target.value)}
+            placeholder="latest"
+            disabled={pending}
+          />
+        </Field>
+
+        <Field htmlFor="firmware-url-input" label="URL del binario (.bin)">
+          <Input
+            id="firmware-url-input"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="http://localhost:8000/..."
+            disabled={pending}
+          />
+        </Field>
       </div>
     </Dialog>
   );
