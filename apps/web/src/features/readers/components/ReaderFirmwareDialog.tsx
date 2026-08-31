@@ -5,14 +5,18 @@ import {
   HardwareVersion,
   buildDynamicFirmwareUrl,
   type Door,
+  type FirmwareUpdateParams,
+  type ReaderState,
 } from '@bb/core';
 import { useEffect, useState } from 'react';
-import { Button, Dialog, Field, Input, RadioGroup, type RadioOption } from '../../../ui';
+import { Alert, Button, Dialog, Field, Input, RadioGroup, Text, type RadioOption } from '../../../ui';
 
 type ReaderFirmwareDialogProps = {
   door: Door | null;
+  reported: ReaderState | null;
   pending: boolean;
   onClose: () => void;
+  onSend: (params: FirmwareUpdateParams) => void;
 };
 
 const targetOptions: ReadonlyArray<RadioOption<FirmwareTarget>> = [
@@ -32,7 +36,7 @@ const flashOptions: ReadonlyArray<RadioOption<FlashSize>> = [
   { value: FlashSize.Flash16MB, label: '16 MB' },
 ];
 
-export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareDialogProps) {
+export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend }: ReaderFirmwareDialogProps) {
   const [target, setTarget] = useState<FirmwareTarget>(FirmwareTarget.Both);
   const [hwVersion, setHwVersion] = useState<HardwareVersion>(HardwareVersion.V6);
   const [flashSize, setFlashSize] = useState<FlashSize>(FlashSize.Flash8MB);
@@ -50,16 +54,25 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
       return;
     }
 
-    if (!customUrl) {
-      const dynamicUrl = buildDynamicFirmwareUrl({
-        hwVersion,
-        flashSize,
-        version,
-      });
-
-      setUrl(dynamicUrl);
+    const reportedHw = reported?.readers?.master?.hw_version ?? reported?.readers?.slave?.hw_version;
+    if (reportedHw === HardwareVersion.V6 || reportedHw === HardwareVersion.V5) {
+      setHwVersion(reportedHw);
     }
-  }, [door, hwVersion, flashSize, version, customUrl]);
+
+    const rawFlash = reported?.system?.flash_size?.trim();
+    if (rawFlash) {
+      const match = flashOptions.find((opt) => opt.value.toLowerCase() === rawFlash.toLowerCase());
+      if (match) {
+        setFlashSize(match.value);
+      }
+    }
+  }, [door, reported]);
+
+  useEffect(() => {
+    if (!customUrl) {
+      setUrl(buildDynamicFirmwareUrl({ hwVersion, flashSize, version }));
+    }
+  }, [hwVersion, flashSize, version, customUrl]);
 
   const handleUrlChange = (value: string): void => {
     setUrl(value);
@@ -68,14 +81,22 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
 
   const handleResetUrl = (): void => {
     setCustomUrl(false);
-    setUrl(
-      buildDynamicFirmwareUrl({
-        hwVersion,
-        flashSize,
-        version,
-      }),
-    );
+    setUrl(buildDynamicFirmwareUrl({ hwVersion, flashSize, version }));
   };
+
+  const handleSend = (): void => {
+    if (url.trim() === '') {
+      return;
+    }
+    onSend({
+      url: url.trim(),
+      target,
+      hw_version: hwVersion,
+      flash_size: flashSize,
+    });
+  };
+
+  const isValid = url.trim().length > 0;
 
   return (
     <Dialog
@@ -89,14 +110,17 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
           <Button appearance="ghost" intent="neutral" onClick={onClose} disabled={pending}>
             Cancelar
           </Button>
-
-          <Button intent="primary" onClick={() => {}} disabled={pending}>
-            Actualizar firmware
+          <Button intent="primary" onClick={handleSend} disabled={!isValid || pending}>
+            {pending ? 'Enviando orden...' : 'Actualizar firmware'}
           </Button>
         </>
       }
     >
       <div className="flex flex-col gap-5 py-2">
+        <Alert variant="warning" title="Proceso crítico de hardware">
+          La lectora reiniciará su microcontrolador tras completar la descarga. No cortes la energía durante el proceso.
+        </Alert>
+
         <Field
           htmlFor="target-selection"
           label="Placa destino"
@@ -112,7 +136,11 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
         </Field>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field htmlFor="hw-version-selection" label="Versión de hardware" hint="Revisión electrónica de la placa.">
+          <Field
+            htmlFor="hw-version-selection"
+            label="Versión de hardware"
+            hint="Revisión electrónica de la placa (autocompletada por telemetría si está disponible)."
+          >
             <RadioGroup
               label="Versión de hardware"
               value={hwVersion}
@@ -125,7 +153,7 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
           <Field
             htmlFor="flash-size-selection"
             label="Memoria Flash"
-            hint="Capacidad de la memoria física del chip ESP32."
+            hint="Capacidad de la memoria física del chip (autocompletada por telemetría si está disponible)."
           >
             <RadioGroup
               label="Memoria Flash"
@@ -165,7 +193,6 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
               disabled={pending}
               className="font-mono text-(--accent)"
             />
-
             {customUrl && (
               <div className="flex justify-end">
                 <button
@@ -179,6 +206,14 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
             )}
           </div>
         </Field>
+
+        <div className="rounded-lg border border-(--border) bg-(--surface-sunken) p-3">
+          <Text as="p" size="label" tone="muted">
+            Resumen: Se actualizará <strong className="text-(--foreground)">{target}</strong> con binario para{' '}
+            <strong className="text-(--foreground)">{hwVersion}</strong> ({flashSize}) versión{' '}
+            <strong className="text-(--foreground)">{version}</strong>.
+          </Text>
+        </div>
       </div>
     </Dialog>
   );
