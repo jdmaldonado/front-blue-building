@@ -1,5 +1,12 @@
-import { DEFAULT_FIRMWARE_VERSION, FirmwareTarget, FlashSize, HardwareVersion, type Door } from '@bb/core';
-import { useState } from 'react';
+import {
+  DEFAULT_FIRMWARE_VERSION,
+  FirmwareTarget,
+  FlashSize,
+  HardwareVersion,
+  buildDynamicFirmwareUrl,
+  type Door,
+} from '@bb/core';
+import { useEffect, useState } from 'react';
 import { Button, Dialog, Field, Input, RadioGroup, type RadioOption } from '../../../ui';
 
 type ReaderFirmwareDialogProps = {
@@ -32,6 +39,24 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
   const [version, setVersion] = useState<string>(DEFAULT_FIRMWARE_VERSION);
   const [url, setUrl] = useState<string>('');
 
+  useEffect(() => {
+    if (door === null) {
+      setTarget(FirmwareTarget.Both);
+      setHwVersion(HardwareVersion.V6);
+      setFlashSize(FlashSize.Flash8MB);
+      setVersion(DEFAULT_FIRMWARE_VERSION);
+      return;
+    }
+
+    const dynamicUrl = buildDynamicFirmwareUrl({
+      hwVersion,
+      flashSize,
+      version,
+    });
+
+    setUrl(dynamicUrl);
+  }, [door, hwVersion, flashSize, version]);
+
   return (
     <Dialog
       open={door !== null}
@@ -52,7 +77,11 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
       }
     >
       <div className="flex flex-col gap-5 py-2">
-        <Field htmlFor="target-selection" label="Placa destino">
+        <Field
+          htmlFor="target-selection"
+          label="Placa destino"
+          hint="Selecciona cuál de las dos tarjetas conectadas por SPI recibirá la actualización."
+        >
           <RadioGroup
             label="Placa destino"
             value={target}
@@ -63,7 +92,7 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
         </Field>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field htmlFor="hw-version-selection" label="Versión de hardware">
+          <Field htmlFor="hw-version-selection" label="Versión de hardware" hint="Revisión electrónica de la placa.">
             <RadioGroup
               label="Versión de hardware"
               value={hwVersion}
@@ -73,7 +102,11 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
             />
           </Field>
 
-          <Field htmlFor="flash-size-selection" label="Memoria Flash">
+          <Field
+            htmlFor="flash-size-selection"
+            label="Memoria Flash"
+            hint="Capacidad de la memoria física del chip ESP32."
+          >
             <RadioGroup
               label="Memoria Flash"
               value={flashSize}
@@ -84,7 +117,11 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
           </Field>
         </div>
 
-        <Field htmlFor="firmware-version-input" label="Versión de software">
+        <Field
+          htmlFor="firmware-version-input"
+          label="Versión de software"
+          hint="Usa 'latest' para compilar la última estable, o un tag semántico (ej. v1.4.6)."
+        >
           <Input
             id="firmware-version-input"
             value={version}
@@ -94,7 +131,11 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
           />
         </Field>
 
-        <Field htmlFor="firmware-url-input" label="URL del binario (.bin)">
+        <Field
+          htmlFor="firmware-url-input"
+          label="URL del binario (.bin)"
+          hint="Ruta generada automáticamente a partir de los selectores."
+        >
           <Input
             id="firmware-url-input"
             value={url}
