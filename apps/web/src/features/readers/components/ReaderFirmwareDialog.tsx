@@ -1,4 +1,5 @@
 import { FirmwareTarget, FlashSize, HardwareVersion, type Door } from '@bb/core';
+import { useState } from 'react';
 import { Button, Dialog, RadioGroup, type RadioOption } from '../../../ui';
 
 type ReaderFirmwareDialogProps = {
@@ -25,6 +26,10 @@ const flashOptions: ReadonlyArray<RadioOption<FlashSize>> = [
 ];
 
 export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareDialogProps) {
+  const [target, setTarget] = useState<FirmwareTarget>(FirmwareTarget.Both);
+  const [hwVersion, setHwVersion] = useState<HardwareVersion>(HardwareVersion.V6);
+  const [flashSize, setFlashSize] = useState<FlashSize>(FlashSize.Flash8MB);
+
   return (
     <Dialog
       open={door !== null}
@@ -47,25 +52,25 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
       <div className="flex flex-col gap-5 py-2">
         <RadioGroup
           label="Placa destino"
-          value={FirmwareTarget.Both}
+          value={target}
           options={targetOptions}
-          onChange={() => {}}
+          onChange={(val) => setTarget(val)}
           disabled={pending}
         />
 
         <RadioGroup
           label="Versión de hardware"
-          value={HardwareVersion.V6}
+          value={hwVersion}
           options={hwOptions}
-          onChange={() => {}}
+          onChange={(val) => setHwVersion(val)}
           disabled={pending}
         />
 
         <RadioGroup
           label="Memoria Flash"
-          value={FlashSize.Flash8MB}
+          value={flashSize}
           options={flashOptions}
-          onChange={() => {}}
+          onChange={(val) => setFlashSize(val)}
           disabled={pending}
         />
       </div>
