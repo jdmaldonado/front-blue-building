@@ -38,6 +38,7 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
   const [flashSize, setFlashSize] = useState<FlashSize>(FlashSize.Flash8MB);
   const [version, setVersion] = useState<string>(DEFAULT_FIRMWARE_VERSION);
   const [url, setUrl] = useState<string>('');
+  const [customUrl, setCustomUrl] = useState<boolean>(false);
 
   useEffect(() => {
     if (door === null) {
@@ -45,17 +46,36 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
       setHwVersion(HardwareVersion.V6);
       setFlashSize(FlashSize.Flash8MB);
       setVersion(DEFAULT_FIRMWARE_VERSION);
+      setCustomUrl(false);
       return;
     }
 
-    const dynamicUrl = buildDynamicFirmwareUrl({
-      hwVersion,
-      flashSize,
-      version,
-    });
+    if (!customUrl) {
+      const dynamicUrl = buildDynamicFirmwareUrl({
+        hwVersion,
+        flashSize,
+        version,
+      });
 
-    setUrl(dynamicUrl);
-  }, [door, hwVersion, flashSize, version]);
+      setUrl(dynamicUrl);
+    }
+  }, [door, hwVersion, flashSize, version, customUrl]);
+
+  const handleUrlChange = (value: string): void => {
+    setUrl(value);
+    setCustomUrl(true);
+  };
+
+  const handleResetUrl = (): void => {
+    setCustomUrl(false);
+    setUrl(
+      buildDynamicFirmwareUrl({
+        hwVersion,
+        flashSize,
+        version,
+      }),
+    );
+  };
 
   return (
     <Dialog
@@ -134,15 +154,30 @@ export function ReaderFirmwareDialog({ door, pending, onClose }: ReaderFirmwareD
         <Field
           htmlFor="firmware-url-input"
           label="URL del binario (.bin)"
-          hint="Ruta generada automáticamente a partir de los selectores."
+          hint="Ruta generada automáticamente a partir de los selectores. Puedes editarla si usas un servidor manual."
         >
-          <Input
-            id="firmware-url-input"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="http://localhost:8000/..."
-            disabled={pending}
-          />
+          <div className="flex flex-col gap-1.5">
+            <Input
+              id="firmware-url-input"
+              value={url}
+              onChange={(e) => handleUrlChange(e.target.value)}
+              placeholder="http://localhost:8000/..."
+              disabled={pending}
+              className="font-mono text-(--accent)"
+            />
+
+            {customUrl && (
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleResetUrl}
+                  className="text-label text-(--muted) hover:text-(--foreground) underline cursor-pointer"
+                >
+                  Restaurar URL automática
+                </button>
+              </div>
+            )}
+          </div>
         </Field>
       </div>
     </Dialog>
