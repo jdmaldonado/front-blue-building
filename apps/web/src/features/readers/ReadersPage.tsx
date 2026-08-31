@@ -226,6 +226,7 @@ export function ReadersPage() {
 
       <ReaderFirmwareDialog
         door={updatingFirmware}
+        reported={updatingFirmware === null ? null : (statuses.data?.[updatingFirmware.id]?.readerState ?? null)}
         pending={control.pending !== null}
         onClose={() => setUpdatingFirmware(null)}
         onSend={(params: FirmwareUpdateParams) => void requestFirmwareUpdate(params)}
