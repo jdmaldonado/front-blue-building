@@ -1,14 +1,14 @@
-import { ReaderHealth, readerHealthFromState, type Door, type ReaderConfig } from '@bb/core';
-import { selectDoorStatus, useBuildingDoors, useDoorStatuses, useReaderControl } from '@bb/logic';
+import { ReaderHealth, readerHealthFromState, type Door, type FirmwareUpdateParams, type ReaderConfig } from '@bb/core';
+import { ReaderCommand, selectDoorStatus, useBuildingDoors, useDoorStatuses, useReaderControl } from '@bb/logic';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Cpu, RotateCw, Settings2 } from 'lucide-react';
+import { Cpu, HardDriveDownload, RotateCw, Settings2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useBuilding } from '../../app/BuildingContext';
 import { useConfirm } from '../../app/ConfirmProvider';
 import { useToast } from '../../app/ToastProvider';
 import { Alert, DataTable, DataTableToolbar, EmptyState, IconButton, Text, useDataTableFilters } from '../../ui';
-import { ReaderBoardStatus, ReaderConfigDialog } from './components';
-import { READER_HEALTH_META, READER_SENT_MESSAGE, readerErrorMessage } from './lib';
+import { ReaderBoardStatus, ReaderConfigDialog, ReaderFirmwareDialog } from './components';
+import { FIRMWARE_UPDATE_SENT_MESSAGE, READER_HEALTH_META, READER_SENT_MESSAGE, readerErrorMessage } from './lib';
 
 export function ReadersPage() {
   const building = useBuilding();
@@ -18,11 +18,14 @@ export function ReadersPage() {
   const confirm = useConfirm();
   const toast = useToast();
   const [configuring, setConfiguring] = useState<Door | null>(null);
+  const [updatingFirmware, setUpdatingFirmware] = useState<Door | null>(null);
 
   const control = useReaderControl(building.id, {
-    onSuccess: () => {
+    onSuccess: (command) => {
       setConfiguring(null);
-      toast({ tone: 'info', title: 'Orden enviada', message: READER_SENT_MESSAGE });
+      setUpdatingFirmware(null);
+      const message = command === ReaderCommand.FirmwareUpdate ? FIRMWARE_UPDATE_SENT_MESSAGE : READER_SENT_MESSAGE;
+      toast({ tone: 'info', title: 'Orden enviada', message });
     },
     onError: (_command, error) => {
       toast({ tone: 'error', title: 'La lectora no respondió', message: readerErrorMessage(error) });
@@ -65,9 +68,19 @@ export function ReadersPage() {
       confirmLabel: 'Enviar',
       intent: 'destructive',
     });
-    if (confirmed) {
-      control.configure(localId, config);
-    }
+    if (confirmed) control.configure(localId, config);
+  };
+
+  const requestFirmwareUpdate = async (params: FirmwareUpdateParams): Promise<void> => {
+    const localId = updatingFirmware?.localId;
+    if (localId === null || localId === undefined) return;
+    const confirmed = await confirm({
+      title: '¿Actualizar firmware?',
+      description: `La lectora ${updatingFirmware?.name ?? ''} (${params.target}) descargará el nuevo firmware y reiniciará su microcontrolador.`,
+      confirmLabel: 'Actualizar',
+      intent: 'destructive',
+    });
+    if (confirmed) control.updateFirmware(localId, params);
   };
 
   const columns = useMemo<Array<ColumnDef<Door, unknown>>>(
@@ -141,6 +154,13 @@ export function ReadersPage() {
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
             <IconButton
+              label={`Actualizar firmware de ${row.original.name ?? 'la lectora'}`}
+              onClick={() => setUpdatingFirmware(row.original)}
+              disabled={control.pending !== null}
+            >
+              <HardDriveDownload size={16} />
+            </IconButton>
+            <IconButton
               label={`Configurar ${row.original.name ?? 'la lectora'}`}
               onClick={() => setConfiguring(row.original)}
               disabled={control.pending !== null}
@@ -202,6 +222,13 @@ export function ReadersPage() {
         pending={control.pending !== null}
         onClose={() => setConfiguring(null)}
         onSend={(config: ReaderConfig) => void requestConfig(config)}
+      />
+
+      <ReaderFirmwareDialog
+        door={updatingFirmware}
+        pending={control.pending !== null}
+        onClose={() => setUpdatingFirmware(null)}
+        onSend={(params: FirmwareUpdateParams) => void requestFirmwareUpdate(params)}
       />
     </div>
   );
