@@ -25,48 +25,33 @@ const targetOptions: ReadonlyArray<RadioOption<FirmwareTarget>> = [
   { value: FirmwareTarget.Slave, label: 'Solo Esclava' },
 ];
 
-const hwOptions: ReadonlyArray<RadioOption<HardwareVersion>> = [
-  { value: HardwareVersion.V6, label: 'Hardware V6 (6.0)' },
-  { value: HardwareVersion.V5, label: 'Hardware V5 (5.1)' },
-];
-
-const flashOptions: ReadonlyArray<RadioOption<FlashSize>> = [
-  { value: FlashSize.Flash4MB, label: '4 MB' },
-  { value: FlashSize.Flash8MB, label: '8 MB (Estándar)' },
-  { value: FlashSize.Flash16MB, label: '16 MB' },
-];
-
 export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend }: ReaderFirmwareDialogProps) {
   const [target, setTarget] = useState<FirmwareTarget>(FirmwareTarget.Both);
-  const [hwVersion, setHwVersion] = useState<HardwareVersion>(HardwareVersion.V6);
-  const [flashSize, setFlashSize] = useState<FlashSize>(FlashSize.Flash8MB);
   const [version, setVersion] = useState<string>(DEFAULT_FIRMWARE_VERSION);
   const [url, setUrl] = useState<string>('');
   const [customUrl, setCustomUrl] = useState<boolean>(false);
 
+  const reportedHw = reported?.readers?.master?.hw_version ?? reported?.readers?.slave?.hw_version ?? null;
+  const hwVersion: HardwareVersion = reportedHw === HardwareVersion.V5 ? HardwareVersion.V5 : HardwareVersion.V6;
+
+  const rawFlash = reported?.system?.flash_size?.trim() ?? null;
+  const flashSize: FlashSize =
+    rawFlash?.toUpperCase() === '4MB'
+      ? FlashSize.Flash4MB
+      : rawFlash?.toUpperCase() === '16MB'
+        ? FlashSize.Flash16MB
+        : FlashSize.Flash8MB;
+
+  const hasReportedHardware = Boolean(reportedHw && rawFlash);
+
   useEffect(() => {
     if (door === null) {
       setTarget(FirmwareTarget.Both);
-      setHwVersion(HardwareVersion.V6);
-      setFlashSize(FlashSize.Flash8MB);
       setVersion(DEFAULT_FIRMWARE_VERSION);
       setCustomUrl(false);
       return;
     }
-
-    const reportedHw = reported?.readers?.master?.hw_version ?? reported?.readers?.slave?.hw_version;
-    if (reportedHw === HardwareVersion.V6 || reportedHw === HardwareVersion.V5) {
-      setHwVersion(reportedHw);
-    }
-
-    const rawFlash = reported?.system?.flash_size?.trim();
-    if (rawFlash) {
-      const match = flashOptions.find((opt) => opt.value.toLowerCase() === rawFlash.toLowerCase());
-      if (match) {
-        setFlashSize(match.value);
-      }
-    }
-  }, [door, reported]);
+  }, [door]);
 
   useEffect(() => {
     if (!customUrl) {
@@ -85,7 +70,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   };
 
   const handleSend = (): void => {
-    if (url.trim() === '') {
+    if (url.trim() === '' || !hasReportedHardware) {
       return;
     }
     onSend({
@@ -96,7 +81,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
     });
   };
 
-  const isValid = url.trim().length > 0;
+  const isValid = url.trim().length > 0 && hasReportedHardware;
 
   return (
     <Dialog
@@ -121,6 +106,25 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
           La lectora reiniciará su microcontrolador tras completar la descarga. No cortes la energía durante el proceso.
         </Alert>
 
+        {!hasReportedHardware && (
+          <Alert variant="error" title="Telemetría requerida">
+            Esta lectora aún no ha reportado su versión de hardware o memoria flash. Espera a que la lectora envíe su
+            primera telemetría para habilitar la actualización.
+          </Alert>
+        )}
+
+        {hasReportedHardware && (
+          <div className="rounded-lg border border-(--border) bg-(--surface-sunken) p-3">
+            <Text as="p" size="label" tone="muted">
+              Hardware detectado en memoria:{' '}
+              <strong className="text-(--foreground)">
+                {reportedHw ? `Hardware V${reportedHw}` : 'Hardware V6 (6.0)'}
+              </strong>{' '}
+              • Memoria Flash: <strong className="text-(--foreground)">{rawFlash ?? '8MB'}</strong>
+            </Text>
+          </div>
+        )}
+
         <Field
           htmlFor="target-selection"
           label="Placa destino"
@@ -134,36 +138,6 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
             disabled={pending}
           />
         </Field>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field
-            htmlFor="hw-version-selection"
-            label="Versión de hardware"
-            hint="Revisión electrónica de la placa (autocompletada por telemetría si está disponible)."
-          >
-            <RadioGroup
-              label="Versión de hardware"
-              value={hwVersion}
-              options={hwOptions}
-              onChange={(val) => setHwVersion(val)}
-              disabled={pending}
-            />
-          </Field>
-
-          <Field
-            htmlFor="flash-size-selection"
-            label="Memoria Flash"
-            hint="Capacidad de la memoria física del chip (autocompletada por telemetría si está disponible)."
-          >
-            <RadioGroup
-              label="Memoria Flash"
-              value={flashSize}
-              options={flashOptions}
-              onChange={(val) => setFlashSize(val)}
-              disabled={pending}
-            />
-          </Field>
-        </div>
 
         <Field
           htmlFor="firmware-version-input"
@@ -182,7 +156,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
         <Field
           htmlFor="firmware-url-input"
           label="URL del binario (.bin)"
-          hint="Ruta generada automáticamente a partir de los selectores. Puedes editarla si usas un servidor manual."
+          hint="Ruta generada automáticamente a partir del hardware detectado en memoria. Puedes editarla si usas un servidor manual."
         >
           <div className="flex flex-col gap-1.5">
             <Input
