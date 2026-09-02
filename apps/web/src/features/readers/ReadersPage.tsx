@@ -136,6 +136,35 @@ export function ReadersPage() {
         },
       },
       {
+        id: 'hwVersion',
+        accessorFn: (door) =>
+          statuses.data?.[door.id]?.readerState?.readers?.master?.hw_version ??
+          statuses.data?.[door.id]?.readerState?.readers?.slave?.hw_version ??
+          '',
+        header: 'Hardware',
+        meta: { hideOnMobile: true },
+        cell: ({ row }) => {
+          const state = statuses.data?.[row.original.id]?.readerState;
+          const hw = state?.readers?.master?.hw_version ?? state?.readers?.slave?.hw_version;
+          return (
+            <Text as="span" size="body-sm" tone="muted" className="font-mono">
+              {hw ? (hw.startsWith('V') || hw.startsWith('v') ? hw : `v${hw}`) : '—'}
+            </Text>
+          );
+        },
+      },
+      {
+        id: 'flashSize',
+        accessorFn: (door) => statuses.data?.[door.id]?.readerState?.system?.flash_size ?? '',
+        header: 'Flash',
+        meta: { hideOnMobile: true },
+        cell: ({ row }) => (
+          <Text as="span" size="body-sm" tone="muted" className="font-mono">
+            {statuses.data?.[row.original.id]?.readerState?.system?.flash_size ?? '—'}
+          </Text>
+        ),
+      },
+      {
         id: 'firmware',
         accessorFn: (door) => statuses.data?.[door.id]?.readerState?.readers?.master?.firmware_version ?? '',
         header: 'Firmware',
