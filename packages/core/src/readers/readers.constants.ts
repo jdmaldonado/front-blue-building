@@ -116,8 +116,8 @@ export const DEFAULT_FIRMWARE_VERSION = 'latest';
 export const DEFAULT_OTA_PORT = 8000;
 
 export interface BuildFirmwareUrlInput {
-  hwVersion: HardwareVersion | string;
-  flashSize: FlashSize | string;
+  hwVersion: HardwareVersion;
+  flashSize: FlashSize;
   version?: string;
   host?: string;
   port?: number;

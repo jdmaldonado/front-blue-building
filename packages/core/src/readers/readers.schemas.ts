@@ -164,7 +164,11 @@ export const ReaderStateSchema = z.object({
 export type ReaderState = z.infer<typeof ReaderStateSchema>;
 
 export const FirmwareUpdateParamsSchema = z.object({
-  url: z.string().trim().min(1, 'La URL del firmware es requerida'),
+  url: z
+    .string()
+    .trim()
+    .url('La URL del firmware debe ser una URL válida (ej: http://localhost:8000/firmware.bin)')
+    .regex(/^https?:\/\//i, 'La URL del firmware debe tener un esquema http:// o https://'),
   target: FirmwareTargetSchema,
   hw_version: HardwareVersionSchema,
   flash_size: FlashSizeSchema,
