@@ -74,9 +74,16 @@ export function ReadersPage() {
   const requestFirmwareUpdate = async (params: FirmwareUpdateParams): Promise<void> => {
     const localId = updatingFirmware?.localId;
     if (localId === null || localId === undefined) return;
+    const targetLabels: Record<string, string> = {
+      both: 'Ambas tarjetas (Maestra y Esclava)',
+      master: 'Solo tarjeta Maestra',
+      slave: 'Solo tarjeta Esclava',
+    };
+    const targetLabel = targetLabels[params.target] ?? params.target;
+
     const confirmed = await confirm({
       title: '¿Actualizar firmware?',
-      description: `La lectora ${updatingFirmware?.name ?? ''} (${params.target}) descargará el nuevo firmware y reiniciará su microcontrolador.`,
+      description: `La lectora ${updatingFirmware?.name ?? 'seleccionada'} (${targetLabel}) descargará el nuevo firmware y reiniciará su microcontrolador.`,
       confirmLabel: 'Actualizar',
       intent: 'destructive',
     });
@@ -184,14 +191,20 @@ export function ReadersPage() {
           <div className="flex justify-end gap-2">
             <IconButton
               label={`Actualizar firmware de ${row.original.name ?? 'la lectora'}`}
-              onClick={() => setUpdatingFirmware(row.original)}
+              onClick={() => {
+                setConfiguring(null);
+                setUpdatingFirmware(row.original);
+              }}
               disabled={control.pending !== null}
             >
               <HardDriveDownload size={16} />
             </IconButton>
             <IconButton
               label={`Configurar ${row.original.name ?? 'la lectora'}`}
-              onClick={() => setConfiguring(row.original)}
+              onClick={() => {
+                setUpdatingFirmware(null);
+                setConfiguring(row.original);
+              }}
               disabled={control.pending !== null}
             >
               <Settings2 size={16} />
