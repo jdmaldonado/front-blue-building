@@ -32,9 +32,12 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const [customUrl, setCustomUrl] = useState<boolean>(false);
 
   const reportedHw = reported?.readers?.master?.hw_version ?? reported?.readers?.slave?.hw_version ?? null;
+  const isSupportedHw = reportedHw === HardwareVersion.V6 || reportedHw === HardwareVersion.V5;
   const hwVersion: HardwareVersion = reportedHw === HardwareVersion.V5 ? HardwareVersion.V5 : HardwareVersion.V6;
 
   const rawFlash = reported?.system?.flash_size?.trim() ?? null;
+  const isSupportedFlash =
+    rawFlash?.toUpperCase() === '4MB' || rawFlash?.toUpperCase() === '8MB' || rawFlash?.toUpperCase() === '16MB';
   const flashSize: FlashSize =
     rawFlash?.toUpperCase() === '4MB'
       ? FlashSize.Flash4MB
@@ -42,16 +45,13 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
         ? FlashSize.Flash16MB
         : FlashSize.Flash8MB;
 
-  const hasReportedHardware = Boolean(reportedHw && rawFlash);
+  const hasReportedHardware = Boolean(isSupportedHw && isSupportedFlash);
 
   useEffect(() => {
-    if (door === null) {
-      setTarget(FirmwareTarget.Both);
-      setVersion(DEFAULT_FIRMWARE_VERSION);
-      setCustomUrl(false);
-      return;
-    }
-  }, [door]);
+    setTarget(FirmwareTarget.Both);
+    setVersion(DEFAULT_FIRMWARE_VERSION);
+    setCustomUrl(false);
+  }, [door?.id]);
 
   useEffect(() => {
     if (!customUrl) {
@@ -169,13 +169,17 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
             />
             {customUrl && (
               <div className="flex justify-end">
-                <button
+                <Button
                   type="button"
+                  intent="neutral"
+                  appearance="ghost"
+                  size="sm"
                   onClick={handleResetUrl}
-                  className="text-label text-(--muted) hover:text-(--foreground) underline cursor-pointer"
+                  disabled={pending}
+                  className="underline"
                 >
                   Restaurar URL automática
-                </button>
+                </Button>
               </div>
             )}
           </div>
