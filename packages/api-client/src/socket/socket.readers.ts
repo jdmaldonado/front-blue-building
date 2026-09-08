@@ -1,5 +1,6 @@
 import {
   CardReaderError,
+  READER_FIRMWARE_UPDATE_TIMEOUT_MS,
   READER_REBOOT_TIMEOUT_MS,
   ReaderTimeoutError,
   ReaderUnreachableError,
@@ -121,7 +122,7 @@ export function updateReaderFirmware(
     request: 'frontend:reader:firmware_update',
     input,
     callbacks,
-    timeoutMs: null,
+    timeoutMs: READER_FIRMWARE_UPDATE_TIMEOUT_MS,
   });
 }
 
