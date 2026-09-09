@@ -85,3 +85,51 @@ export function readerHealthFromState(state: string | null | undefined): ReaderH
 // The reader restores itself if nothing answers, and the panel gives up here
 // (front/.../ReaderReboot.jsx:50-57).
 export const READER_REBOOT_TIMEOUT_MS = 15_000;
+
+// Which microcontrollers receive the firmware update.
+export const FirmwareTarget = {
+  Master: 'master',
+  Slave: 'slave',
+  Both: 'both',
+} as const;
+export type FirmwareTarget = (typeof FirmwareTarget)[keyof typeof FirmwareTarget];
+export const FirmwareTargetSchema = z.enum(FirmwareTarget);
+
+// Hardware revisions of the ESP32 controller board.
+export const HardwareVersion = {
+  V6: '6.0',
+  V5: '5.1',
+} as const;
+export type HardwareVersion = (typeof HardwareVersion)[keyof typeof HardwareVersion];
+export const HardwareVersionSchema = z.enum(HardwareVersion);
+
+// Flash memory sizes of the microcontroller.
+export const FlashSize = {
+  Flash4MB: '4MB',
+  Flash8MB: '8MB',
+  Flash16MB: '16MB',
+} as const;
+export type FlashSize = (typeof FlashSize)[keyof typeof FlashSize];
+export const FlashSizeSchema = z.enum(FlashSize);
+
+export const DEFAULT_FIRMWARE_VERSION = 'latest';
+export const DEFAULT_OTA_PORT = 8000;
+
+export interface BuildFirmwareUrlInput {
+  hwVersion: HardwareVersion;
+  flashSize: FlashSize;
+  version?: string;
+  host?: string;
+  port?: number;
+}
+
+// Pure helper function that builds the standard canonical OTA firmware download URL.
+export function buildDynamicFirmwareUrl(input: BuildFirmwareUrlInput): string {
+  const hwNum = input.hwVersion.split('.')[0] || '6';
+  const sizeFormatted = input.flashSize.toLowerCase();
+  const ver = input.version && input.version.trim() ? input.version.trim() : DEFAULT_FIRMWARE_VERSION;
+  const host = input.host || 'localhost';
+  const port = input.port ?? DEFAULT_OTA_PORT;
+
+  return `http://${host}:${port}/hw${hwNum}/${sizeFormatted}/${ver}/firmware-hw${hwNum}-${sizeFormatted}-${ver}.bin`;
+}
