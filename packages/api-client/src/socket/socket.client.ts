@@ -1,9 +1,9 @@
 import { DoorAction, DoorUpdateSchema, isStartupState, OutOfScheduleError, UnauthorizedDoorError } from '@bb/core';
-import type { DomainError, DoorUpdate, ReaderConfig, UserEvent } from '@bb/core';
+import type { DomainError, DoorUpdate, FirmwareUpdateParams, ReaderConfig, UserEvent } from '@bb/core';
 import type { Logger } from '@bb/logger';
 import { io, type Socket } from 'socket.io-client';
 import { z } from 'zod';
-import { configureReader, rebootReader, setupCardReader } from './socket.readers';
+import { configureReader, rebootReader, setupCardReader, updateReaderFirmware } from './socket.readers';
 import type { CardReaderCallbacks, ReaderCallbacks, ReaderTarget } from './socket.readers';
 import { SocketRooms } from './socket.rooms';
 import type { Unsubscribe } from './socket.types';
@@ -128,6 +128,13 @@ export class SocketClient {
 
   configureReader(input: ReaderTarget & { config: ReaderConfig }, callbacks: ReaderCallbacks): Unsubscribe {
     return configureReader(this.socket, input, callbacks);
+  }
+
+  updateReaderFirmware(
+    input: ReaderTarget & { params: FirmwareUpdateParams },
+    callbacks: ReaderCallbacks,
+  ): Unsubscribe {
+    return updateReaderFirmware(this.socket, input, callbacks);
   }
 
   subscribeDoorStatus(buildingId: string): void {

@@ -72,3 +72,6 @@ export function readerErrorMessage(error: DomainError): string {
 
 // Success only means the order left the API (api/src/hardware/index.ts:1259).
 export const READER_SENT_MESSAGE = 'La orden salió. La lectora no confirma si la aplicó.';
+
+export const FIRMWARE_UPDATE_SENT_MESSAGE =
+  'La orden de actualización fue confirmada por el controlador y enviada a la lectora.';
