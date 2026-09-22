@@ -7,6 +7,7 @@ type ReaderBoardStatusProps = {
   title: string;
   state: string | null | undefined;
   spiOk: boolean | null | undefined;
+  isConfigured?: boolean;
 };
 
 // Offline is red and not the grey `offline` dot: that grey belongs to a closed
