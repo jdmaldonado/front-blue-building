@@ -186,9 +186,12 @@ export function ReadersPage() {
         header: 'Firmware',
         meta: { hideOnMobile: true },
         cell: ({ row }) => (
-          <Text as="span" size="body-sm" tone="muted" className="font-mono">
-            {statuses.data?.[row.original.id]?.readerState?.readers?.master?.firmware_version ?? '—'}
-          </Text>
+          <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
+            <span>M: {statuses.data?.[row.original.id]?.readerState?.readers?.master?.firmware_version ?? '—'}</span>
+            {row.original.statusQueryTarget !== 'MASTER' && (
+              <span>E: {statuses.data?.[row.original.id]?.readerState?.readers?.slave?.firmware_version ?? '—'}</span>
+            )}
+          </div>
         ),
       },
       {
