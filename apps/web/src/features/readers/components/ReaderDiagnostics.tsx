@@ -40,6 +40,7 @@ export function ReaderDiagnostics({ reported }: ReaderDiagnosticsProps) {
   add('Firmware maestra', master?.firmware_version);
   add('Hardware maestra', master?.hw_version);
   add('Firmware esclava', slave?.firmware_version);
+  add('Hardware esclava', slave?.hw_version);
   add('Red', network?.wifi_ssid);
   add('Señal', network?.rssi, ' dBm');
   add(
