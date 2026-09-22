@@ -159,11 +159,13 @@ export function ReadersPage() {
         meta: { hideOnMobile: true },
         cell: ({ row }) => {
           const state = statuses.data?.[row.original.id]?.readerState;
-          const hw = state?.readers?.master?.hw_version ?? state?.readers?.slave?.hw_version;
+          const r = state?.readers;
+          const fmt = (v?: string | null) => (v ? (v.toLowerCase().startsWith('v') ? v : `v${v}`) : '—');
           return (
-            <Text as="span" size="body-sm" tone="muted" className="font-mono">
-              {hw ? (hw.startsWith('V') || hw.startsWith('v') ? hw : `v${hw}`) : '—'}
-            </Text>
+            <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
+              <span>M: {fmt(r?.master?.hw_version)}</span>
+              {row.original.statusQueryTarget !== 'MASTER' && <span>E: {fmt(r?.slave?.hw_version)}</span>}
+            </div>
           );
         },
       },
