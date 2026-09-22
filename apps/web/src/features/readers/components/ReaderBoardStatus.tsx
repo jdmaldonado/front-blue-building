@@ -48,9 +48,11 @@ export function ReaderBoardStatus({ title, state, spiOk, isConfigured = true }: 
         <Text as="span" size="label" tone="muted">
           SPI
         </Text>
-        <StatusDot state={spiOk === true ? 'online' : spiOk === false ? 'alert' : 'unknown'} />
+        <StatusDot
+          state={!isConfigured ? 'unknown' : spiOk === true ? 'online' : spiOk === false ? 'alert' : 'unknown'}
+        />
         <Text as="span" size="body-sm" tone="secondary" className="w-10">
-          {spiOk === true ? 'OK' : spiOk === false ? 'Error' : '—'}
+          {!isConfigured ? '—' : spiOk === true ? 'OK' : spiOk === false ? 'Error' : '—'}
         </Text>
       </span>
     </div>
