@@ -16,6 +16,8 @@ export type DoorCamera = z.infer<typeof DoorCameraSchema>;
 export const DoorSchema = z.object({
   id: IdSchema,
   localId: z.string().nullish(),
+  readerProtocol: z.enum(['MQTT', 'XBEE']).nullish(),
+  statusQueryTarget: z.enum(['MASTER', 'SLAVE', 'BOTH']).nullish(),
   name: z.string().nullish(),
   doorType: DoorTypeSchema,
   left: z.number().nullish(),
