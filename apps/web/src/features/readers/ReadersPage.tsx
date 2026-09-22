@@ -41,8 +41,13 @@ export function ReadersPage() {
   const healthOf = (door: Door): ReaderHealth => {
     const status = selectDoorStatus(statuses.data, door.id);
     const event = statuses.data?.[door.id];
-    // The reader reports its own state; the door status is the fallback.
-    return readerHealthFromState(event?.masterStatus ?? (event === undefined ? null : status));
+    const m = readerHealthFromState(event?.masterStatus ?? (event === undefined ? null : status));
+    const s = readerHealthFromState(event?.slaveStatus);
+    if (door.statusQueryTarget === 'MASTER') return m;
+    if (door.statusQueryTarget === 'SLAVE') return s;
+    if (m === ReaderHealth.Alert || s === ReaderHealth.Alert) return ReaderHealth.Alert;
+    if (m === ReaderHealth.Offline || s === ReaderHealth.Offline) return ReaderHealth.Offline;
+    return m !== ReaderHealth.Online ? m : s;
   };
 
   const requestReboot = async (door: Door): Promise<void> => {
