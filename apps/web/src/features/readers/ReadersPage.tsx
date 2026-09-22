@@ -137,11 +137,13 @@ export function ReadersPage() {
                 title="Maestra"
                 state={event?.masterStatus ?? boards?.master?.state}
                 spiOk={event?.masterSpiOk ?? boards?.master?.spi_ok}
+                isConfigured={row.original.statusQueryTarget !== 'SLAVE'}
               />
               <ReaderBoardStatus
                 title="Esclava"
                 state={event?.slaveStatus ?? boards?.slave?.state}
                 spiOk={event?.slaveSpiOk ?? boards?.slave?.spi_ok}
+                isConfigured={row.original.statusQueryTarget !== 'MASTER'}
               />
             </div>
           );
