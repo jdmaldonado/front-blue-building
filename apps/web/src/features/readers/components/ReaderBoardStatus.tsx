@@ -23,9 +23,11 @@ const DOT_STATE = {
 
 // One board: how it is, and whether its chip bus answers. The SPI matters on its
 // own — a reader can be online and still not read a single card.
-export function ReaderBoardStatus({ title, state, spiOk }: ReaderBoardStatusProps) {
+export function ReaderBoardStatus({ title, state, spiOk, isConfigured = true }: ReaderBoardStatusProps) {
   const health = readerHealthFromState(state);
   const meta = READER_HEALTH_META[health];
+  const label = isConfigured ? meta.label : 'No configurada';
+  const dotState = isConfigured ? DOT_STATE[health] : 'unknown';
 
   return (
     // Fixed columns: the labels change on every frame, and without a reserved
@@ -36,9 +38,9 @@ export function ReaderBoardStatus({ title, state, spiOk }: ReaderBoardStatusProp
       </Text>
 
       <span className="flex w-32 flex-none items-center gap-1.5">
-        <StatusDot state={DOT_STATE[health]} halo={meta.pulse} />
+        <StatusDot state={dotState} halo={isConfigured && meta.pulse} />
         <Text as="span" size="body-sm" tone="secondary" truncate>
-          {meta.label}
+          {label}
         </Text>
       </span>
 
