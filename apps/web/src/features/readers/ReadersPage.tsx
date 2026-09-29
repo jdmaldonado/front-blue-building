@@ -187,7 +187,7 @@ export function ReadersPage() {
         cell: ({ row }) => (
           <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
             <span>M: {statuses.data?.[row.original.id]?.readerState?.readers?.master?.firmware_version ?? '—'}</span>
-            {row.original.statusQueryTarget !== 'MASTER' && (
+            {Boolean(row.original.readerConfig?.hasSlave) && (
               <span>E: {statuses.data?.[row.original.id]?.readerState?.readers?.slave?.firmware_version ?? '—'}</span>
             )}
           </div>
