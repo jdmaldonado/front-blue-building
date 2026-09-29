@@ -7,6 +7,7 @@ type ReaderBoardStatusProps = {
   title: string;
   state: string | null | undefined;
   spiOk: boolean | null | undefined;
+  isConfigured?: boolean;
 };
 
 // Offline is red and not the grey `offline` dot: that grey belongs to a closed
@@ -20,11 +21,19 @@ const DOT_STATE = {
   UNKNOWN: 'unknown',
 } as const;
 
+function resolveSpiStatus(spiOk: boolean | null | undefined, isConfigured: boolean) {
+  if (!isConfigured || spiOk === null || spiOk === undefined) return { label: '—', dotState: 'unknown' as const };
+  return spiOk ? { label: 'OK', dotState: 'online' as const } : { label: 'Error', dotState: 'alert' as const };
+}
+
 // One board: how it is, and whether its chip bus answers. The SPI matters on its
 // own — a reader can be online and still not read a single card.
-export function ReaderBoardStatus({ title, state, spiOk }: ReaderBoardStatusProps) {
+export function ReaderBoardStatus({ title, state, spiOk, isConfigured = true }: ReaderBoardStatusProps) {
   const health = readerHealthFromState(state);
   const meta = READER_HEALTH_META[health];
+  const label = isConfigured ? meta.label : 'No configurada';
+  const dotState = isConfigured ? DOT_STATE[health] : 'unknown';
+  const spi = resolveSpiStatus(spiOk, isConfigured);
 
   return (
     // Fixed columns: the labels change on every frame, and without a reserved
@@ -35,9 +44,9 @@ export function ReaderBoardStatus({ title, state, spiOk }: ReaderBoardStatusProp
       </Text>
 
       <span className="flex w-32 flex-none items-center gap-1.5">
-        <StatusDot state={DOT_STATE[health]} halo={meta.pulse} />
+        <StatusDot state={dotState} halo={isConfigured && meta.pulse} />
         <Text as="span" size="body-sm" tone="secondary" truncate>
-          {meta.label}
+          {label}
         </Text>
       </span>
 
@@ -45,9 +54,9 @@ export function ReaderBoardStatus({ title, state, spiOk }: ReaderBoardStatusProp
         <Text as="span" size="label" tone="muted">
           SPI
         </Text>
-        <StatusDot state={spiOk === true ? 'online' : spiOk === false ? 'alert' : 'unknown'} />
+        <StatusDot state={spi.dotState} />
         <Text as="span" size="body-sm" tone="secondary" className="w-10">
-          {spiOk === true ? 'OK' : spiOk === false ? 'Error' : '—'}
+          {spi.label}
         </Text>
       </span>
     </div>

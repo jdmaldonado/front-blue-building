@@ -31,7 +31,10 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const [url, setUrl] = useState<string>('');
   const [customUrl, setCustomUrl] = useState<boolean>(false);
 
-  const reportedHw = reported?.readers?.master?.hw_version ?? reported?.readers?.slave?.hw_version ?? null;
+  const reportedHw =
+    target === FirmwareTarget.Slave
+      ? (reported?.readers?.slave?.hw_version ?? reported?.readers?.master?.hw_version ?? null)
+      : (reported?.readers?.master?.hw_version ?? reported?.readers?.slave?.hw_version ?? null);
   const isSupportedHw = reportedHw === HardwareVersion.V6 || reportedHw === HardwareVersion.V5;
   const hwVersion: HardwareVersion = reportedHw === HardwareVersion.V5 ? HardwareVersion.V5 : HardwareVersion.V6;
 

@@ -41,8 +41,12 @@ export function ReadersPage() {
   const healthOf = (door: Door): ReaderHealth => {
     const status = selectDoorStatus(statuses.data, door.id);
     const event = statuses.data?.[door.id];
-    // The reader reports its own state; the door status is the fallback.
-    return readerHealthFromState(event?.masterStatus ?? (event === undefined ? null : status));
+    const masterHealth = readerHealthFromState(event?.masterStatus ?? (event === undefined ? null : status));
+    const slaveHealth = readerHealthFromState(event?.slaveStatus);
+    if (!door.readerConfig?.hasSlave) return masterHealth;
+    if (masterHealth === ReaderHealth.Alert || slaveHealth === ReaderHealth.Alert) return ReaderHealth.Alert;
+    if (masterHealth === ReaderHealth.Offline || slaveHealth === ReaderHealth.Offline) return ReaderHealth.Offline;
+    return masterHealth !== ReaderHealth.Online ? masterHealth : slaveHealth;
   };
 
   const requestReboot = async (door: Door): Promise<void> => {
@@ -132,11 +136,13 @@ export function ReadersPage() {
                 title="Maestra"
                 state={event?.masterStatus ?? boards?.master?.state}
                 spiOk={event?.masterSpiOk ?? boards?.master?.spi_ok}
+                isConfigured={true}
               />
               <ReaderBoardStatus
                 title="Esclava"
                 state={event?.slaveStatus ?? boards?.slave?.state}
                 spiOk={event?.slaveSpiOk ?? boards?.slave?.spi_ok}
+                isConfigured={Boolean(row.original.readerConfig?.hasSlave)}
               />
             </div>
           );
@@ -152,11 +158,16 @@ export function ReadersPage() {
         meta: { hideOnMobile: true },
         cell: ({ row }) => {
           const state = statuses.data?.[row.original.id]?.readerState;
-          const hw = state?.readers?.master?.hw_version ?? state?.readers?.slave?.hw_version;
+          const reportedReaders = state?.readers;
+          const formatHardwareVersion = (v?: string | null) =>
+            v ? (v.toLowerCase().startsWith('v') ? v : `v${v}`) : '—';
           return (
-            <Text as="span" size="body-sm" tone="muted" className="font-mono">
-              {hw ? (hw.startsWith('V') || hw.startsWith('v') ? hw : `v${hw}`) : '—'}
-            </Text>
+            <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
+              <span>M: {formatHardwareVersion(reportedReaders?.master?.hw_version)}</span>
+              {Boolean(row.original.readerConfig?.hasSlave) && (
+                <span>E: {formatHardwareVersion(reportedReaders?.slave?.hw_version)}</span>
+              )}
+            </div>
           );
         },
       },
@@ -177,9 +188,12 @@ export function ReadersPage() {
         header: 'Firmware',
         meta: { hideOnMobile: true },
         cell: ({ row }) => (
-          <Text as="span" size="body-sm" tone="muted" className="font-mono">
-            {statuses.data?.[row.original.id]?.readerState?.readers?.master?.firmware_version ?? '—'}
-          </Text>
+          <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
+            <span>M: {statuses.data?.[row.original.id]?.readerState?.readers?.master?.firmware_version ?? '—'}</span>
+            {Boolean(row.original.readerConfig?.hasSlave) && (
+              <span>E: {statuses.data?.[row.original.id]?.readerState?.readers?.slave?.firmware_version ?? '—'}</span>
+            )}
+          </div>
         ),
       },
       {
