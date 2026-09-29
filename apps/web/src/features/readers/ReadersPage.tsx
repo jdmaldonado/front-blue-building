@@ -158,12 +158,15 @@ export function ReadersPage() {
         meta: { hideOnMobile: true },
         cell: ({ row }) => {
           const state = statuses.data?.[row.original.id]?.readerState;
-          const r = state?.readers;
-          const fmt = (v?: string | null) => (v ? (v.toLowerCase().startsWith('v') ? v : `v${v}`) : '—');
+          const reportedReaders = state?.readers;
+          const formatHardwareVersion = (v?: string | null) =>
+            v ? (v.toLowerCase().startsWith('v') ? v : `v${v}`) : '—';
           return (
             <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
-              <span>M: {fmt(r?.master?.hw_version)}</span>
-              {Boolean(row.original.readerConfig?.hasSlave) && <span>E: {fmt(r?.slave?.hw_version)}</span>}
+              <span>M: {formatHardwareVersion(reportedReaders?.master?.hw_version)}</span>
+              {Boolean(row.original.readerConfig?.hasSlave) && (
+                <span>E: {formatHardwareVersion(reportedReaders?.slave?.hw_version)}</span>
+              )}
             </div>
           );
         },
