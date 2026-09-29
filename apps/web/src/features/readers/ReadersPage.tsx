@@ -41,12 +41,12 @@ export function ReadersPage() {
   const healthOf = (door: Door): ReaderHealth => {
     const status = selectDoorStatus(statuses.data, door.id);
     const event = statuses.data?.[door.id];
-    const m = readerHealthFromState(event?.masterStatus ?? (event === undefined ? null : status));
-    const s = readerHealthFromState(event?.slaveStatus);
-    if (!door.readerConfig?.hasSlave) return m;
-    if (m === ReaderHealth.Alert || s === ReaderHealth.Alert) return ReaderHealth.Alert;
-    if (m === ReaderHealth.Offline || s === ReaderHealth.Offline) return ReaderHealth.Offline;
-    return m !== ReaderHealth.Online ? m : s;
+    const masterHealth = readerHealthFromState(event?.masterStatus ?? (event === undefined ? null : status));
+    const slaveHealth = readerHealthFromState(event?.slaveStatus);
+    if (!door.readerConfig?.hasSlave) return masterHealth;
+    if (masterHealth === ReaderHealth.Alert || slaveHealth === ReaderHealth.Alert) return ReaderHealth.Alert;
+    if (masterHealth === ReaderHealth.Offline || slaveHealth === ReaderHealth.Offline) return ReaderHealth.Offline;
+    return masterHealth !== ReaderHealth.Online ? masterHealth : slaveHealth;
   };
 
   const requestReboot = async (door: Door): Promise<void> => {
