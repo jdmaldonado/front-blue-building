@@ -163,7 +163,7 @@ export function ReadersPage() {
           return (
             <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
               <span>M: {fmt(r?.master?.hw_version)}</span>
-              {row.original.statusQueryTarget !== 'MASTER' && <span>E: {fmt(r?.slave?.hw_version)}</span>}
+              {Boolean(row.original.readerConfig?.hasSlave) && <span>E: {fmt(r?.slave?.hw_version)}</span>}
             </div>
           );
         },
