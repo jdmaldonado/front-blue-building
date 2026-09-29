@@ -21,6 +21,11 @@ const DOT_STATE = {
   UNKNOWN: 'unknown',
 } as const;
 
+function resolveSpiStatus(spiOk: boolean | null | undefined, isConfigured: boolean) {
+  if (!isConfigured || spiOk === null || spiOk === undefined) return { label: '—', dotState: 'unknown' as const };
+  return spiOk ? { label: 'OK', dotState: 'online' as const } : { label: 'Error', dotState: 'alert' as const };
+}
+
 // One board: how it is, and whether its chip bus answers. The SPI matters on its
 // own — a reader can be online and still not read a single card.
 export function ReaderBoardStatus({ title, state, spiOk, isConfigured = true }: ReaderBoardStatusProps) {
@@ -28,6 +33,7 @@ export function ReaderBoardStatus({ title, state, spiOk, isConfigured = true }: 
   const meta = READER_HEALTH_META[health];
   const label = isConfigured ? meta.label : 'No configurada';
   const dotState = isConfigured ? DOT_STATE[health] : 'unknown';
+  const spi = resolveSpiStatus(spiOk, isConfigured);
 
   return (
     // Fixed columns: the labels change on every frame, and without a reserved
@@ -48,11 +54,9 @@ export function ReaderBoardStatus({ title, state, spiOk, isConfigured = true }: 
         <Text as="span" size="label" tone="muted">
           SPI
         </Text>
-        <StatusDot
-          state={!isConfigured ? 'unknown' : spiOk === true ? 'online' : spiOk === false ? 'alert' : 'unknown'}
-        />
+        <StatusDot state={spi.dotState} />
         <Text as="span" size="body-sm" tone="secondary" className="w-10">
-          {!isConfigured ? '—' : spiOk === true ? 'OK' : spiOk === false ? 'Error' : '—'}
+          {spi.label}
         </Text>
       </span>
     </div>
