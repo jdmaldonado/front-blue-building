@@ -23,7 +23,6 @@ export const DoorSchema = z.object({
   localId: z.string().nullish(),
   readerProtocol: z.enum(['MQTT', 'XBEE']).nullish(),
   readerConfig: DoorReaderConfigSchema.nullish(),
-  statusQueryTarget: z.enum(['MASTER', 'SLAVE', 'BOTH']).nullish(),
   name: z.string().nullish(),
   doorType: DoorTypeSchema,
   left: z.number().nullish(),
