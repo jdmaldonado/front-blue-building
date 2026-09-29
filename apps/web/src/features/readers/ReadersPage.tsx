@@ -43,8 +43,7 @@ export function ReadersPage() {
     const event = statuses.data?.[door.id];
     const m = readerHealthFromState(event?.masterStatus ?? (event === undefined ? null : status));
     const s = readerHealthFromState(event?.slaveStatus);
-    if (door.statusQueryTarget === 'MASTER') return m;
-    if (door.statusQueryTarget === 'SLAVE') return s;
+    if (!door.readerConfig?.hasSlave) return m;
     if (m === ReaderHealth.Alert || s === ReaderHealth.Alert) return ReaderHealth.Alert;
     if (m === ReaderHealth.Offline || s === ReaderHealth.Offline) return ReaderHealth.Offline;
     return m !== ReaderHealth.Online ? m : s;
