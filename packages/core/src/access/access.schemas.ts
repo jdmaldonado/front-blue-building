@@ -12,11 +12,17 @@ export const DoorCameraSchema = z.object({
 });
 export type DoorCamera = z.infer<typeof DoorCameraSchema>;
 
+export const DoorReaderConfigSchema = z.object({
+  hasSlave: z.boolean().nullish(),
+});
+export type DoorReaderConfig = z.infer<typeof DoorReaderConfigSchema>;
+
 // ListDoorsDTO. `left` and `top` are percentages over the floor plan image.
 export const DoorSchema = z.object({
   id: IdSchema,
   localId: z.string().nullish(),
   readerProtocol: z.enum(['MQTT', 'XBEE']).nullish(),
+  readerConfig: DoorReaderConfigSchema.nullish(),
   statusQueryTarget: z.enum(['MASTER', 'SLAVE', 'BOTH']).nullish(),
   name: z.string().nullish(),
   doorType: DoorTypeSchema,
