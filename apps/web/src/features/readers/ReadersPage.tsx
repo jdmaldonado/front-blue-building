@@ -28,7 +28,8 @@ export function ReadersPage() {
       toast({ tone: 'info', title: 'Orden enviada', message });
     },
     onError: (_command, error) => {
-      toast({ tone: 'error', title: 'La lectora no respondió', message: readerErrorMessage(error) });
+      const title = error.name === 'ReaderTimeoutError' ? 'La lectora no respondió' : 'Error en la orden';
+      toast({ tone: 'error', title, message: readerErrorMessage(error) });
     },
   });
 
