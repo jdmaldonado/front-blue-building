@@ -162,7 +162,8 @@ function commandReader(socket: Socket, command: ReaderCommand): Unsubscribe {
       return;
     }
     finish();
-    const reason = readerErrorSchema.parse(payload).error ?? '';
+    const parsed = readerErrorSchema.parse(payload);
+    const reason = parsed.message || parsed.error || '';
     command.callbacks.onError(new ReaderUnreachableError(reason === '' ? 'Reader did not answer' : reason));
   };
 
