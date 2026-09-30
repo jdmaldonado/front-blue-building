@@ -64,6 +64,9 @@ export function formatBytes(bytes: number): string {
 }
 
 export function readerErrorMessage(error: DomainError): string {
+  if (error.message && error.message.trim() && error.message !== 'Reader did not answer') {
+    return error.message;
+  }
   if (error instanceof ReaderTimeoutError) {
     return 'La lectora no contestó en 15 segundos. Puede estar apagada o sin red.';
   }
