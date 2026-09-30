@@ -181,9 +181,9 @@ export function ReadersPage() {
         header: 'Flash',
         meta: { hideOnMobile: true },
         cell: ({ row }) => (
-          <Text as="span" size="body-sm" tone="muted" className="font-mono">
-            {statuses.data?.[row.original.id]?.readerState?.system?.flash_size ?? '—'}
-          </Text>
+          <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
+            <span>M: {statuses.data?.[row.original.id]?.readerState?.system?.flash_size ?? '—'}</span>
+          </div>
         ),
       },
       {
