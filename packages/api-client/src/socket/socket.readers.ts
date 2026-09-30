@@ -37,7 +37,9 @@ const cardSetupResponseSchema = z
 const CARD_SETUP_READY = 'READY';
 
 // "No socket found" means the reader is not connected.
-const readerErrorSchema = z.object({ error: z.string().nullish() }).catch({ error: null });
+const readerErrorSchema = z
+  .object({ error: z.string().nullish(), message: z.string().nullish() })
+  .catch({ error: null, message: null });
 
 // The tag arrives raw, sometimes as a number.
 const readTagSchema = z.union([z.string(), z.number()]).transform((value) => String(value));
