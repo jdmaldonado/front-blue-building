@@ -59,6 +59,10 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
         ? hasSlaveHw
         : hasMasterHw;
   const hardwareSummary = `Maestra: V${masterHw ?? '—'} (${masterFlash ?? '—'})${hasSlaveHw ? ` • Esclava: V${slaveHw ?? '—'} (${slaveFlash ?? '—'})` : ''}`;
+  const targetSummary =
+    target === FirmwareTarget.Both
+      ? `1° Esclava (V${slaveHw ?? '—'} ${slaveFlash ?? '—'}) y 2° Maestra (V${masterHw ?? '—'} ${masterFlash ?? '—'})`
+      : `${target === FirmwareTarget.Slave ? 'Esclava' : 'Maestra'} (V${hwVersion} ${flashSize})`;
 
   useEffect(() => {
     setTarget(isSlaveOnline ? FirmwareTarget.Both : FirmwareTarget.Master);
@@ -210,8 +214,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
 
         <div className="rounded-lg border border-(--border) bg-(--surface-sunken) p-3">
           <Text as="p" size="label" tone="muted">
-            Resumen: Se actualizará <strong className="text-(--foreground)">{target}</strong> con binario para{' '}
-            <strong className="text-(--foreground)">{hwVersion}</strong> ({flashSize}) versión{' '}
+            Resumen: Se actualizará <strong className="text-(--foreground)">{targetSummary}</strong> con versión{' '}
             <strong className="text-(--foreground)">{version}</strong>.
           </Text>
         </div>
