@@ -40,13 +40,12 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
     opt.value === FirmwareTarget.Master ? opt : { ...opt, disabled: !isSlaveOnline },
   );
 
-  const reportedHw =
-    target === FirmwareTarget.Slave
-      ? (reported?.readers?.slave?.hw_version ?? reported?.readers?.master?.hw_version ?? null)
-      : (reported?.readers?.master?.hw_version ?? reported?.readers?.slave?.hw_version ?? null);
-  const parsedHw = parseHardwareVersion(reportedHw);
+  const masterHw = parseHardwareVersion(reported?.readers?.master?.hw_version);
+  const slaveHw = parseHardwareVersion(reported?.readers?.slave?.hw_version);
+  const parsedHw = target === FirmwareTarget.Slave ? slaveHw : masterHw;
   const isSupportedHw = Boolean(parsedHw);
   const hwVersion: HardwareVersion = parsedHw ?? HardwareVersion.V6;
+  const reportedHw = parsedHw;
 
   const rawFlash = reported?.system?.flash_size?.trim() ?? null;
   const parsedFlash = parseFlashSize(rawFlash);
