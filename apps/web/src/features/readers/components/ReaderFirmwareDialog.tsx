@@ -4,6 +4,7 @@ import {
   FlashSize,
   HardwareVersion,
   buildDynamicFirmwareUrl,
+  parseFlashSize,
   type Door,
   type FirmwareUpdateParams,
   type ReaderState,
@@ -46,14 +47,9 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const hwVersion: HardwareVersion = reportedHw === HardwareVersion.V5 ? HardwareVersion.V5 : HardwareVersion.V6;
 
   const rawFlash = reported?.system?.flash_size?.trim() ?? null;
-  const isSupportedFlash =
-    rawFlash?.toUpperCase() === '4MB' || rawFlash?.toUpperCase() === '8MB' || rawFlash?.toUpperCase() === '16MB';
-  const flashSize: FlashSize =
-    rawFlash?.toUpperCase() === '4MB'
-      ? FlashSize.Flash4MB
-      : rawFlash?.toUpperCase() === '16MB'
-        ? FlashSize.Flash16MB
-        : FlashSize.Flash8MB;
+  const parsedFlash = parseFlashSize(rawFlash);
+  const isSupportedFlash = Boolean(parsedFlash);
+  const flashSize: FlashSize = parsedFlash ?? FlashSize.Flash8MB;
 
   const hasReportedHardware = Boolean(isSupportedHw && isSupportedFlash);
 
