@@ -60,10 +60,10 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
       : target === FirmwareTarget.Slave
         ? isSlaveHardwareReady
         : isMasterHardwareReady;
-  const hardwareSummary = `Maestra: V${masterHw ?? '—'} (${masterFlash ?? '—'})${isSlaveHardwareReady ? ` • Esclava: V${slaveHw ?? '—'} (${slaveFlash ?? '—'})` : ''}`;
+  const hardwareSummary = `Maestra: V${masterHardwareVersion ?? '—'} (${masterFlash ?? '—'})${isSlaveHardwareReady ? ` • Esclava: V${slaveHardwareVersion ?? '—'} (${slaveFlash ?? '—'})` : ''}`;
   const targetSummary =
     target === FirmwareTarget.Both
-      ? `1° Esclava (V${slaveHw ?? '—'} ${slaveFlash ?? '—'}) y 2° Maestra (V${masterHw ?? '—'} ${masterFlash ?? '—'})`
+      ? `1° Esclava (V${slaveHardwareVersion ?? '—'} ${slaveFlash ?? '—'}) y 2° Maestra (V${masterHardwareVersion ?? '—'} ${masterFlash ?? '—'})`
       : `${target === FirmwareTarget.Slave ? 'Esclava' : 'Maestra'} (V${hwVersion} ${flashSize})`;
 
   useEffect(() => {
