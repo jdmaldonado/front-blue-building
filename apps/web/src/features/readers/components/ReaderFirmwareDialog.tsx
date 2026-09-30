@@ -103,10 +103,10 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
       onSend({
         url: masterUrl,
         target,
-        hw_version: masterHw,
+        hw_version: masterHardwareVersion,
         flash_size: masterFlash,
-        master: { url: masterUrl, hw_version: masterHw, flash_size: masterFlash },
-        slave: { url: slaveUrl, hw_version: slaveHw, flash_size: slaveFlash },
+        master: { url: masterUrl, hw_version: masterHardwareVersion, flash_size: masterFlash },
+        slave: { url: slaveUrl, hw_version: slaveHardwareVersion, flash_size: slaveFlash },
       });
       return;
     }
