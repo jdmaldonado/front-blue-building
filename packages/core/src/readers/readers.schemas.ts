@@ -164,6 +164,17 @@ export const ReaderStateSchema = z.object({
 });
 export type ReaderState = z.infer<typeof ReaderStateSchema>;
 
+export const FirmwareTargetInfoSchema = z.object({
+  url: z
+    .string()
+    .trim()
+    .url()
+    .regex(/^https?:\/\//i),
+  hw_version: HardwareVersionSchema,
+  flash_size: FlashSizeSchema,
+});
+export type FirmwareTargetInfo = z.infer<typeof FirmwareTargetInfoSchema>;
+
 export const FirmwareUpdateParamsSchema = z.object({
   url: z
     .string()
@@ -173,5 +184,7 @@ export const FirmwareUpdateParamsSchema = z.object({
   target: FirmwareTargetSchema,
   hw_version: HardwareVersionSchema,
   flash_size: FlashSizeSchema,
+  master: FirmwareTargetInfoSchema.optional(),
+  slave: FirmwareTargetInfoSchema.optional(),
 });
 export type FirmwareUpdateParams = z.infer<typeof FirmwareUpdateParamsSchema>;
