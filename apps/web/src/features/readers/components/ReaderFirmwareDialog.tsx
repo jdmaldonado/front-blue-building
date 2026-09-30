@@ -58,10 +58,10 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const hasReportedHardware = Boolean(isSupportedHw && isSupportedFlash);
 
   useEffect(() => {
-    setTarget(FirmwareTarget.Both);
+    setTarget(isSlaveOnline ? FirmwareTarget.Both : FirmwareTarget.Master);
     setVersion(DEFAULT_FIRMWARE_VERSION);
     setCustomUrl(false);
-  }, [door?.id]);
+  }, [door?.id, isSlaveOnline]);
 
   useEffect(() => {
     if (!customUrl) {
