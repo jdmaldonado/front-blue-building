@@ -99,7 +99,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
     if (url.trim() === '' || !hasReportedHardware) {
       return;
     }
-    if (target === FirmwareTarget.Both && masterHw && masterFlash && slaveHw && slaveFlash) {
+    if (target === FirmwareTarget.Both && isMasterHardwareReady && isSlaveHardwareReady) {
       onSend({
         url: masterUrl,
         target,
