@@ -42,9 +42,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
 
   const masterHardwareVersion = parseHardwareVersion(reported?.readers?.master?.hw_version);
   const slaveHardwareVersion = parseHardwareVersion(reported?.readers?.slave?.hw_version);
-  const masterHw = masterHardwareVersion;
-  const slaveHw = slaveHardwareVersion;
-  const parsedHw = target === FirmwareTarget.Slave ? slaveHw : masterHw;
+  const parsedHw = target === FirmwareTarget.Slave ? slaveHardwareVersion : masterHardwareVersion;
   const hwVersion: HardwareVersion = parsedHw ?? HardwareVersion.V6;
 
   const masterFlash = parseFlashSize(reported?.readers?.master?.flash_size ?? reported?.system?.flash_size);
