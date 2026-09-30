@@ -44,13 +44,11 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const slaveHw = parseHardwareVersion(reported?.readers?.slave?.hw_version);
   const parsedHw = target === FirmwareTarget.Slave ? slaveHw : masterHw;
   const hwVersion: HardwareVersion = parsedHw ?? HardwareVersion.V6;
-  const reportedHw = parsedHw;
 
   const masterFlash = parseFlashSize(reported?.readers?.master?.flash_size ?? reported?.system?.flash_size);
   const slaveFlash = parseFlashSize(reported?.readers?.slave?.flash_size);
   const parsedFlash = target === FirmwareTarget.Slave ? slaveFlash : masterFlash;
   const flashSize: FlashSize = parsedFlash ?? FlashSize.Flash8MB;
-  const rawFlash = flashSize;
 
   const hasMasterHw = Boolean(masterHw && masterFlash);
   const hasSlaveHw = Boolean(slaveHw && slaveFlash && isSlaveOnline);
@@ -60,6 +58,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
       : target === FirmwareTarget.Slave
         ? hasSlaveHw
         : hasMasterHw;
+  const hardwareSummary = `Maestra: V${masterHw ?? '—'} (${masterFlash ?? '—'})${hasSlaveHw ? ` • Esclava: V${slaveHw ?? '—'} (${slaveFlash ?? '—'})` : ''}`;
 
   useEffect(() => {
     setTarget(isSlaveOnline ? FirmwareTarget.Both : FirmwareTarget.Master);
@@ -144,11 +143,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
         {hasReportedHardware && (
           <div className="rounded-lg border border-(--border) bg-(--surface-sunken) p-3">
             <Text as="p" size="label" tone="muted">
-              Hardware detectado en memoria:{' '}
-              <strong className="text-(--foreground)">
-                {reportedHw ? `Hardware V${reportedHw}` : 'Hardware V6 (6.0)'}
-              </strong>{' '}
-              • Memoria Flash: <strong className="text-(--foreground)">{rawFlash ?? '8MB'}</strong>
+              Hardware detectado: <strong className="text-(--foreground)">{hardwareSummary}</strong>
             </Text>
           </div>
         )}
