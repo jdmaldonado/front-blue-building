@@ -47,10 +47,12 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const hwVersion: HardwareVersion = parsedHw ?? HardwareVersion.V6;
   const reportedHw = parsedHw;
 
-  const rawFlash = reported?.system?.flash_size?.trim() ?? null;
-  const parsedFlash = parseFlashSize(rawFlash);
+  const masterFlash = parseFlashSize(reported?.readers?.master?.flash_size ?? reported?.system?.flash_size);
+  const slaveFlash = parseFlashSize(reported?.readers?.slave?.flash_size);
+  const parsedFlash = target === FirmwareTarget.Slave ? slaveFlash : masterFlash;
   const isSupportedFlash = Boolean(parsedFlash);
   const flashSize: FlashSize = parsedFlash ?? FlashSize.Flash8MB;
+  const rawFlash = flashSize;
 
   const hasReportedHardware = Boolean(isSupportedHw && isSupportedFlash);
 
