@@ -174,7 +174,10 @@ export function ReadersPage() {
       },
       {
         id: 'flashSize',
-        accessorFn: (door) => statuses.data?.[door.id]?.readerState?.system?.flash_size ?? '',
+        accessorFn: (door) =>
+          statuses.data?.[door.id]?.readerState?.readers?.master?.flash_size ??
+          statuses.data?.[door.id]?.readerState?.system?.flash_size ??
+          '',
         header: 'Flash',
         meta: { hideOnMobile: true },
         cell: ({ row }) => (
