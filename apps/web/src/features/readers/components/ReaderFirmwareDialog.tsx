@@ -19,7 +19,7 @@ type ReaderFirmwareDialogProps = {
   onSend: (params: FirmwareUpdateParams) => void;
 };
 
-const targetOptions: ReadonlyArray<RadioOption<FirmwareTarget>> = [
+const BASE_TARGET_OPTIONS: ReadonlyArray<RadioOption<FirmwareTarget>> = [
   { value: FirmwareTarget.Both, label: 'Ambas (Maestra y Esclava)' },
   { value: FirmwareTarget.Master, label: 'Solo Maestra' },
   { value: FirmwareTarget.Slave, label: 'Solo Esclava' },
@@ -30,6 +30,13 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const [version, setVersion] = useState<string>(DEFAULT_FIRMWARE_VERSION);
   const [url, setUrl] = useState<string>('');
   const [customUrl, setCustomUrl] = useState<boolean>(false);
+  const slaveState = reported?.readers?.slave?.state;
+  const isSlaveOnline = Boolean(
+    door?.readerConfig?.hasSlave && slaveState && slaveState !== 'READER_DISCONNECTED' && slaveState !== 'BROKEN_SLAVE',
+  );
+  const targetOptions = BASE_TARGET_OPTIONS.map((opt) =>
+    opt.value === FirmwareTarget.Master ? opt : { ...opt, disabled: !isSlaveOnline },
+  );
 
   const reportedHw =
     target === FirmwareTarget.Slave
