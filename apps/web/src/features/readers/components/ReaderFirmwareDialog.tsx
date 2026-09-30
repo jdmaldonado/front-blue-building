@@ -43,18 +43,23 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const masterHw = parseHardwareVersion(reported?.readers?.master?.hw_version);
   const slaveHw = parseHardwareVersion(reported?.readers?.slave?.hw_version);
   const parsedHw = target === FirmwareTarget.Slave ? slaveHw : masterHw;
-  const isSupportedHw = Boolean(parsedHw);
   const hwVersion: HardwareVersion = parsedHw ?? HardwareVersion.V6;
   const reportedHw = parsedHw;
 
   const masterFlash = parseFlashSize(reported?.readers?.master?.flash_size ?? reported?.system?.flash_size);
   const slaveFlash = parseFlashSize(reported?.readers?.slave?.flash_size);
   const parsedFlash = target === FirmwareTarget.Slave ? slaveFlash : masterFlash;
-  const isSupportedFlash = Boolean(parsedFlash);
   const flashSize: FlashSize = parsedFlash ?? FlashSize.Flash8MB;
   const rawFlash = flashSize;
 
-  const hasReportedHardware = Boolean(isSupportedHw && isSupportedFlash);
+  const hasMasterHw = Boolean(masterHw && masterFlash);
+  const hasSlaveHw = Boolean(slaveHw && slaveFlash && isSlaveOnline);
+  const hasReportedHardware =
+    target === FirmwareTarget.Both
+      ? hasMasterHw && hasSlaveHw
+      : target === FirmwareTarget.Slave
+        ? hasSlaveHw
+        : hasMasterHw;
 
   useEffect(() => {
     setTarget(isSlaveOnline ? FirmwareTarget.Both : FirmwareTarget.Master);
