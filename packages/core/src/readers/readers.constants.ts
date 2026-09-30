@@ -136,3 +136,15 @@ export function buildDynamicFirmwareUrl(input: BuildFirmwareUrlInput): string {
 
   return `http://${host}:${port}/hw${hwNum}/${sizeFormatted}/${ver}/firmware-hw${hwNum}-${sizeFormatted}-${ver}.bin`;
 }
+
+export function parseHardwareVersion(raw?: string | null): HardwareVersion | null {
+  return raw === HardwareVersion.V5 || raw === HardwareVersion.V6 ? raw : null;
+}
+
+export function parseFlashSize(raw?: string | null): FlashSize | null {
+  const norm = raw?.trim().toUpperCase();
+  if (norm === '4MB') return FlashSize.Flash4MB;
+  if (norm === '8MB') return FlashSize.Flash8MB;
+  if (norm === '16MB') return FlashSize.Flash16MB;
+  return null;
+}
