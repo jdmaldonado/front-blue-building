@@ -40,8 +40,10 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
     opt.value === FirmwareTarget.Master ? opt : { ...opt, disabled: !isSlaveOnline },
   );
 
-  const masterHw = parseHardwareVersion(reported?.readers?.master?.hw_version);
-  const slaveHw = parseHardwareVersion(reported?.readers?.slave?.hw_version);
+  const masterHardwareVersion = parseHardwareVersion(reported?.readers?.master?.hw_version);
+  const slaveHardwareVersion = parseHardwareVersion(reported?.readers?.slave?.hw_version);
+  const masterHw = masterHardwareVersion;
+  const slaveHw = slaveHardwareVersion;
   const parsedHw = target === FirmwareTarget.Slave ? slaveHw : masterHw;
   const hwVersion: HardwareVersion = parsedHw ?? HardwareVersion.V6;
 
