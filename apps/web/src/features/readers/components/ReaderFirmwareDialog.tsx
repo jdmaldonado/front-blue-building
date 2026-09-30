@@ -194,6 +194,9 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
               disabled={pending}
               className="font-mono text-(--accent)"
             />
+            {target === FirmwareTarget.Both && (
+              <span className="font-mono text-label text-(--text-muted) break-all">Esclava: {slaveUrl}</span>
+            )}
             {customUrl && (
               <div className="flex justify-end">
                 <Button
