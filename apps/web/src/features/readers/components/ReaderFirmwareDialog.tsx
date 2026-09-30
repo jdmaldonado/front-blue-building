@@ -90,6 +90,17 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
     if (url.trim() === '' || !hasReportedHardware) {
       return;
     }
+    if (target === FirmwareTarget.Both && masterHw && masterFlash && slaveHw && slaveFlash) {
+      onSend({
+        url: masterUrl,
+        target,
+        hw_version: masterHw,
+        flash_size: masterFlash,
+        master: { url: masterUrl, hw_version: masterHw, flash_size: masterFlash },
+        slave: { url: slaveUrl, hw_version: slaveHw, flash_size: slaveFlash },
+      });
+      return;
+    }
     onSend({
       url: url.trim(),
       target,
