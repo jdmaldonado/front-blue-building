@@ -40,9 +40,9 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
     opt.value === FirmwareTarget.Master ? opt : { ...opt, disabled: !isSlaveOnline },
   );
 
-  const masterHw = parseHardwareVersion(reported?.readers?.master?.hw_version);
-  const slaveHw = parseHardwareVersion(reported?.readers?.slave?.hw_version);
-  const parsedHw = target === FirmwareTarget.Slave ? slaveHw : masterHw;
+  const masterHardwareVersion = parseHardwareVersion(reported?.readers?.master?.hw_version);
+  const slaveHardwareVersion = parseHardwareVersion(reported?.readers?.slave?.hw_version);
+  const parsedHw = target === FirmwareTarget.Slave ? slaveHardwareVersion : masterHardwareVersion;
   const hwVersion: HardwareVersion = parsedHw ?? HardwareVersion.V6;
 
   const masterFlash = parseFlashSize(reported?.readers?.master?.flash_size ?? reported?.system?.flash_size);
@@ -50,18 +50,18 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const parsedFlash = target === FirmwareTarget.Slave ? slaveFlash : masterFlash;
   const flashSize: FlashSize = parsedFlash ?? FlashSize.Flash8MB;
 
-  const hasMasterHw = Boolean(masterHw && masterFlash);
-  const hasSlaveHw = Boolean(slaveHw && slaveFlash && isSlaveOnline);
+  const isMasterHardwareReady = Boolean(masterHardwareVersion && masterFlash);
+  const isSlaveHardwareReady = Boolean(slaveHardwareVersion && slaveFlash && isSlaveOnline);
   const hasReportedHardware =
     target === FirmwareTarget.Both
-      ? hasMasterHw && hasSlaveHw
+      ? isMasterHardwareReady && isSlaveHardwareReady
       : target === FirmwareTarget.Slave
-        ? hasSlaveHw
-        : hasMasterHw;
-  const hardwareSummary = `Maestra: V${masterHw ?? '—'} (${masterFlash ?? '—'})${hasSlaveHw ? ` • Esclava: V${slaveHw ?? '—'} (${slaveFlash ?? '—'})` : ''}`;
+        ? isSlaveHardwareReady
+        : isMasterHardwareReady;
+  const hardwareSummary = `Maestra: V${masterHardwareVersion ?? '—'} (${masterFlash ?? '—'})${isSlaveHardwareReady ? ` • Esclava: V${slaveHardwareVersion ?? '—'} (${slaveFlash ?? '—'})` : ''}`;
   const targetSummary =
     target === FirmwareTarget.Both
-      ? `1° Esclava (V${slaveHw ?? '—'} ${slaveFlash ?? '—'}) y 2° Maestra (V${masterHw ?? '—'} ${masterFlash ?? '—'})`
+      ? `1° Esclava (V${slaveHardwareVersion ?? '—'} ${slaveFlash ?? '—'}) y 2° Maestra (V${masterHardwareVersion ?? '—'} ${masterFlash ?? '—'})`
       : `${target === FirmwareTarget.Slave ? 'Esclava' : 'Maestra'} (V${hwVersion} ${flashSize})`;
 
   useEffect(() => {
@@ -71,9 +71,13 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   }, [door?.id, isSlaveOnline]);
 
   const masterUrl =
-    masterHw && masterFlash ? buildDynamicFirmwareUrl({ hwVersion: masterHw, flashSize: masterFlash, version }) : '';
+    masterHardwareVersion && masterFlash
+      ? buildDynamicFirmwareUrl({ hwVersion: masterHardwareVersion, flashSize: masterFlash, version })
+      : '';
   const slaveUrl =
-    slaveHw && slaveFlash ? buildDynamicFirmwareUrl({ hwVersion: slaveHw, flashSize: slaveFlash, version }) : '';
+    slaveHardwareVersion && slaveFlash
+      ? buildDynamicFirmwareUrl({ hwVersion: slaveHardwareVersion, flashSize: slaveFlash, version })
+      : '';
 
   useEffect(() => {
     if (!customUrl) setUrl(target === FirmwareTarget.Slave ? slaveUrl : masterUrl);
@@ -93,14 +97,14 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
     if (url.trim() === '' || !hasReportedHardware) {
       return;
     }
-    if (target === FirmwareTarget.Both && masterHw && masterFlash && slaveHw && slaveFlash) {
+    if (target === FirmwareTarget.Both && masterHardwareVersion && masterFlash && slaveHardwareVersion && slaveFlash) {
       onSend({
         url: masterUrl,
         target,
-        hw_version: masterHw,
+        hw_version: masterHardwareVersion,
         flash_size: masterFlash,
-        master: { url: masterUrl, hw_version: masterHw, flash_size: masterFlash },
-        slave: { url: slaveUrl, hw_version: slaveHw, flash_size: slaveFlash },
+        master: { url: masterUrl, hw_version: masterHardwareVersion, flash_size: masterFlash },
+        slave: { url: slaveUrl, hw_version: slaveHardwareVersion, flash_size: slaveFlash },
       });
       return;
     }

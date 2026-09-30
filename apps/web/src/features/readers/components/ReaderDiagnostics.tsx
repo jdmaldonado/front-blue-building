@@ -54,7 +54,8 @@ export function ReaderDiagnostics({ reported }: ReaderDiagnosticsProps) {
       ? null
       : formatBytes(system.free_heap_bytes),
   );
-  add('Flash', system?.flash_size);
+  add('Flash maestra', master?.flash_size ?? system?.flash_size);
+  add('Flash esclava', slave?.flash_size);
   add('Esclava vista hace', slave?.last_seen_sec, ' s');
 
   return (

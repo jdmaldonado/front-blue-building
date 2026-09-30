@@ -28,7 +28,8 @@ export function ReadersPage() {
       toast({ tone: 'info', title: 'Orden enviada', message });
     },
     onError: (_command, error) => {
-      toast({ tone: 'error', title: 'La lectora no respondió', message: readerErrorMessage(error) });
+      const title = error.name === 'ReaderTimeoutError' ? 'La lectora no respondió' : 'Error en la orden';
+      toast({ tone: 'error', title, message: readerErrorMessage(error) });
     },
   });
 
@@ -173,13 +174,24 @@ export function ReadersPage() {
       },
       {
         id: 'flashSize',
-        accessorFn: (door) => statuses.data?.[door.id]?.readerState?.system?.flash_size ?? '',
+        accessorFn: (door) =>
+          statuses.data?.[door.id]?.readerState?.readers?.master?.flash_size ??
+          statuses.data?.[door.id]?.readerState?.system?.flash_size ??
+          '',
         header: 'Flash',
         meta: { hideOnMobile: true },
         cell: ({ row }) => (
-          <Text as="span" size="body-sm" tone="muted" className="font-mono">
-            {statuses.data?.[row.original.id]?.readerState?.system?.flash_size ?? '—'}
-          </Text>
+          <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
+            <span>
+              M:{' '}
+              {statuses.data?.[row.original.id]?.readerState?.readers?.master?.flash_size ??
+                statuses.data?.[row.original.id]?.readerState?.system?.flash_size ??
+                '—'}
+            </span>
+            {Boolean(row.original.readerConfig?.hasSlave) && (
+              <span>E: {statuses.data?.[row.original.id]?.readerState?.readers?.slave?.flash_size ?? '—'}</span>
+            )}
+          </div>
         ),
       },
       {
