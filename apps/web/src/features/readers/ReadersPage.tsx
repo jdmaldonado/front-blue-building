@@ -182,7 +182,15 @@ export function ReadersPage() {
         meta: { hideOnMobile: true },
         cell: ({ row }) => (
           <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
-            <span>M: {statuses.data?.[row.original.id]?.readerState?.system?.flash_size ?? '—'}</span>
+            <span>
+              M:{' '}
+              {statuses.data?.[row.original.id]?.readerState?.readers?.master?.flash_size ??
+                statuses.data?.[row.original.id]?.readerState?.system?.flash_size ??
+                '—'}
+            </span>
+            {Boolean(row.original.readerConfig?.hasSlave) && (
+              <span>E: {statuses.data?.[row.original.id]?.readerState?.readers?.slave?.flash_size ?? '—'}</span>
+            )}
           </div>
         ),
       },
