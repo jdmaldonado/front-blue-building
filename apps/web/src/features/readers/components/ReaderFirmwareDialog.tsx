@@ -182,7 +182,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
 
         <Field
           htmlFor="firmware-url-input"
-          label="URL del binario (.bin)"
+          label={target === FirmwareTarget.Both ? 'URL Binario Maestra (.bin)' : 'URL del binario (.bin)'}
           hint="Ruta generada automáticamente a partir del hardware detectado en memoria. Puedes editarla si usas un servidor manual."
         >
           <div className="flex flex-col gap-1.5">
