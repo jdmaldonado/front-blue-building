@@ -83,7 +83,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
 
   const handleResetUrl = (): void => {
     setCustomUrl(false);
-    setUrl(buildDynamicFirmwareUrl({ hwVersion, flashSize, version }));
+    setUrl(target === FirmwareTarget.Slave ? slaveUrl : masterUrl);
   };
 
   const handleSend = (): void => {
