@@ -15,17 +15,17 @@ type ResidentMenuPanelProps = {
 
 const optionClassName = [
   'flex min-h-12 w-full items-center justify-end gap-3 rounded-(--radius-2) px-3',
-  'font-display text-body-lg font-semibold text-(--menu-panel-foreground)',
-  'transition-colors duration-(--duration-fast) ease-standard hover:bg-(--menu-panel-hover)',
-  'focus-visible:ring-2 focus-visible:ring-(--menu-panel-accent) focus-visible:outline-none',
+  'font-display text-body-lg font-semibold text-(--brand-vivid-foreground)',
+  'transition-colors duration-(--duration-fast) ease-standard hover:bg-(--brand-vivid-ring)',
+  'focus-visible:ring-2 focus-visible:ring-(--brand-vivid-foreground) focus-visible:outline-none',
 ].join(' ');
 
 function OptionIcon({ icon: Icon }: { icon: LucideIcon }): ReactNode {
-  return <Icon size={18} aria-hidden className="text-(--menu-panel-accent)" />;
+  return <Icon size={18} aria-hidden className="text-(--brand-vivid-foreground)" />;
 }
 
-// The diagonal menu of the current app, rebuilt in the brand language of the
-// login panel: dark surface, honeycomb, cyan only as an accent.
+// The diagonal menu of the current app, on the same gradient as the login and
+// rising from the bottom bar that opens it.
 export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
   const session = useSessionStore((state) => state.session);
   const spaces = useSessionStore(selectSpaces);
@@ -46,7 +46,7 @@ export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
     // The global CSS rule cancels the animation for whoever asked for less
     // motion, but it cannot cancel a timer: without this they would just wait.
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.setTimeout(() => void navigate({ to }), reduced ? 0 : duration.slow);
+    window.setTimeout(() => void navigate({ to }), reduced ? 0 : duration.base);
   };
 
   const caption =
@@ -57,37 +57,36 @@ export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
       open={open}
       onClose={onClose}
       label="Menú"
-      side="right"
+      side="bottom"
       size="full"
-      className="overflow-hidden bg-transparent shadow-none"
+      className="on-brand-vivid overflow-hidden bg-transparent shadow-none"
     >
       {/* The slant is a background of its own: skewing the panel would skew
           every letter inside it. Its left border draws the diagonal line. */}
       <span
         aria-hidden
-        className="absolute inset-y-0 left-[6%] w-[200%] skew-x-[-25deg] border-(--menu-panel-accent) border-l-2 bg-(--menu-panel-bg) bg-[image:var(--menu-panel-gradient),var(--pattern-honeycomb)] bg-[length:auto,39px_22.52px]"
+        className="absolute inset-y-0 left-[6%] w-[200%] skew-x-(--slant) border-(--brand-vivid-foreground) border-l-2 bg-[image:var(--brand-vivid-surface)]"
       />
 
       <div className="relative ml-auto flex h-full w-[88%] max-w-[380px] flex-col gap-6 pt-6 pr-5 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pl-3">
-        <div className="flex items-start justify-between gap-3">
-          <Logo size="lg" className="text-(--menu-panel-foreground)" markClassName="text-(--menu-panel-accent)" />
+        <div className="flex items-start justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
             aria-label="Cerrar menú"
-            className="-mt-2 -mr-2 flex size-11 flex-none items-center justify-center rounded-(--radius-2) text-(--menu-panel-foreground) transition-colors duration-(--duration-fast) ease-standard hover:bg-(--menu-panel-hover) focus-visible:ring-2 focus-visible:ring-(--menu-panel-accent) focus-visible:outline-none"
+            className="-mt-2 -mr-2 flex size-11 flex-none items-center justify-center rounded-(--radius-2) text-(--brand-vivid-foreground) transition-colors duration-(--duration-fast) ease-standard hover:bg-(--brand-vivid-ring) focus-visible:ring-2 focus-visible:ring-(--brand-vivid-foreground) focus-visible:outline-none"
           >
             <X size={22} aria-hidden />
           </button>
         </div>
 
         {session === null ? null : (
-          <div className="flex items-center justify-end gap-3 border-(--menu-panel-border) border-b pb-5">
+          <div className="ml-auto flex w-fit items-center gap-3 border-(--brand-vivid-border) border-b pb-4">
             <span className="flex min-w-0 flex-col items-end">
-              <Text as="span" size="body" weight="medium" className="text-(--menu-panel-foreground)" truncate>
+              <Text as="span" size="body" weight="medium" className="text-(--brand-vivid-foreground)" truncate>
                 {session.user.name}
               </Text>
-              <Text as="span" size="caption" className="text-(--menu-panel-muted)" truncate>
+              <Text as="span" size="caption" className="text-(--brand-vivid-muted)" truncate>
                 {caption}
               </Text>
             </span>
@@ -112,16 +111,14 @@ export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
             Perfil
             <OptionIcon icon={User} />
           </Link>
-          <span aria-hidden className="my-1 h-px w-full bg-(--menu-panel-border)" />
+          <span aria-hidden className="my-1 h-px w-full bg-(--brand-vivid-border)" />
           <button type="button" onClick={signOut} className={optionClassName}>
             Salir
             <OptionIcon icon={LogOut} />
           </button>
         </nav>
 
-        <Text as="span" size="caption" className="text-right font-mono tracking-wider text-(--menu-panel-muted)">
-          BLUE BUILDING
-        </Text>
+        <Logo size="lg" parts="wordmark" className="justify-end text-(--brand-vivid-foreground)" />
       </div>
     </Drawer>
   );

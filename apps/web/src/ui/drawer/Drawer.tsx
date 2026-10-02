@@ -11,8 +11,8 @@ type DrawerProps = DrawerVariants & {
   className?: string;
 };
 
-// Panel that slides in from the edge of the screen. Used for navigation on
-// small screens, where a fixed sidebar does not fit.
+// Panel that slides in from an edge of the screen. The resident menu rises
+// from the bottom, where the bar that opens it lives.
 export function Drawer({ open, onClose, label, side, size, children, className }: DrawerProps) {
   const ref = useRef<HTMLDialogElement>(null);
 

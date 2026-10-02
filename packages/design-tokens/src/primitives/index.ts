@@ -92,6 +92,9 @@ export const duration = {
   base: 220,
   slow: 380,
   slower: 700,
+  // For a panel that takes the whole screen: the travel is long enough that the
+  // usual steps read as a jump.
+  slowest: 1200,
 } as const;
 
 export type DurationToken = keyof typeof duration;

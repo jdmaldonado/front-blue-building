@@ -15,7 +15,7 @@ export const dialogVariants = cva(
     // Closed state first, `open:` the visible one and `starting:` where it comes
     // from. `transition-discrete` is what lets an element that appears and
     // disappears from the page animate at all.
-    'translate-y-4 opacity-0 transition-[opacity,transform,display,overlay] duration-200 ease-out transition-discrete',
+    'translate-y-4 opacity-0 transition-[opacity,translate,display,overlay] duration-200 ease-out transition-discrete',
     'open:translate-y-0 open:opacity-100 starting:open:translate-y-4 starting:open:opacity-0',
     'backdrop:opacity-0 backdrop:transition-[opacity,display,overlay] backdrop:duration-200 backdrop:ease-out',
     'backdrop:transition-discrete open:backdrop:opacity-100 starting:open:backdrop:opacity-0',
