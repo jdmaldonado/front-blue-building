@@ -40,6 +40,12 @@ export function DoorsDashboardPage({ initialDoorName }: DoorsDashboardPageProps)
             className="max-w-full"
           />
         ) : null}
+        {/* The building is named here and not in the header: the panel reaches
+            this same screen, and from there it is the only thing that says
+            which building is on screen. */}
+        <Text as="span" size="title-sm" weight="semibold" truncate>
+          {building.name}
+        </Text>
         <Text as="span" size="label" tone="muted">
           {doorCount} {doorCount === 1 ? 'puerta' : 'puertas'} en este piso
         </Text>

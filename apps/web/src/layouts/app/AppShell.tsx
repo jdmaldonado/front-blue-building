@@ -97,7 +97,7 @@ export function AppShell({ header, headerActions, sectionNav, bottomNav, childre
           className={cn(
             'flex min-h-0 flex-1 flex-col overflow-y-auto p-4 sm:p-6',
             // Room for the fixed bottom bar, which floats over the content.
-            withSidebar ? '' : 'pb-20',
+            withSidebar ? '' : 'pb-24',
           )}
         >
           {children}
