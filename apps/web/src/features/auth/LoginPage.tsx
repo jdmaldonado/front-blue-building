@@ -64,10 +64,12 @@ export function LoginPage({ mode }: LoginPageProps) {
 
   const alert = login.isError ? loginErrorMessage(login.error) : null;
   const disabled = login.isPending || login.isSuccess;
+  // The resident door carries the brand language; the staff one stays plain.
+  const branded = mode === LoginMode.Usuario;
 
   return (
     <>
-      <AuthHeading title={headings[mode].title} description={headings[mode].description} />
+      <AuthHeading title={headings[mode].title} description={headings[mode].description} centered={branded} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {alert ? (
@@ -82,10 +84,13 @@ export function LoginPage({ mode }: LoginPageProps) {
           </Alert>
         ) : null}
 
-        <div className="flex flex-col gap-3.5">
-          <Field label="Documento" htmlFor="cedula" error={fieldErrors.cedula}>
+        <div className={branded ? 'flex flex-col gap-7' : 'flex flex-col gap-3.5'}>
+          <Field label="Documento" htmlFor="cedula" error={fieldErrors.cedula} hideLabel={branded}>
             <Input
               id="cedula"
+              appearance={branded ? 'slanted' : 'plain'}
+              mark={branded ? 'left' : undefined}
+              type="number"
               className="font-mono"
               inputMode="numeric"
               autoComplete="username"
@@ -98,9 +103,11 @@ export function LoginPage({ mode }: LoginPageProps) {
             />
           </Field>
 
-          <Field label="Contraseña" htmlFor="password" error={fieldErrors.password}>
+          <Field label="Contraseña" htmlFor="password" error={fieldErrors.password} hideLabel={branded}>
             <Input
               id="password"
+              appearance={branded ? 'slanted' : 'plain'}
+              mark={branded ? 'right' : undefined}
               type="password"
               autoComplete="current-password"
               placeholder="Contraseña"
@@ -124,6 +131,7 @@ export function LoginPage({ mode }: LoginPageProps) {
         <Button
           type="submit"
           size="lg"
+          shape={branded ? 'slanted' : 'straight'}
           intent={login.isSuccess ? 'success' : 'primary'}
           loading={login.isPending}
           disabled={disabled}

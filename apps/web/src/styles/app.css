@@ -12,6 +12,34 @@ body {
   font-family: var(--font-body);
 }
 
+/* Shared primitives take their colours from the app surface. On the vivid brand
+   surface that surface is gone and the polarity flips, so the roles are
+   re-pointed here once instead of every component growing a second palette. */
+.on-brand-vivid {
+  --text-primary: var(--brand-vivid-foreground);
+  --text-secondary: var(--brand-vivid-foreground);
+  --text-muted: var(--brand-vivid-muted);
+  --text-on-accent: var(--brand-vivid-inverse);
+  --border-default: var(--brand-vivid-border);
+  --border-focus: var(--brand-vivid-foreground);
+  --accent: var(--brand-vivid-foreground);
+  --accent-hover: var(--brand-vivid-muted);
+  /* A component token that aliases another one is resolved at :root, so the
+     roles above never reach it. The few that show up here are re-pointed by
+     name. */
+  --photo-input-bg: oklch(1 0 0/0.35);
+  --photo-input-border: var(--brand-vivid-border);
+  --photo-input-foreground: var(--brand-vivid-muted);
+}
+
+/* The browser paints its own background on an autofilled field, which would
+   show as a straight rectangle inside the leaning frame. An endless transition
+   is the only way to keep it from ever landing. */
+.on-brand-vivid input:-webkit-autofill {
+  -webkit-text-fill-color: var(--input-slanted-foreground);
+  transition: background-color 9999s;
+}
+
 /* One rule for the whole app: if the person asked their system for less motion,
    nothing loops and nothing slides. Components never repeat this check. */
 @media (prefers-reduced-motion: reduce) {

@@ -60,6 +60,23 @@ export const semanticLight = {
   'brand-border': 'oklch(0.86 0.03 235/.18)',
   'brand-hover': 'oklch(0.86 0.03 235/.10)',
 
+  // A second brand surface, saturated instead of dark. Same hue path as the
+  // current app (`front/src/components/form.css:14`), cyan to blue, with as much
+  // chroma as sRGB holds. The lightness is flat and sits at the brightest point
+  // white text still clears 4.5:1 on; the original was brighter but left its own
+  // labels at 2.6:1.
+  'brand-vivid-surface':
+    'linear-gradient(180deg, oklch(0.56 0.094 212) 0%, oklch(0.557 0.104 228) 55%, oklch(0.55 0.127 243) 100%)',
+  'brand-vivid-foreground': palette.ink[0],
+  'brand-vivid-muted': 'oklch(0.86 0.03 235/.8)',
+  'brand-vivid-border': 'oklch(1 0 0/.75)',
+  'brand-vivid-ring': 'oklch(1 0 0/.3)',
+  'brand-vivid-placeholder': 'oklch(1 0 0/.9)',
+  // What sits on the light plate of a button on this surface.
+  'brand-vivid-inverse': palette.ink[900],
+  // The glow the current app drops under its button (`front/src/components/form.css:105`).
+  'brand-glow': '0 10px 30px oklch(0.48 0.09 238/.55)',
+
   'shadow-1': '0 1px 2px oklch(0.2 0.02 242/.06), 0 2px 8px oklch(0.2 0.02 242/.05)',
   'shadow-2': '0 4px 16px oklch(0.2 0.02 242/.12)',
   'shadow-3': '0 12px 40px oklch(0.2 0.02 242/.18), 0 4px 12px oklch(0.2 0.02 242/.08)',
@@ -122,6 +139,23 @@ export const semanticDark = {
   // alpha, so they read on the dark panel without becoming a second colour.
   'brand-border': 'oklch(0.86 0.03 235/.18)',
   'brand-hover': 'oklch(0.86 0.03 235/.10)',
+
+  // A second brand surface, saturated instead of dark. Same hue path as the
+  // current app (`front/src/components/form.css:14`), cyan to blue, with as much
+  // chroma as sRGB holds. The lightness is flat and sits at the brightest point
+  // white text still clears 4.5:1 on; the original was brighter but left its own
+  // labels at 2.6:1.
+  'brand-vivid-surface':
+    'linear-gradient(180deg, oklch(0.56 0.094 212) 0%, oklch(0.557 0.104 228) 55%, oklch(0.55 0.127 243) 100%)',
+  'brand-vivid-foreground': palette.ink[0],
+  'brand-vivid-muted': 'oklch(0.86 0.03 235/.8)',
+  'brand-vivid-border': 'oklch(1 0 0/.75)',
+  'brand-vivid-ring': 'oklch(1 0 0/.3)',
+  'brand-vivid-placeholder': 'oklch(1 0 0/.9)',
+  // What sits on the light plate of a button on this surface.
+  'brand-vivid-inverse': palette.ink[900],
+  // The glow the current app drops under its button (`front/src/components/form.css:105`).
+  'brand-glow': '0 10px 30px oklch(0.48 0.09 238/.55)',
 
   'shadow-1': '0 1px 2px oklch(0 0 0/.4), 0 2px 8px oklch(0 0 0/.3)',
   'shadow-2': '0 4px 16px oklch(0 0 0/.5)',

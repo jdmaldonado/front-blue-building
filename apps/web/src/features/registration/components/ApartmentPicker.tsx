@@ -67,6 +67,7 @@ export function ApartmentPicker({ role, value, onChange, disabled = false, error
     <div className="flex flex-col gap-3.5">
       <Field label="Edificio" htmlFor="buildingId" required>
         <Select
+          appearance="slanted"
           id="buildingId"
           options={toSelectOptions(buildings.data, { first: { value: '', label: 'Selecciona el edificio' } })}
           value={value.buildingId}
@@ -77,6 +78,7 @@ export function ApartmentPicker({ role, value, onChange, disabled = false, error
 
       <Field label="Torre" htmlFor="towerId" required>
         <Select
+          appearance="slanted"
           id="towerId"
           options={toSelectOptions(towers.data ?? [], { first: { value: '', label: 'Selecciona la torre' } })}
           value={value.towerId}
@@ -87,6 +89,7 @@ export function ApartmentPicker({ role, value, onChange, disabled = false, error
 
       <Field label="Piso" htmlFor="floorId" required>
         <Select
+          appearance="slanted"
           id="floorId"
           options={toSelectOptions(floors.data ?? [], { first: { value: '', label: 'Selecciona el piso' } })}
           value={value.floorId}
@@ -97,6 +100,7 @@ export function ApartmentPicker({ role, value, onChange, disabled = false, error
 
       <Field label="Apartamento" htmlFor="apartmentId" required error={error}>
         <Select
+          appearance="slanted"
           id="apartmentId"
           options={toSelectOptions(apartments.data ?? [], { first: { value: '', label: 'Selecciona el apartamento' } })}
           value={value.apartmentId}

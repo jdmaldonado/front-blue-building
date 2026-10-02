@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
-export const logoSizes = ['sm', 'md', 'lg', 'xl'] as const;
+export const logoSizes = ['sm', 'md', 'lg', 'xl', '2xl'] as const;
 export type LogoSize = (typeof logoSizes)[number];
 
 export const logoVariants = cva('flex items-center', {
@@ -10,6 +10,7 @@ export const logoVariants = cva('flex items-center', {
       md: 'gap-2.5',
       lg: 'gap-3',
       xl: 'gap-4',
+      '2xl': 'gap-5',
     },
   },
   defaultVariants: {
@@ -25,6 +26,7 @@ export const logoMarkVariants = cva('shrink-0', {
       md: 'size-8',
       lg: 'size-10',
       xl: 'size-14',
+      '2xl': 'size-20',
     },
   },
   defaultVariants: {
@@ -40,6 +42,7 @@ export const logoWordmarkVariants = cva('w-auto shrink-0', {
       md: 'h-3',
       lg: 'h-4',
       xl: 'h-5',
+      '2xl': 'h-9',
     },
   },
   defaultVariants: {

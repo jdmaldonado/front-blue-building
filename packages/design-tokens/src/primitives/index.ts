@@ -73,6 +73,15 @@ export const radius = {
 
 export type RadiusToken = keyof typeof radius;
 
+// The lean of the brand, taken from the current app (`front/src/components/form.css:71`).
+// Everything that leans uses this one angle: fields, buttons and the diagonal
+// mark. `gap` is how far a leaning frame pokes out sideways per 1px of height,
+// which is `tan(25deg)`; a 52px field needs 12px of room on each side.
+export const slant = {
+  angle: -25,
+  gap: 0.466,
+} as const;
+
 // Motion, by role. Durations are milliseconds on every platform.
 // `instant` is for state that must feel immediate (hover, focus). `slow` and
 // `slower` are for things that repeat by themselves (scan lines, breathing
@@ -154,8 +163,8 @@ const HONEYCOMB_BRAND_STROKE = '%230e85b0';
 
 export const pattern = {
   honeycomb: `url("data:image/svg+xml,${honeycombSvg('%23ffffff', '0.08')}")`,
-  // For light surfaces, where the white one is invisible. Kept because the
-  // system needs it the day something light wants texture.
+  // For genuinely light surfaces. The stroke is brand blue, so it needs the
+  // surface to be near white: on the saturated one it separates 0.2 L*, nothing.
   'honeycomb-brand': `url("data:image/svg+xml,${honeycombSvg(HONEYCOMB_BRAND_STROKE, '0.07')}")`,
 } as const;
 

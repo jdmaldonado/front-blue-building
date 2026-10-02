@@ -10,16 +10,19 @@ type FieldProps = {
   error?: string;
   hint?: string;
   required?: boolean;
+  // Keeps the label for screen readers but takes it off the screen, for forms
+  // where the placeholder already says what the field is.
+  hideLabel?: boolean;
   className?: string;
   children: ReactNode;
 };
 
-export function Field({ label, htmlFor, error, hint, required, className, children }: FieldProps) {
+export function Field({ label, htmlFor, error, hint, required, hideLabel = false, className, children }: FieldProps) {
   const invalid = error !== undefined;
 
   return (
     <div className={cn(fieldVariants(), className)}>
-      <label htmlFor={htmlFor} className={fieldLabelVariants({ invalid })}>
+      <label htmlFor={htmlFor} className={cn(fieldLabelVariants({ invalid }), hideLabel ? 'sr-only' : '')}>
         {label}
         {required ? <span className="text-(--destructive)"> *</span> : null}
       </label>

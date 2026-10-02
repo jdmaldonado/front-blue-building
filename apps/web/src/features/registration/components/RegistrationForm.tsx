@@ -140,6 +140,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
       <div className="flex flex-col gap-3.5">
         <Field label="Nombre completo" htmlFor="name" error={fieldErrors.name} required>
           <Input
+            appearance="slanted"
             id="name"
             autoComplete="name"
             placeholder="Como aparece en tu documento"
@@ -152,6 +153,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
 
         <Field label="Tipo de documento" htmlFor="documentType" required>
           <Select
+            appearance="slanted"
             id="documentType"
             options={documentOptions}
             value={documentType}
@@ -167,6 +169,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
           required
         >
           <Input
+            appearance="slanted"
             id="cedula"
             className="font-mono"
             inputMode="numeric"
@@ -185,6 +188,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
           required
         >
           <Input
+            appearance="slanted"
             id="email"
             type="email"
             autoComplete="email"
@@ -204,6 +208,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
           required
         >
           <Input
+            appearance="slanted"
             id="phone"
             className="font-mono"
             type="tel"
@@ -219,6 +224,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
 
         <Field label="Contraseña" htmlFor="password" error={fieldErrors.password} required>
           <Input
+            appearance="slanted"
             id="password"
             type="password"
             autoComplete="new-password"
@@ -231,6 +237,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
 
         <Field label="Repite la contraseña" htmlFor="passwordConfirm" error={fieldErrors.passwordConfirm} required>
           <Input
+            appearance="slanted"
             id="passwordConfirm"
             type="password"
             autoComplete="new-password"
@@ -277,7 +284,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
         ) : null}
       </div>
 
-      <Button type="submit" size="lg" loading={register.isPending} disabled={disabled}>
+      <Button type="submit" size="lg" shape="slanted" loading={register.isPending} disabled={disabled}>
         {register.isPending ? 'Enviando...' : 'Enviar solicitud'}
       </Button>
 

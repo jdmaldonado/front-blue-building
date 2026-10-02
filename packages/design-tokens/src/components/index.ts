@@ -145,6 +145,23 @@ export const componentTokens = {
   // Four L marks on the corners of a frame. Reads as an instrument, not a card.
   'corner-bracket-line': 'accent',
   'corner-bracket-line-muted': 'border-strong',
+
+  // The slanted line with a dot at each end, taken from the current app.
+  'diagonal-mark-line': 'accent',
+  'diagonal-mark-line-brand': 'brand-vivid-foreground',
+
+  // Slanted field: the leaning frame carries the border, so these paint it.
+  'input-slanted-border': 'brand-vivid-border',
+  'input-slanted-border-focus': 'brand-vivid-foreground',
+  'input-slanted-ring': 'brand-vivid-ring',
+  'input-slanted-foreground': 'brand-vivid-foreground',
+  'input-slanted-placeholder': 'brand-vivid-placeholder',
+
+  // Slanted button: a light plate on the vivid surface. Both sides are fixed,
+  // because the surface under it does not flip with the theme.
+  'button-slanted-bg': 'brand-vivid-foreground',
+  'button-slanted-glow': 'brand-glow',
+  'button-slanted-foreground': 'brand-vivid-inverse',
 } as const satisfies Record<string, ComponentRef>;
 
 export type ComponentToken = keyof typeof componentTokens;

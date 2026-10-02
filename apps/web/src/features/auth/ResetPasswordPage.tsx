@@ -93,6 +93,8 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
           >
             <Input
               id="password"
+              appearance="slanted"
+              mark="left"
               type="password"
               autoComplete="new-password"
               placeholder="Contraseña nueva"
@@ -107,6 +109,7 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
           <Field label="Repite la contraseña" htmlFor="passwordConfirm" error={fieldErrors.passwordConfirm}>
             <Input
               id="passwordConfirm"
+              appearance="slanted"
               type="password"
               autoComplete="new-password"
               placeholder="Repite la contraseña"
@@ -122,6 +125,7 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
         <Button
           type="submit"
           size="lg"
+          shape="slanted"
           intent={resetPassword.isSuccess ? 'success' : 'primary'}
           loading={resetPassword.isPending}
           disabled={disabled}
