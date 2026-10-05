@@ -44,8 +44,6 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const slaveHardwareVersion = parseHardwareVersion(reported?.readers?.slave?.hw_version);
   const selectedHardwareVersion = target === FirmwareTarget.Slave ? slaveHardwareVersion : masterHardwareVersion;
   const targetHardwareVersion: HardwareVersion = selectedHardwareVersion ?? HardwareVersion.V6;
-  const masterHw = masterHardwareVersion;
-  const slaveHw = slaveHardwareVersion;
   const hwVersion = targetHardwareVersion;
 
   const masterFlash = parseFlashSize(reported?.readers?.master?.flash_size ?? reported?.system?.flash_size);
@@ -101,7 +99,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
     if (url.trim() === '' || !hasReportedHardware) {
       return;
     }
-    if (target === FirmwareTarget.Both && masterHw && masterFlash && slaveHw && slaveFlash) {
+    if (target === FirmwareTarget.Both && masterHardwareVersion && masterFlash && slaveHardwareVersion && slaveFlash) {
       onSend({
         url: masterUrl,
         target,
