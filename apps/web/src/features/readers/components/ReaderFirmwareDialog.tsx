@@ -74,9 +74,13 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   }, [door?.id, isSlaveOnline]);
 
   const masterUrl =
-    masterHw && masterFlash ? buildDynamicFirmwareUrl({ hwVersion: masterHw, flashSize: masterFlash, version }) : '';
+    masterHardwareVersion && masterFlash
+      ? buildDynamicFirmwareUrl({ hardwareVersion: masterHardwareVersion, flashSize: masterFlash, version })
+      : '';
   const slaveUrl =
-    slaveHw && slaveFlash ? buildDynamicFirmwareUrl({ hwVersion: slaveHw, flashSize: slaveFlash, version }) : '';
+    slaveHardwareVersion && slaveFlash
+      ? buildDynamicFirmwareUrl({ hardwareVersion: slaveHardwareVersion, flashSize: slaveFlash, version })
+      : '';
 
   useEffect(() => {
     if (!customUrl) setUrl(target === FirmwareTarget.Slave ? slaveUrl : masterUrl);
