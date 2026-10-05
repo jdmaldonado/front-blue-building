@@ -62,11 +62,11 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
       : target === FirmwareTarget.Slave
         ? isSlaveHardwareReady
         : isMasterHardwareReady;
-  const hardwareSummary = `Maestra: V${masterHw ?? '—'} (${masterFlash ?? '—'})${hasSlaveHw ? ` • Esclava: V${slaveHw ?? '—'} (${slaveFlash ?? '—'})` : ''}`;
+  const hardwareSummary = `Maestra: V${masterHardwareVersion ?? '—'} (${masterFlash ?? '—'})${isSlaveHardwareReady ? ` • Esclava: V${slaveHardwareVersion ?? '—'} (${slaveFlash ?? '—'})` : ''}`;
   const targetSummary =
     target === FirmwareTarget.Both
-      ? `1° Esclava (V${slaveHw ?? '—'} ${slaveFlash ?? '—'}) y 2° Maestra (V${masterHw ?? '—'} ${masterFlash ?? '—'})`
-      : `${target === FirmwareTarget.Slave ? 'Esclava' : 'Maestra'} (V${hwVersion} ${flashSize})`;
+      ? `1° Esclava (V${slaveHardwareVersion ?? '—'} ${slaveFlash ?? '—'}) y 2° Maestra (V${masterHardwareVersion ?? '—'} ${masterFlash ?? '—'})`
+      : `${target === FirmwareTarget.Slave ? 'Esclava' : 'Maestra'} (V${targetHardwareVersion} ${targetFlashSize})`;
 
   useEffect(() => {
     setTarget(isSlaveOnline ? FirmwareTarget.Both : FirmwareTarget.Master);
