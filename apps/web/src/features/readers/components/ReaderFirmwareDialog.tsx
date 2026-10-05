@@ -55,15 +55,13 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
 
   const isMasterHardwareReady = Boolean(masterHardwareVersion && masterFlash);
   const isSlaveHardwareReady = Boolean(slaveHardwareVersion && slaveFlash && isSlaveOnline);
-  const hasMasterHw = isMasterHardwareReady;
-  const hasSlaveHw = isSlaveHardwareReady;
   const flashSize = targetFlashSize;
   const hasReportedHardware =
     target === FirmwareTarget.Both
-      ? hasMasterHw && hasSlaveHw
+      ? isMasterHardwareReady && isSlaveHardwareReady
       : target === FirmwareTarget.Slave
-        ? hasSlaveHw
-        : hasMasterHw;
+        ? isSlaveHardwareReady
+        : isMasterHardwareReady;
   const hardwareSummary = `Maestra: V${masterHw ?? '—'} (${masterFlash ?? '—'})${hasSlaveHw ? ` • Esclava: V${slaveHw ?? '—'} (${slaveFlash ?? '—'})` : ''}`;
   const targetSummary =
     target === FirmwareTarget.Both
