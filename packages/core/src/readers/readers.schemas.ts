@@ -126,6 +126,7 @@ const ReaderDetailStateSchema = z.object({
   device_mode: z.string().nullish().catch(null),
   last_seen_sec: z.number().nullish().catch(null),
   flash_size: z.string().nullish().catch(null),
+  flash_size_mb: z.string().nullish().catch(null),
 });
 export type ReaderDetailState = z.infer<typeof ReaderDetailStateSchema>;
 
