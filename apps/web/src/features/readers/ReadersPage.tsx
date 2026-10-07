@@ -165,12 +165,11 @@ export function ReadersPage() {
           const formatHardwareVersion = (v?: string | null) =>
             v ? (v.toLowerCase().startsWith('v') ? v : `v${v}`) : '—';
           const masterHardware = reportedReaders?.master?.hardware_version ?? reportedReaders?.master?.hw_version;
+          const slaveHardware = reportedReaders?.slave?.hardware_version ?? reportedReaders?.slave?.hw_version;
           return (
             <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
               <span>M: {formatHardwareVersion(masterHardware)}</span>
-              {Boolean(row.original.readerConfig?.hasSlave) && (
-                <span>E: {formatHardwareVersion(reportedReaders?.slave?.hw_version)}</span>
-              )}
+              {Boolean(row.original.readerConfig?.hasSlave) && <span>E: {formatHardwareVersion(slaveHardware)}</span>}
             </div>
           );
         },
