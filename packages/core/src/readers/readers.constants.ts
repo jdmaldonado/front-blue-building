@@ -120,7 +120,8 @@ export const DEFAULT_OTA_PORT = 8000;
 
 export interface BuildFirmwareUrlInput {
   hardwareVersion: HardwareVersion;
-  flashSize: FlashSize;
+  flashSizeMb?: FlashSize;
+  flashSize?: FlashSize;
   version?: string;
   host?: string;
   port?: number;
@@ -129,7 +130,8 @@ export interface BuildFirmwareUrlInput {
 // Pure helper function that builds the standard canonical OTA firmware download URL.
 export function buildDynamicFirmwareUrl(input: BuildFirmwareUrlInput): string {
   const majorHardwareVersion = input.hardwareVersion.split('.')[0] || '6';
-  const sizeFormatted = input.flashSize.toLowerCase();
+  const resolvedFlashSize = input.flashSizeMb ?? input.flashSize ?? FlashSize.Flash8MB;
+  const sizeFormatted = resolvedFlashSize.toLowerCase();
   const ver = input.version && input.version.trim() ? input.version.trim() : DEFAULT_FIRMWARE_VERSION;
   const host = input.host || 'localhost';
   const port = input.port ?? DEFAULT_OTA_PORT;
