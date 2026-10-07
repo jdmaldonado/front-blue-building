@@ -149,7 +149,7 @@ export function ReadersPage() {
         },
       },
       {
-        id: 'hwVersion',
+        id: 'hardwareVersion',
         accessorFn: (door) =>
           statuses.data?.[door.id]?.readerState?.readers?.master?.hw_version ??
           statuses.data?.[door.id]?.readerState?.readers?.slave?.hw_version ??

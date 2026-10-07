@@ -4,6 +4,8 @@ import {
   FlashSize,
   HardwareVersion,
   buildDynamicFirmwareUrl,
+  parseFlashSize,
+  parseHardwareVersion,
   type Door,
   type FirmwareUpdateParams,
   type ReaderState,
@@ -19,7 +21,7 @@ type ReaderFirmwareDialogProps = {
   onSend: (params: FirmwareUpdateParams) => void;
 };
 
-const targetOptions: ReadonlyArray<RadioOption<FirmwareTarget>> = [
+const BASE_TARGET_OPTIONS: ReadonlyArray<RadioOption<FirmwareTarget>> = [
   { value: FirmwareTarget.Both, label: 'Ambas (Maestra y Esclava)' },
   { value: FirmwareTarget.Master, label: 'Solo Maestra' },
   { value: FirmwareTarget.Slave, label: 'Solo Esclava' },
@@ -30,37 +32,56 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const [version, setVersion] = useState<string>(DEFAULT_FIRMWARE_VERSION);
   const [url, setUrl] = useState<string>('');
   const [customUrl, setCustomUrl] = useState<boolean>(false);
+  const slaveState = reported?.readers?.slave?.state;
+  const isSlaveOnline = Boolean(
+    door?.readerConfig?.hasSlave && slaveState && slaveState !== 'READER_DISCONNECTED' && slaveState !== 'BROKEN_SLAVE',
+  );
+  const targetOptions = BASE_TARGET_OPTIONS.map((targetOption) =>
+    targetOption.value === FirmwareTarget.Master ? targetOption : { ...targetOption, disabled: !isSlaveOnline },
+  );
 
-  const reportedHw =
-    target === FirmwareTarget.Slave
-      ? (reported?.readers?.slave?.hw_version ?? reported?.readers?.master?.hw_version ?? null)
-      : (reported?.readers?.master?.hw_version ?? reported?.readers?.slave?.hw_version ?? null);
-  const isSupportedHw = reportedHw === HardwareVersion.V6 || reportedHw === HardwareVersion.V5;
-  const hwVersion: HardwareVersion = reportedHw === HardwareVersion.V5 ? HardwareVersion.V5 : HardwareVersion.V6;
+  const masterHardwareVersion = parseHardwareVersion(reported?.readers?.master?.hw_version);
+  const slaveHardwareVersion = parseHardwareVersion(reported?.readers?.slave?.hw_version);
+  const selectedHardwareVersion = target === FirmwareTarget.Slave ? slaveHardwareVersion : masterHardwareVersion;
+  const targetHardwareVersion: HardwareVersion = selectedHardwareVersion ?? HardwareVersion.V6;
 
-  const rawFlash = reported?.system?.flash_size?.trim() ?? null;
-  const isSupportedFlash =
-    rawFlash?.toUpperCase() === '4MB' || rawFlash?.toUpperCase() === '8MB' || rawFlash?.toUpperCase() === '16MB';
-  const flashSize: FlashSize =
-    rawFlash?.toUpperCase() === '4MB'
-      ? FlashSize.Flash4MB
-      : rawFlash?.toUpperCase() === '16MB'
-        ? FlashSize.Flash16MB
-        : FlashSize.Flash8MB;
+  const masterFlashSizeMb = parseFlashSize(reported?.readers?.master?.flash_size_mb);
+  const slaveFlashSizeMb = parseFlashSize(reported?.readers?.slave?.flash_size_mb);
+  const selectedFlashSizeMb = target === FirmwareTarget.Slave ? slaveFlashSizeMb : masterFlashSizeMb;
+  const targetFlashSizeMb: FlashSize = selectedFlashSizeMb ?? FlashSize.Flash8MB;
 
-  const hasReportedHardware = Boolean(isSupportedHw && isSupportedFlash);
+  const isMasterHardwareReady = Boolean(masterHardwareVersion && masterFlashSizeMb);
+  const isSlaveHardwareReady = Boolean(slaveHardwareVersion && slaveFlashSizeMb && isSlaveOnline);
+  const hasReportedHardware =
+    target === FirmwareTarget.Both
+      ? isMasterHardwareReady && isSlaveHardwareReady
+      : target === FirmwareTarget.Slave
+        ? isSlaveHardwareReady
+        : isMasterHardwareReady;
+  const hardwareSummary = `Maestra: V${masterHardwareVersion ?? '—'} (${masterFlashSizeMb ?? '—'})${isSlaveHardwareReady ? ` • Esclava: V${slaveHardwareVersion ?? '—'} (${slaveFlashSizeMb ?? '—'})` : ''}`;
+  const targetSummary =
+    target === FirmwareTarget.Both
+      ? `1° Esclava (V${slaveHardwareVersion ?? '—'} ${slaveFlashSizeMb ?? '—'}) y 2° Maestra (V${masterHardwareVersion ?? '—'} ${masterFlashSizeMb ?? '—'})`
+      : `${target === FirmwareTarget.Slave ? 'Esclava' : 'Maestra'} (V${targetHardwareVersion} ${targetFlashSizeMb})`;
 
   useEffect(() => {
-    setTarget(FirmwareTarget.Both);
+    setTarget(isSlaveOnline ? FirmwareTarget.Both : FirmwareTarget.Master);
     setVersion(DEFAULT_FIRMWARE_VERSION);
     setCustomUrl(false);
-  }, [door?.id]);
+  }, [door?.id, isSlaveOnline]);
+
+  const masterUrl =
+    masterHardwareVersion && masterFlashSizeMb
+      ? buildDynamicFirmwareUrl({ hardwareVersion: masterHardwareVersion, flashSizeMb: masterFlashSizeMb, version })
+      : '';
+  const slaveUrl =
+    slaveHardwareVersion && slaveFlashSizeMb
+      ? buildDynamicFirmwareUrl({ hardwareVersion: slaveHardwareVersion, flashSizeMb: slaveFlashSizeMb, version })
+      : '';
 
   useEffect(() => {
-    if (!customUrl) {
-      setUrl(buildDynamicFirmwareUrl({ hwVersion, flashSize, version }));
-    }
-  }, [hwVersion, flashSize, version, customUrl]);
+    if (!customUrl) setUrl(target === FirmwareTarget.Slave ? slaveUrl : masterUrl);
+  }, [target, masterUrl, slaveUrl, customUrl]);
 
   const handleUrlChange = (value: string): void => {
     setUrl(value);
@@ -69,18 +90,51 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
 
   const handleResetUrl = (): void => {
     setCustomUrl(false);
-    setUrl(buildDynamicFirmwareUrl({ hwVersion, flashSize, version }));
+    setUrl(target === FirmwareTarget.Slave ? slaveUrl : masterUrl);
   };
 
   const handleSend = (): void => {
     if (url.trim() === '' || !hasReportedHardware) {
       return;
     }
+    if (
+      target === FirmwareTarget.Both &&
+      masterHardwareVersion &&
+      masterFlashSizeMb &&
+      slaveHardwareVersion &&
+      slaveFlashSizeMb
+    ) {
+      onSend({
+        url: masterUrl,
+        target,
+        hardware_version: masterHardwareVersion,
+        hw_version: masterHardwareVersion,
+        flash_size_mb: masterFlashSizeMb,
+        flash_size: masterFlashSizeMb,
+        master: {
+          url: masterUrl,
+          hardware_version: masterHardwareVersion,
+          hw_version: masterHardwareVersion,
+          flash_size_mb: masterFlashSizeMb,
+          flash_size: masterFlashSizeMb,
+        },
+        slave: {
+          url: slaveUrl,
+          hardware_version: slaveHardwareVersion,
+          hw_version: slaveHardwareVersion,
+          flash_size_mb: slaveFlashSizeMb,
+          flash_size: slaveFlashSizeMb,
+        },
+      });
+      return;
+    }
     onSend({
       url: url.trim(),
       target,
-      hw_version: hwVersion,
-      flash_size: flashSize,
+      hardware_version: targetHardwareVersion,
+      hw_version: targetHardwareVersion,
+      flash_size_mb: targetFlashSizeMb,
+      flash_size: targetFlashSizeMb,
     });
   };
 
@@ -119,11 +173,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
         {hasReportedHardware && (
           <div className="rounded-lg border border-(--border) bg-(--surface-sunken) p-3">
             <Text as="p" size="label" tone="muted">
-              Hardware detectado en memoria:{' '}
-              <strong className="text-(--foreground)">
-                {reportedHw ? `Hardware V${reportedHw}` : 'Hardware V6 (6.0)'}
-              </strong>{' '}
-              • Memoria Flash: <strong className="text-(--foreground)">{rawFlash ?? '8MB'}</strong>
+              Hardware detectado: <strong className="text-(--foreground)">{hardwareSummary}</strong>
             </Text>
           </div>
         )}
@@ -158,7 +208,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
 
         <Field
           htmlFor="firmware-url-input"
-          label="URL del binario (.bin)"
+          label={target === FirmwareTarget.Both ? 'URL Binario Maestra (.bin)' : 'URL del binario (.bin)'}
           hint="Ruta generada automáticamente a partir del hardware detectado en memoria. Puedes editarla si usas un servidor manual."
         >
           <div className="flex flex-col gap-1.5">
@@ -170,6 +220,9 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
               disabled={pending}
               className="font-mono text-(--accent)"
             />
+            {target === FirmwareTarget.Both && (
+              <span className="font-mono text-label text-(--text-muted) break-all">Esclava: {slaveUrl}</span>
+            )}
             {customUrl && (
               <div className="flex justify-end">
                 <Button
@@ -190,8 +243,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
 
         <div className="rounded-lg border border-(--border) bg-(--surface-sunken) p-3">
           <Text as="p" size="label" tone="muted">
-            Resumen: Se actualizará <strong className="text-(--foreground)">{target}</strong> con binario para{' '}
-            <strong className="text-(--foreground)">{hwVersion}</strong> ({flashSize}) versión{' '}
+            Resumen: Se actualizará <strong className="text-(--foreground)">{targetSummary}</strong> con versión{' '}
             <strong className="text-(--foreground)">{version}</strong>.
           </Text>
         </div>

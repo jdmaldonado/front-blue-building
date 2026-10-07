@@ -119,8 +119,8 @@ export const DEFAULT_FIRMWARE_VERSION = 'latest';
 export const DEFAULT_OTA_PORT = 8000;
 
 export interface BuildFirmwareUrlInput {
-  hwVersion: HardwareVersion;
-  flashSize: FlashSize;
+  hardwareVersion: HardwareVersion;
+  flashSizeMb: FlashSize;
   version?: string;
   host?: string;
   port?: number;
@@ -128,11 +128,23 @@ export interface BuildFirmwareUrlInput {
 
 // Pure helper function that builds the standard canonical OTA firmware download URL.
 export function buildDynamicFirmwareUrl(input: BuildFirmwareUrlInput): string {
-  const hwNum = input.hwVersion.split('.')[0] || '6';
-  const sizeFormatted = input.flashSize.toLowerCase();
+  const majorHardwareVersion = input.hardwareVersion.split('.')[0] || '6';
+  const sizeFormatted = input.flashSizeMb.toLowerCase();
   const ver = input.version && input.version.trim() ? input.version.trim() : DEFAULT_FIRMWARE_VERSION;
   const host = input.host || 'localhost';
   const port = input.port ?? DEFAULT_OTA_PORT;
 
-  return `http://${host}:${port}/hw${hwNum}/${sizeFormatted}/${ver}/firmware-hw${hwNum}-${sizeFormatted}-${ver}.bin`;
+  return `http://${host}:${port}/hw${majorHardwareVersion}/${sizeFormatted}/${ver}/firmware-hw${majorHardwareVersion}-${sizeFormatted}-${ver}.bin`;
+}
+
+export function parseHardwareVersion(raw?: string | null): HardwareVersion | null {
+  return raw === HardwareVersion.V5 || raw === HardwareVersion.V6 ? raw : null;
+}
+
+export function parseFlashSize(raw?: string | null): FlashSize | null {
+  const norm = raw?.trim().toUpperCase();
+  if (norm === '4MB') return FlashSize.Flash4MB;
+  if (norm === '8MB') return FlashSize.Flash8MB;
+  if (norm === '16MB') return FlashSize.Flash16MB;
+  return null;
 }

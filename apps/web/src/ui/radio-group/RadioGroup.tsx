@@ -14,6 +14,7 @@ export interface RadioOption<TValue extends string> {
   value: TValue;
   label: string;
   icon?: LucideIcon;
+  disabled?: boolean;
 }
 
 type RadioGroupProps<TValue extends string> = {
@@ -94,8 +95,8 @@ export function RadioGroup<TValue extends string>({
             role="radio"
             aria-checked={selected}
             tabIndex={selected ? 0 : -1}
-            disabled={disabled}
-            onClick={() => onChange(option.value)}
+            disabled={disabled || Boolean(option.disabled)}
+            onClick={() => !(disabled || option.disabled) && onChange(option.value)}
             className={radioGroupItemVariants({ appearance, size, selected })}
           >
             {appearance === 'list' ? (
