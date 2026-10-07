@@ -56,18 +56,18 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const selectedFlashSize = target === FirmwareTarget.Slave ? slaveFlashSize : masterFlashSize;
   const targetFlashSize: FlashSize = selectedFlashSize ?? FlashSize.Flash8MB;
 
-  const isMasterHardwareReady = Boolean(masterHardwareVersion && masterFlash);
-  const isSlaveHardwareReady = Boolean(slaveHardwareVersion && slaveFlash && isSlaveOnline);
+  const isMasterHardwareReady = Boolean(masterHardwareVersion && masterFlashSize);
+  const isSlaveHardwareReady = Boolean(slaveHardwareVersion && slaveFlashSize && isSlaveOnline);
   const hasReportedHardware =
     target === FirmwareTarget.Both
       ? isMasterHardwareReady && isSlaveHardwareReady
       : target === FirmwareTarget.Slave
         ? isSlaveHardwareReady
         : isMasterHardwareReady;
-  const hardwareSummary = `Maestra: V${masterHardwareVersion ?? '—'} (${masterFlash ?? '—'})${isSlaveHardwareReady ? ` • Esclava: V${slaveHardwareVersion ?? '—'} (${slaveFlash ?? '—'})` : ''}`;
+  const hardwareSummary = `Maestra: V${masterHardwareVersion ?? '—'} (${masterFlashSize ?? '—'})${isSlaveHardwareReady ? ` • Esclava: V${slaveHardwareVersion ?? '—'} (${slaveFlashSize ?? '—'})` : ''}`;
   const targetSummary =
     target === FirmwareTarget.Both
-      ? `1° Esclava (V${slaveHardwareVersion ?? '—'} ${slaveFlash ?? '—'}) y 2° Maestra (V${masterHardwareVersion ?? '—'} ${masterFlash ?? '—'})`
+      ? `1° Esclava (V${slaveHardwareVersion ?? '—'} ${slaveFlashSize ?? '—'}) y 2° Maestra (V${masterHardwareVersion ?? '—'} ${masterFlashSize ?? '—'})`
       : `${target === FirmwareTarget.Slave ? 'Esclava' : 'Maestra'} (V${targetHardwareVersion} ${targetFlashSize})`;
 
   useEffect(() => {
