@@ -185,8 +185,10 @@ export const FirmwareUpdateParamsSchema = z.object({
     .url('La URL del firmware debe ser una URL válida (ej: http://localhost:8000/firmware.bin)')
     .regex(/^https?:\/\//i, 'La URL del firmware debe tener un esquema http:// o https://'),
   target: FirmwareTargetSchema,
-  hw_version: HardwareVersionSchema,
-  flash_size: FlashSizeSchema,
+  hardware_version: HardwareVersionSchema.optional(),
+  hw_version: HardwareVersionSchema.optional(),
+  flash_size_mb: FlashSizeSchema.optional(),
+  flash_size: FlashSizeSchema.optional(),
   master: FirmwareTargetInfoSchema.optional(),
   slave: FirmwareTargetInfoSchema.optional(),
 });
