@@ -107,7 +107,9 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
       onSend({
         url: masterUrl,
         target,
+        hardware_version: masterHardwareVersion,
         hw_version: masterHardwareVersion,
+        flash_size_mb: masterFlashSizeMb,
         flash_size: masterFlashSizeMb,
         master: { url: masterUrl, hw_version: masterHardwareVersion, flash_size: masterFlashSizeMb },
         slave: { url: slaveUrl, hw_version: slaveHardwareVersion, flash_size: slaveFlashSizeMb },
