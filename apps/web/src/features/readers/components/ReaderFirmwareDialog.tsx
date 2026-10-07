@@ -47,8 +47,8 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
 
   const masterFlashSizeMb = parseFlashSize(reported?.readers?.master?.flash_size_mb);
   const slaveFlashSizeMb = parseFlashSize(reported?.readers?.slave?.flash_size_mb);
-  const selectedFlashSize = target === FirmwareTarget.Slave ? slaveFlashSizeMb : masterFlashSizeMb;
-  const targetFlashSize: FlashSize = selectedFlashSize ?? FlashSize.Flash8MB;
+  const selectedFlashSizeMb = target === FirmwareTarget.Slave ? slaveFlashSizeMb : masterFlashSizeMb;
+  const targetFlashSizeMb: FlashSize = selectedFlashSizeMb ?? FlashSize.Flash8MB;
 
   const isMasterHardwareReady = Boolean(masterHardwareVersion && masterFlashSizeMb);
   const isSlaveHardwareReady = Boolean(slaveHardwareVersion && slaveFlashSizeMb && isSlaveOnline);
@@ -62,7 +62,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const targetSummary =
     target === FirmwareTarget.Both
       ? `1° Esclava (V${slaveHardwareVersion ?? '—'} ${slaveFlashSizeMb ?? '—'}) y 2° Maestra (V${masterHardwareVersion ?? '—'} ${masterFlashSizeMb ?? '—'})`
-      : `${target === FirmwareTarget.Slave ? 'Esclava' : 'Maestra'} (V${targetHardwareVersion} ${targetFlashSize})`;
+      : `${target === FirmwareTarget.Slave ? 'Esclava' : 'Maestra'} (V${targetHardwareVersion} ${targetFlashSizeMb})`;
 
   useEffect(() => {
     setTarget(isSlaveOnline ? FirmwareTarget.Both : FirmwareTarget.Master);
@@ -118,7 +118,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
       url: url.trim(),
       target,
       hw_version: targetHardwareVersion,
-      flash_size: targetFlashSize,
+      flash_size: targetFlashSizeMb,
     });
   };
 
