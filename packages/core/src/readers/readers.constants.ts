@@ -130,13 +130,13 @@ export interface BuildFirmwareUrlInput {
 // Pure helper function that builds the standard canonical OTA firmware download URL.
 export function buildDynamicFirmwareUrl(input: BuildFirmwareUrlInput): string {
   const versionStr = input.hardwareVersion ?? input.hwVersion ?? HardwareVersion.V6;
-  const hwNum = versionStr.split('.')[0] || '6';
+  const majorHardwareVersion = versionStr.split('.')[0] || '6';
   const sizeFormatted = input.flashSize.toLowerCase();
   const ver = input.version && input.version.trim() ? input.version.trim() : DEFAULT_FIRMWARE_VERSION;
   const host = input.host || 'localhost';
   const port = input.port ?? DEFAULT_OTA_PORT;
 
-  return `http://${host}:${port}/hw${hwNum}/${sizeFormatted}/${ver}/firmware-hw${hwNum}-${sizeFormatted}-${ver}.bin`;
+  return `http://${host}:${port}/hw${majorHardwareVersion}/${sizeFormatted}/${ver}/firmware-hw${majorHardwareVersion}-${sizeFormatted}-${ver}.bin`;
 }
 
 export function parseHardwareVersion(raw?: string | null): HardwareVersion | null {
