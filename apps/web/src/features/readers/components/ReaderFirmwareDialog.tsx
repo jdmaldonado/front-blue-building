@@ -103,7 +103,13 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
     if (url.trim() === '' || !hasReportedHardware) {
       return;
     }
-    if (target === FirmwareTarget.Both && masterHardwareVersion && masterFlash && slaveHardwareVersion && slaveFlash) {
+    if (
+      target === FirmwareTarget.Both &&
+      masterHardwareVersion &&
+      masterFlashSize &&
+      slaveHardwareVersion &&
+      slaveFlashSize
+    ) {
       onSend({
         url: masterUrl,
         target,
