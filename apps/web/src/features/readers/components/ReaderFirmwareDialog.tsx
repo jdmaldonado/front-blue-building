@@ -117,7 +117,9 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
     onSend({
       url: url.trim(),
       target,
+      hardware_version: targetHardwareVersion,
       hw_version: targetHardwareVersion,
+      flash_size_mb: targetFlashSizeMb,
       flash_size: targetFlashSizeMb,
     });
   };
