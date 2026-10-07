@@ -164,9 +164,10 @@ export function ReadersPage() {
           const reportedReaders = state?.readers;
           const formatHardwareVersion = (v?: string | null) =>
             v ? (v.toLowerCase().startsWith('v') ? v : `v${v}`) : '—';
+          const masterHardware = reportedReaders?.master?.hardware_version ?? reportedReaders?.master?.hw_version;
           return (
             <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
-              <span>M: {formatHardwareVersion(reportedReaders?.master?.hw_version)}</span>
+              <span>M: {formatHardwareVersion(masterHardware)}</span>
               {Boolean(row.original.readerConfig?.hasSlave) && (
                 <span>E: {formatHardwareVersion(reportedReaders?.slave?.hw_version)}</span>
               )}
