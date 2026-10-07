@@ -51,8 +51,6 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const slaveFlashSize = parseFlashSize(
     reported?.readers?.slave?.flash_size_mb ?? reported?.readers?.slave?.flash_size,
   );
-  const masterFlash = masterFlashSize;
-  const slaveFlash = slaveFlashSize;
   const selectedFlashSize = target === FirmwareTarget.Slave ? slaveFlashSize : masterFlashSize;
   const targetFlashSize: FlashSize = selectedFlashSize ?? FlashSize.Flash8MB;
 
@@ -114,9 +112,9 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
         url: masterUrl,
         target,
         hw_version: masterHardwareVersion,
-        flash_size: masterFlash,
-        master: { url: masterUrl, hw_version: masterHardwareVersion, flash_size: masterFlash },
-        slave: { url: slaveUrl, hw_version: slaveHardwareVersion, flash_size: slaveFlash },
+        flash_size: masterFlashSize,
+        master: { url: masterUrl, hw_version: masterHardwareVersion, flash_size: masterFlashSize },
+        slave: { url: slaveUrl, hw_version: slaveHardwareVersion, flash_size: slaveFlashSize },
       });
       return;
     }
