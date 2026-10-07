@@ -171,8 +171,10 @@ export const FirmwareTargetInfoSchema = z.object({
     .trim()
     .url()
     .regex(/^https?:\/\//i),
-  hw_version: HardwareVersionSchema,
-  flash_size: FlashSizeSchema,
+  hardware_version: HardwareVersionSchema.optional(),
+  hw_version: HardwareVersionSchema.optional(),
+  flash_size_mb: FlashSizeSchema.optional(),
+  flash_size: FlashSizeSchema.optional(),
 });
 export type FirmwareTargetInfo = z.infer<typeof FirmwareTargetInfoSchema>;
 
