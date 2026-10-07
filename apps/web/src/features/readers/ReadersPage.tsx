@@ -187,7 +187,8 @@ export function ReadersPage() {
           <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
             <span>
               M:{' '}
-              {statuses.data?.[row.original.id]?.readerState?.readers?.master?.flash_size ??
+              {statuses.data?.[row.original.id]?.readerState?.readers?.master?.flash_size_mb ??
+                statuses.data?.[row.original.id]?.readerState?.readers?.master?.flash_size ??
                 statuses.data?.[row.original.id]?.readerState?.system?.flash_size ??
                 '—'}
             </span>
