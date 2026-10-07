@@ -193,7 +193,12 @@ export function ReadersPage() {
                 '—'}
             </span>
             {Boolean(row.original.readerConfig?.hasSlave) && (
-              <span>E: {statuses.data?.[row.original.id]?.readerState?.readers?.slave?.flash_size ?? '—'}</span>
+              <span>
+                E:{' '}
+                {statuses.data?.[row.original.id]?.readerState?.readers?.slave?.flash_size_mb ??
+                  statuses.data?.[row.original.id]?.readerState?.readers?.slave?.flash_size ??
+                  '—'}
+              </span>
             )}
           </div>
         ),
