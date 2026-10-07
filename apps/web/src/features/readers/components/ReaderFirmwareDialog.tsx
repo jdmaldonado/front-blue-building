@@ -36,8 +36,8 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
   const isSlaveOnline = Boolean(
     door?.readerConfig?.hasSlave && slaveState && slaveState !== 'READER_DISCONNECTED' && slaveState !== 'BROKEN_SLAVE',
   );
-  const targetOptions = BASE_TARGET_OPTIONS.map((opt) =>
-    opt.value === FirmwareTarget.Master ? opt : { ...opt, disabled: !isSlaveOnline },
+  const targetOptions = BASE_TARGET_OPTIONS.map((targetOption) =>
+    targetOption.value === FirmwareTarget.Master ? targetOption : { ...targetOption, disabled: !isSlaveOnline },
   );
 
   const masterHardwareVersion = parseHardwareVersion(reported?.readers?.master?.hw_version);
