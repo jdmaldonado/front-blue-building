@@ -152,7 +152,9 @@ export function ReadersPage() {
       {
         id: 'hardwareVersion',
         accessorFn: (door) =>
+          statuses.data?.[door.id]?.readerState?.readers?.master?.hardware_version ??
           statuses.data?.[door.id]?.readerState?.readers?.master?.hw_version ??
+          statuses.data?.[door.id]?.readerState?.readers?.slave?.hardware_version ??
           statuses.data?.[door.id]?.readerState?.readers?.slave?.hw_version ??
           '',
         header: 'Hardware',
