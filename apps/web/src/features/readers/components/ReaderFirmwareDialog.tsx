@@ -118,7 +118,13 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
           flash_size_mb: masterFlashSizeMb,
           flash_size: masterFlashSizeMb,
         },
-        slave: { url: slaveUrl, hw_version: slaveHardwareVersion, flash_size: slaveFlashSizeMb },
+        slave: {
+          url: slaveUrl,
+          hardware_version: slaveHardwareVersion,
+          hw_version: slaveHardwareVersion,
+          flash_size_mb: slaveFlashSizeMb,
+          flash_size: slaveFlashSizeMb,
+        },
       });
       return;
     }
