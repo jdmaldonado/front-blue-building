@@ -123,7 +123,6 @@ const ReaderDetailStateSchema = z.object({
   spi_ok: z.boolean().nullish().catch(null),
   firmware_version: z.string().nullish().catch(null),
   hardware_version: z.string().nullish().catch(null),
-  hw_version: z.string().nullish().catch(null),
   device_mode: z.string().nullish().catch(null),
   last_seen_sec: z.number().nullish().catch(null),
   flash_size: z.string().nullish().catch(null),
