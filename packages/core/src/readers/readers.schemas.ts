@@ -122,10 +122,9 @@ const ReaderDetailStateSchema = z.object({
   state: z.string().nullish().catch(null),
   spi_ok: z.boolean().nullish().catch(null),
   firmware_version: z.string().nullish().catch(null),
-  hw_version: z.string().nullish().catch(null),
+  hardware_version: z.string().nullish().catch(null),
   device_mode: z.string().nullish().catch(null),
   last_seen_sec: z.number().nullish().catch(null),
-  flash_size: z.string().nullish().catch(null),
   flash_size_mb: z.string().nullish().catch(null),
 });
 export type ReaderDetailState = z.infer<typeof ReaderDetailStateSchema>;

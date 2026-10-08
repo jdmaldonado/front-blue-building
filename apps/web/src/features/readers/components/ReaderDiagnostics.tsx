@@ -38,9 +38,9 @@ export function ReaderDiagnostics({ reported }: ReaderDiagnosticsProps) {
   add('ID del dispositivo', reported.metadata?.device_id);
   add('Modo', master?.device_mode);
   add('Firmware maestra', master?.firmware_version);
-  add('Hardware maestra', master?.hw_version);
+  add('Hardware maestra', master?.hardware_version);
   add('Firmware esclava', slave?.firmware_version);
-  add('Hardware esclava', slave?.hw_version);
+  add('Hardware esclava', slave?.hardware_version);
   add('Red', network?.wifi_ssid);
   add('Señal', network?.rssi, ' dBm');
   add(
@@ -54,7 +54,8 @@ export function ReaderDiagnostics({ reported }: ReaderDiagnosticsProps) {
       ? null
       : formatBytes(system.free_heap_bytes),
   );
-  add('Flash', system?.flash_size);
+  add('Flash maestra', master?.flash_size_mb);
+  add('Flash esclava', slave?.flash_size_mb);
   add('Esclava vista hace', slave?.last_seen_sec, ' s');
 
   return (
