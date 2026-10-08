@@ -38,9 +38,9 @@ export function ReaderDiagnostics({ reported }: ReaderDiagnosticsProps) {
   add('ID del dispositivo', reported.metadata?.device_id);
   add('Modo', master?.device_mode);
   add('Firmware maestra', master?.firmware_version);
-  add('Hardware maestra', master?.hardware_version ?? master?.hw_version);
+  add('Hardware maestra', master?.hardware_version);
   add('Firmware esclava', slave?.firmware_version);
-  add('Hardware esclava', slave?.hardware_version ?? slave?.hw_version);
+  add('Hardware esclava', slave?.hardware_version);
   add('Red', network?.wifi_ssid);
   add('Señal', network?.rssi, ' dBm');
   add(
