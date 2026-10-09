@@ -63,13 +63,10 @@ export const semanticLight = {
   'brand-border': 'oklch(0.86 0.03 235/.18)',
   'brand-hover': 'oklch(0.86 0.03 235/.10)',
 
-  // A second brand surface, saturated instead of dark. Same hue path as the
-  // current app (`front/src/components/form.css:14`), cyan to blue, with as much
-  // chroma as sRGB holds. The lightness is flat and sits at the brightest point
-  // white text still clears 4.5:1 on; the original was brighter but left its own
-  // labels at 2.6:1.
+  // Cyan to blue like the current app (`front/src/components/form.css:14`), a bit
+  // darker so white text stays readable: about 3.5:1 where the small text sits.
   'brand-vivid-surface':
-    'linear-gradient(180deg, oklch(0.56 0.094 212) 0%, oklch(0.557 0.104 228) 55%, oklch(0.55 0.127 243) 100%)',
+    'linear-gradient(180deg, oklch(0.64 0.11 212) 0%, oklch(0.61 0.108 228) 55%, oklch(0.585 0.12 243) 100%)',
   'brand-vivid-foreground': palette.ink[0],
   'brand-vivid-muted': 'oklch(0.86 0.03 235/.8)',
   'brand-vivid-border': 'oklch(1 0 0/.75)',
@@ -146,13 +143,10 @@ export const semanticDark = {
   'brand-border': 'oklch(0.86 0.03 235/.18)',
   'brand-hover': 'oklch(0.86 0.03 235/.10)',
 
-  // A second brand surface, saturated instead of dark. Same hue path as the
-  // current app (`front/src/components/form.css:14`), cyan to blue, with as much
-  // chroma as sRGB holds. The lightness is flat and sits at the brightest point
-  // white text still clears 4.5:1 on; the original was brighter but left its own
-  // labels at 2.6:1.
+  // Cyan to blue like the current app (`front/src/components/form.css:14`), a bit
+  // darker so white text stays readable: about 3.5:1 where the small text sits.
   'brand-vivid-surface':
-    'linear-gradient(180deg, oklch(0.56 0.094 212) 0%, oklch(0.557 0.104 228) 55%, oklch(0.55 0.127 243) 100%)',
+    'linear-gradient(180deg, oklch(0.64 0.11 212) 0%, oklch(0.61 0.108 228) 55%, oklch(0.585 0.12 243) 100%)',
   'brand-vivid-foreground': palette.ink[0],
   'brand-vivid-muted': 'oklch(0.86 0.03 235/.8)',
   'brand-vivid-border': 'oklch(1 0 0/.75)',
