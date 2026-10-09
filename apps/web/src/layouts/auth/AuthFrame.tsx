@@ -26,7 +26,7 @@ export function AuthFrame({ branded = false, children }: AuthFrameProps) {
           {/* On the resident door the lettering is the headline, centred and on
               its own, the way the current app opens. */}
           {branded ? (
-            <Logo size="3xl" parts="wordmark" className="justify-center" wordmarkClassName="max-w-full" />
+            <Logo size="3xl" parts="wordmark" className="mb-4 justify-center" wordmarkClassName="max-w-full" />
           ) : (
             <Logo size="xl" className="md:hidden" />
           )}

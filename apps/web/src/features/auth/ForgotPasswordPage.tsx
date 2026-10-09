@@ -56,7 +56,7 @@ export function ForgotPasswordPage() {
           </Alert>
         ) : null}
 
-        <Field label="Documento" htmlFor="cedula" error={fieldError} hideLabel>
+        <Field label="Documento" htmlFor="cedula" error={fieldError} hideLabel inset>
           <Input
             appearance="slanted"
             mark="left"

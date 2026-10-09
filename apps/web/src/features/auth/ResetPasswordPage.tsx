@@ -90,6 +90,8 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
             htmlFor="password"
             error={fieldErrors.password}
             hint={`Mínimo ${PASSWORD_MIN_LENGTH} caracteres.`}
+            hideLabel
+            inset
           >
             <Input
               id="password"
@@ -106,7 +108,13 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
             />
           </Field>
 
-          <Field label="Repite la contraseña" htmlFor="passwordConfirm" error={fieldErrors.passwordConfirm}>
+          <Field
+            label="Repite la contraseña"
+            htmlFor="passwordConfirm"
+            error={fieldErrors.passwordConfirm}
+            hideLabel
+            inset
+          >
             <Input
               id="passwordConfirm"
               appearance="slanted"

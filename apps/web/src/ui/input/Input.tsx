@@ -1,6 +1,5 @@
 import type { ComponentProps, Ref } from 'react';
 import { cn } from '../cn';
-import { DiagonalMark } from '../diagonal-mark';
 import {
   inputFrameVariants,
   inputMarkVariants,
@@ -17,8 +16,8 @@ export type InputMarkSide = (typeof inputMarkSides)[number];
 // `inputSize` instead of `size` because <input> already owns a native `size` attr.
 type InputProps = ComponentProps<'input'> &
   InputVariants & {
-    // Runs the diagonal mark alongside one edge of the frame, the way the
-    // current app does on some of its fields. Only drawn when slanted.
+    // Extends one slanted edge with a line and a ring, like the current app.
+    // The left one goes up and down, the right one only up.
     mark?: InputMarkSide;
     ref?: Ref<HTMLInputElement>;
   };
@@ -35,8 +34,10 @@ export function Input({ appearance, inputSize, mark, className, ...props }: Inpu
   return (
     <span className={inputFrameVariants()}>
       {field}
-      <span aria-hidden className={inputSlantVariants()} />
-      {mark === undefined ? null : <DiagonalMark size="lg" className={inputMarkVariants({ side: mark })} />}
+      <span aria-hidden className={inputSlantVariants()}>
+        {mark === undefined ? null : <span className={inputMarkVariants({ side: mark, end: 'top' })} />}
+        {mark === 'left' ? <span className={inputMarkVariants({ side: mark, end: 'bottom' })} /> : null}
+      </span>
     </span>
   );
 }

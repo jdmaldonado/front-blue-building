@@ -48,30 +48,36 @@ export const inputVariants = cva(
 // focus and error are painted here; it reads them off the input with `peer`.
 export const inputSlantVariants = cva([
   'pointer-events-none absolute inset-y-0 right-6 left-6 skew-x-(--slant)',
-  'border border-(--input-slanted-border) transition-colors duration-(--duration-fast) ease-standard',
-  'peer-focus:border-(--input-slanted-border-focus)',
+  'border border-current text-(--input-slanted-border) transition-colors duration-(--duration-fast) ease-standard',
+  'peer-focus:text-(--input-slanted-border-focus)',
   'peer-focus:shadow-[0_0_0_3px_var(--input-slanted-ring)]',
-  'peer-aria-invalid:border-(--destructive)',
+  'peer-aria-invalid:text-(--destructive)',
 ]);
 
 // Holds the field and its frame. The frame is absolute, so the wrapper is what
 // gives the row its height.
 export const inputFrameVariants = cva('relative isolate flex w-full');
 
-// Placed from the current app's own numbers (`front/src/components/form.css:128`):
-// a 66x129 shape hung 57px above the field. That puts the line on the extension
-// of the slanted edge, 2px outside it, running well past the field at both ends.
-// The two sides differ because the line sits right of centre inside its box.
-export const inputMarkVariants = cva('-top-14 absolute text-(--diagonal-mark-line-brand)', {
-  variants: {
-    side: {
-      left: '-left-0.5',
-      right: '-right-[18px]',
+// A line that continues the frame edge past the field, with a ring at its tip.
+// It lives inside the leaning frame, so it leans with it; the ring undoes the lean.
+export const inputMarkVariants = cva(
+  [
+    'absolute w-px bg-current',
+    'before:absolute before:left-1/2 before:size-2 before:-translate-x-1/2 before:rounded-full',
+    'before:border before:border-current before:-skew-x-(--slant)',
+  ],
+  {
+    variants: {
+      side: {
+        left: '-left-px',
+        right: '-right-px',
+      },
+      end: {
+        top: 'bottom-full h-6 before:bottom-full',
+        bottom: 'top-full h-3 before:top-full',
+      },
     },
   },
-  defaultVariants: {
-    side: 'left',
-  },
-});
+);
 
 export type InputVariants = VariantProps<typeof inputVariants>;

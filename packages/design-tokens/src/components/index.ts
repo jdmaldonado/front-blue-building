@@ -137,10 +137,6 @@ export const componentTokens = {
   'corner-bracket-line': 'accent',
   'corner-bracket-line-muted': 'border-strong',
 
-  // The slanted line with a dot at each end, taken from the current app.
-  'diagonal-mark-line': 'accent',
-  'diagonal-mark-line-brand': 'brand-vivid-foreground',
-
   // Slanted field: the leaning frame carries the border, so these paint it.
   'input-slanted-border': 'brand-vivid-border',
   'input-slanted-border-focus': 'brand-vivid-foreground',

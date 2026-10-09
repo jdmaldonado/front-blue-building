@@ -60,9 +60,6 @@ export type { DataTableDensity, DataTableVariants } from './data-table';
 export { useDataTableFilters } from './data-table';
 export type { DataTableFiltersController } from './data-table';
 
-export { DiagonalMark, diagonalMarkSizes, diagonalMarkVariants } from './diagonal-mark';
-export type { DiagonalMarkSize, DiagonalMarkVariants } from './diagonal-mark';
-
 export {
   Dialog,
   dialogBodyVariants,

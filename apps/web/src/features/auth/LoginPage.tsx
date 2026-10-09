@@ -76,7 +76,7 @@ export function LoginPage({ mode }: LoginPageProps) {
         ) : null}
 
         <div className={branded ? 'flex flex-col gap-7' : 'flex flex-col gap-3.5'}>
-          <Field label="Documento" htmlFor="cedula" error={fieldErrors.cedula} hideLabel={branded}>
+          <Field label="Documento" htmlFor="cedula" error={fieldErrors.cedula} hideLabel={branded} inset={branded}>
             <Input
               id="cedula"
               appearance={branded ? 'slanted' : 'plain'}
@@ -94,7 +94,7 @@ export function LoginPage({ mode }: LoginPageProps) {
             />
           </Field>
 
-          <Field label="Contraseña" htmlFor="password" error={fieldErrors.password} hideLabel={branded}>
+          <Field label="Contraseña" htmlFor="password" error={fieldErrors.password} hideLabel={branded} inset={branded}>
             <Input
               id="password"
               appearance={branded ? 'slanted' : 'plain'}
