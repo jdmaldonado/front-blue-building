@@ -12,19 +12,6 @@ type FieldErrors = {
   password?: string;
 };
 
-// Each door calls a different endpoint, so the mode comes from the route and
-// nobody has to pick it. A resident never reads the word "administrador".
-const headings: Record<LoginMode, { title: string; description: string }> = {
-  [LoginMode.Usuario]: {
-    title: 'Acceso al edificio',
-    description: 'Ingresa con tu documento y contraseña.',
-  },
-  [LoginMode.Admin]: {
-    title: 'Panel de administración',
-    description: 'Acceso del equipo de Blue Building.',
-  },
-};
-
 type LoginPageProps = {
   mode: LoginMode;
 };
@@ -69,7 +56,11 @@ export function LoginPage({ mode }: LoginPageProps) {
 
   return (
     <>
-      <AuthHeading title={headings[mode].title} description={headings[mode].description} centered={branded} />
+      {branded ? (
+        <h1 className="sr-only">Iniciar sesión</h1>
+      ) : (
+        <AuthHeading title="Panel de administración" description="Acceso del equipo de Blue Building." />
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {alert ? (
