@@ -1,10 +1,10 @@
 import { LoginInputSchema, LoginMode } from '@bb/core';
 import { useLogin } from '@bb/logic';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { useState, type SubmitEvent } from 'react';
-import { AppRoute, landingPathFor } from '../../app/navigation';
-import { Alert, Button, Field, Input, Text, linkVariants } from '../../ui';
-import { AuthHeading } from './components';
+import { landingPathFor } from '../../app/navigation';
+import { Alert, Button, Field, Input } from '../../ui';
+import { AuthHeading, LoginLinks } from './components';
 import { loginErrorMessage } from './lib';
 
 type FieldErrors = {
@@ -111,14 +111,6 @@ export function LoginPage({ mode }: LoginPageProps) {
           </Field>
         </div>
 
-        {/* Recovery exists only for resident accounts: the API filters by
-            userType = USER, so it is hidden in admin mode. */}
-        {mode === LoginMode.Usuario ? (
-          <Link to={AppRoute.ForgotPassword} className={linkVariants({ className: 'self-end' })}>
-            ¿Olvidaste tu contraseña?
-          </Link>
-        ) : null}
-
         <Button
           type="submit"
           size="lg"
@@ -131,23 +123,7 @@ export function LoginPage({ mode }: LoginPageProps) {
         </Button>
       </form>
 
-      {/* Registration is for residents only: an admin account is created by
-          Blue Building, never from here. */}
-      {mode === LoginMode.Usuario ? (
-        <div className="flex flex-col gap-2 border-(--border-default) border-t pt-5">
-          <Text as="span" size="body-sm" tone="secondary">
-            ¿Es la primera vez? Regístrate como...
-          </Text>
-          <div className="flex flex-wrap gap-x-5 gap-y-1">
-            <Link to={AppRoute.RegisterOwner} className={linkVariants()}>
-              Propietario o líder
-            </Link>
-            <Link to={AppRoute.RegisterResident} className={linkVariants()}>
-              Residente o colaborador
-            </Link>
-          </div>
-        </div>
-      ) : null}
+      {branded ? <LoginLinks /> : null}
     </>
   );
 }
