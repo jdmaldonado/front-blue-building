@@ -4,7 +4,8 @@ const SPLASH_MIN_MS = 600;
 // It stays at least SPLASH_MIN_MS so a fast load does not look like a flicker.
 export function hideSplash(): void {
   const splash = document.getElementById('splash');
-  if (splash === null) {
+  // `splash-blocked` is set by index.html on browsers too old for the app.
+  if (splash === null || splash.classList.contains('splash-blocked')) {
     return;
   }
 

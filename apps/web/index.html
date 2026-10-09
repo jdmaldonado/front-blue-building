@@ -89,6 +89,47 @@
           opacity: 1;
         }
       }
+      .splash-message {
+        max-width: 280px;
+        margin: 32px 24px 0;
+        color: #fff;
+        font: 16px/1.5 sans-serif;
+        text-align: center;
+      }
+      .splash-retry {
+        position: relative;
+        z-index: 0;
+        min-width: 240px;
+        height: 52px;
+        margin-top: 24px;
+        padding: 0 48px;
+        border: 0;
+        background: none;
+        color: #06121b;
+        font: 15px sans-serif;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 0.15s;
+      }
+      .splash-retry::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 24px;
+        bottom: 0;
+        left: 24px;
+        z-index: -1;
+        background: #fafcfd;
+        box-shadow: 0 10px 30px rgba(33, 100, 138, 0.55);
+        transform: skewX(-25deg);
+      }
+      .splash-retry:hover {
+        transform: translateY(-4px);
+      }
+      .splash-failed .splash-mark {
+        display: none;
+      }
       @media (prefers-reduced-motion: reduce) {
         .splash,
         .splash * {
@@ -139,7 +180,44 @@
         />
       </svg>
       <span class="splash-mark"><span class="splash-ring"></span></span>
+      <p id="splash-message" class="splash-message" hidden></p>
+      <button id="splash-retry" class="splash-retry" type="button" hidden>Reintentar</button>
     </div>
+    <!-- Plain old JavaScript on purpose: it must run on phones too old for the app. -->
+    <script>
+      (function () {
+        var START_TIMEOUT_MS = 15000;
+        var OLD_BROWSER_TEXT =
+          'Tu teléfono o navegador es muy antiguo para Blue Building. Actualízalo o usa otro dispositivo.';
+        var TIMEOUT_TEXT = 'No pudimos cargar la app. Revisa tu conexión e intenta de nuevo.';
+        var splash = document.getElementById('splash');
+        var message = document.getElementById('splash-message');
+        var retry = document.getElementById('splash-retry');
+
+        function fail(className, text, canRetry) {
+          splash.className = 'splash splash-failed ' + className;
+          message.textContent = text;
+          message.hidden = false;
+          retry.hidden = !canRetry;
+        }
+
+        // The app styles need color-mix(), which arrived with the browsers the app supports.
+        var supported = window.CSS && CSS.supports && CSS.supports('color', 'color-mix(in oklch, red, blue)');
+        if (!supported) {
+          fail('splash-blocked', OLD_BROWSER_TEXT, false);
+          return;
+        }
+
+        retry.onclick = function () {
+          window.location.reload();
+        };
+        window.setTimeout(function () {
+          if (splash.className.indexOf('splash-hidden') === -1) {
+            fail('', TIMEOUT_TEXT, true);
+          }
+        }, START_TIMEOUT_MS);
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
