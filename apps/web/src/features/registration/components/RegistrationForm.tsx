@@ -16,6 +16,7 @@ import {
   Checkbox,
   Field,
   Input,
+  PasswordInput,
   PhotoInput,
   Select,
   Text,
@@ -221,10 +222,9 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
         </Field>
 
         <Field label="Contraseña" htmlFor="password" error={fieldErrors.password} required>
-          <Input
+          <PasswordInput
             appearance="slanted"
             id="password"
-            type="password"
             autoComplete="new-password"
             value={password}
             disabled={disabled}
@@ -234,10 +234,9 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
         </Field>
 
         <Field label="Repite la contraseña" htmlFor="passwordConfirm" error={fieldErrors.passwordConfirm} required>
-          <Input
+          <PasswordInput
             appearance="slanted"
             id="passwordConfirm"
-            type="password"
             autoComplete="new-password"
             value={passwordConfirm}
             disabled={disabled}

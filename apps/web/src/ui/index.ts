@@ -123,6 +123,14 @@ export { Pagination, paginationStatusVariants, paginationVariants } from './pagi
 export type { PaginationVariants } from './pagination';
 
 export {
+  PasswordInput,
+  passwordInputFieldVariants,
+  passwordInputVariants,
+  passwordToggleVariants,
+} from './password-input';
+export type { PasswordInputVariants } from './password-input';
+
+export {
   PhotoInput,
   photoInputHintVariants,
   photoInputSizes,

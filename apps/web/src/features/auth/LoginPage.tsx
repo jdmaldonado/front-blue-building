@@ -3,7 +3,7 @@ import { useLogin } from '@bb/logic';
 import { useNavigate } from '@tanstack/react-router';
 import { useState, type SubmitEvent } from 'react';
 import { landingPathFor } from '../../app/navigation';
-import { Alert, Button, Field, Input } from '../../ui';
+import { Alert, Button, Field, Input, PasswordInput } from '../../ui';
 import { AuthHeading, LoginLinks } from './components';
 import { loginErrorMessage } from './lib';
 
@@ -94,11 +94,10 @@ export function LoginPage({ mode }: LoginPageProps) {
           </Field>
 
           <Field label="Contraseña" htmlFor="password" error={fieldErrors.password} hideLabel={branded} inset={branded}>
-            <Input
+            <PasswordInput
               id="password"
               appearance={branded ? 'slanted' : 'plain'}
               mark={branded ? 'right' : undefined}
-              type="password"
               autoComplete="current-password"
               placeholder="Contraseña"
               value={password}

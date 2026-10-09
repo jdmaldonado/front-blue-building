@@ -3,7 +3,7 @@ import { useResetPassword } from '@bb/logic';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useState, type SubmitEvent } from 'react';
 import { AppRoute } from '../../app/navigation';
-import { Alert, Button, Field, Input, linkVariants } from '../../ui';
+import { Alert, Button, Field, PasswordInput, linkVariants } from '../../ui';
 import { AuthHeading } from './components';
 import { recoveryErrorMessage } from './lib';
 
@@ -93,11 +93,10 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
             hideLabel
             inset
           >
-            <Input
+            <PasswordInput
               id="password"
               appearance="slanted"
               mark="left"
-              type="password"
               autoComplete="new-password"
               placeholder="Contraseña nueva"
               value={password}
@@ -115,10 +114,9 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
             hideLabel
             inset
           >
-            <Input
+            <PasswordInput
               id="passwordConfirm"
               appearance="slanted"
-              type="password"
               autoComplete="new-password"
               placeholder="Repite la contraseña"
               value={passwordConfirm}
