@@ -24,6 +24,7 @@ body {
   --border-focus: var(--brand-vivid-foreground);
   --accent: var(--brand-vivid-foreground);
   --accent-hover: var(--brand-vivid-muted);
+  --destructive: var(--brand-vivid-error);
   /* A component token that aliases another one is resolved at :root, so the
      roles above never reach it. The few that show up here are re-pointed by
      name. */

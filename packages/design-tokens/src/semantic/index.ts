@@ -75,6 +75,8 @@ export const semanticLight = {
   'brand-vivid-border': 'oklch(1 0 0/.75)',
   'brand-vivid-ring': 'oklch(1 0 0/.3)',
   'brand-vivid-placeholder': 'oklch(1 0 0/.9)',
+  // Red disappears on this blue, so errors use a pale amber like the current app.
+  'brand-vivid-error': 'oklch(0.88 0.11 85)',
   // What sits on the light plate of a button on this surface.
   'brand-vivid-inverse': palette.ink[900],
   // The glow the current app drops under its button (`front/src/components/form.css:105`).
@@ -156,6 +158,8 @@ export const semanticDark = {
   'brand-vivid-border': 'oklch(1 0 0/.75)',
   'brand-vivid-ring': 'oklch(1 0 0/.3)',
   'brand-vivid-placeholder': 'oklch(1 0 0/.9)',
+  // Red disappears on this blue, so errors use a pale amber like the current app.
+  'brand-vivid-error': 'oklch(0.88 0.11 85)',
   // What sits on the light plate of a button on this surface.
   'brand-vivid-inverse': palette.ink[900],
   // The glow the current app drops under its button (`front/src/components/form.css:105`).
