@@ -133,6 +133,7 @@ export const buttonVariants = cva(
           'before:-z-10 before:absolute before:inset-y-0 before:right-6 before:left-6',
           'before:skew-x-(--slant) before:bg-(--button-slanted-bg) before:content-[""]',
           'before:shadow-[var(--button-slanted-glow)]',
+          'transition-[translate] duration-(--duration-fast) ease-standard enabled:hover:-translate-y-1',
         ],
       },
     ],
