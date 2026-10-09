@@ -58,14 +58,15 @@ export const inputSlantVariants = cva([
 // gives the row its height.
 export const inputFrameVariants = cva('relative isolate flex w-full');
 
-// The mark leans the same 25 degrees as the frame, so it can only run alongside
-// an edge, never across it. It overshoots upwards, which is what ties it to what
-// sits above instead of leaving it floating on a corner.
-export const inputMarkVariants = cva('-top-9 absolute text-(--diagonal-mark-line-brand)', {
+// Placed from the current app's own numbers (`front/src/components/form.css:128`):
+// a 66x129 shape hung 57px above the field. That puts the line on the extension
+// of the slanted edge, 2px outside it, running well past the field at both ends.
+// The two sides differ because the line sits right of centre inside its box.
+export const inputMarkVariants = cva('-top-14 absolute text-(--diagonal-mark-line-brand)', {
   variants: {
     side: {
-      left: '-left-3',
-      right: '-right-3',
+      left: '-left-0.5',
+      right: '-right-[18px]',
     },
   },
   defaultVariants: {

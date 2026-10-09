@@ -13,6 +13,9 @@ export const semanticLight = {
   'text-muted': palette.ink[400],
   'text-on-accent': palette.ink[0],
   'text-inverse': palette.ink[50],
+  // Brand colour for words. One step darker than `accent`, which is tuned for
+  // fills and borders: as text it only reaches 3.3:1 on the light surface.
+  'text-brand': palette.cyan[550],
 
   'border-default': palette.ink[200],
   'border-strong': palette.ink[300],
@@ -93,6 +96,7 @@ export const semanticDark = {
   'text-muted': palette.ink[500],
   'text-on-accent': palette.ink[975],
   'text-inverse': palette.ink[900],
+  'text-brand': palette.cyan[400],
 
   'border-default': palette.ink[800],
   'border-strong': palette.ink[600],

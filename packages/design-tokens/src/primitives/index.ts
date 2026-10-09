@@ -8,6 +8,9 @@ export const palette = {
     300: 'oklch(0.80 0.10 213)',
     400: 'oklch(0.72 0.13 215)',
     500: 'oklch(0.60 0.125 224)',
+    // Between 500 and 600: the lightest brand cyan that still reads as text on
+    // the light surface (4.6:1). 500 only reaches 3.3:1.
+    550: 'oklch(0.525 0.095 222)',
     600: 'oklch(0.50 0.105 228)',
     700: 'oklch(0.40 0.085 232)',
   },

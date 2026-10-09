@@ -21,7 +21,7 @@ function RouteComponent() {
 
   return (
     <AppShell
-      header={<AppTitle title="Perfil" subtitle="Tus datos y tu sesión" />}
+      header={<AppTitle title="Perfil" subtitle="Tus datos y tu sesión" brand />}
       bottomNav={isResident ? <ResidentNav buildingId={building.id} /> : undefined}
     >
       <AccountPage />

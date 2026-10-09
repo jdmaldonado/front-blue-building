@@ -15,7 +15,7 @@ function RouteComponent() {
 
   return (
     <AppShell
-      header={<AppTitle title="Solicitudes" subtitle="Quién pide entrar a tu espacio" />}
+      header={<AppTitle title="Solicitudes" subtitle="Quién pide entrar a tu espacio" brand />}
       bottomNav={building === null ? undefined : <ResidentNav buildingId={building.id} />}
     >
       <AccessRequestsPage />

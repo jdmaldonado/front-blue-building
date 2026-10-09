@@ -32,12 +32,19 @@ body {
   --photo-input-foreground: var(--brand-vivid-muted);
 }
 
-/* The browser paints its own background on an autofilled field, which would
-   show as a straight rectangle inside the leaning frame. An endless transition
-   is the only way to keep it from ever landing. */
-.on-brand-vivid input:-webkit-autofill {
+/* The browser paints its own background on an autofilled field, and it lands on
+   the straight input, not on the leaning frame, so it shows as a pale rectangle
+   sticking out of it. Clipping that background to the glyphs is what actually
+   removes it; the endless transition covers the moment before it applies. */
+.on-brand-vivid input:-webkit-autofill,
+.on-brand-vivid input:-webkit-autofill:hover,
+.on-brand-vivid input:-webkit-autofill:focus,
+.on-brand-vivid input:-webkit-autofill:active,
+.on-brand-vivid input:autofill {
   -webkit-text-fill-color: var(--input-slanted-foreground);
-  transition: background-color 9999s;
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: background-color 9999s ease-in-out 0s;
 }
 
 /* One rule for the whole app: if the person asked their system for less motion,

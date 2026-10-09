@@ -41,7 +41,7 @@ export const textVariants = cva('', {
       secondary: 'text-(--text-secondary)',
       muted: 'text-(--text-muted)',
       inverse: 'text-(--text-inverse)',
-      accent: 'text-(--accent)',
+      accent: 'text-(--text-brand)',
       destructive: 'text-(--destructive)',
       success: 'text-(--success)',
     },

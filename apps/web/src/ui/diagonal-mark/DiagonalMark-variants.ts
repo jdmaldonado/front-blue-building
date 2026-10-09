@@ -11,7 +11,7 @@ export const diagonalMarkVariants = cva('pointer-events-none text-(--diagonal-ma
       sm: 'w-6 h-12',
       md: 'w-8 h-16',
       lg: 'w-10 h-20',
-      xl: 'w-14 h-28',
+      xl: 'w-16 h-32',
     },
   },
   defaultVariants: {

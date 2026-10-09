@@ -36,7 +36,7 @@ export function Input({ appearance, inputSize, mark, className, ...props }: Inpu
     <span className={inputFrameVariants()}>
       {field}
       <span aria-hidden className={inputSlantVariants()} />
-      {mark === undefined ? null : <DiagonalMark size="xl" className={inputMarkVariants({ side: mark })} />}
+      {mark === undefined ? null : <DiagonalMark size="lg" className={inputMarkVariants({ side: mark })} />}
     </span>
   );
 }
