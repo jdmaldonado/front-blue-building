@@ -81,7 +81,6 @@ export function LoginPage({ mode }: LoginPageProps) {
               id="cedula"
               appearance={branded ? 'slanted' : 'plain'}
               mark={branded ? 'left' : undefined}
-              type="number"
               inputMode="numeric"
               autoComplete="username"
               placeholder="Número de documento"
