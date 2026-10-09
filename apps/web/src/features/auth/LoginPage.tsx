@@ -82,7 +82,6 @@ export function LoginPage({ mode }: LoginPageProps) {
               appearance={branded ? 'slanted' : 'plain'}
               mark={branded ? 'left' : undefined}
               type="number"
-              className="font-mono"
               inputMode="numeric"
               autoComplete="username"
               placeholder="Número de documento"

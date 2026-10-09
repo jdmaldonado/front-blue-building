@@ -171,7 +171,6 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
           <Input
             appearance="slanted"
             id="cedula"
-            className="font-mono"
             inputMode="numeric"
             autoComplete="username"
             value={cedula}
@@ -210,7 +209,6 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
           <Input
             appearance="slanted"
             id="phone"
-            className="font-mono"
             type="tel"
             inputMode="numeric"
             autoComplete="tel-national"

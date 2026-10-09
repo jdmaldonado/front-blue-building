@@ -61,7 +61,6 @@ export function ForgotPasswordPage() {
             appearance="slanted"
             mark="left"
             id="cedula"
-            className="font-mono"
             inputMode="numeric"
             autoComplete="username"
             placeholder="Número de documento"

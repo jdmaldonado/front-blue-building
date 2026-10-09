@@ -44,12 +44,6 @@ export const palette = {
   },
 } as const;
 
-export const font = {
-  display: "'Space Grotesk', sans-serif",
-  body: "'IBM Plex Sans', sans-serif",
-  mono: "'IBM Plex Mono', monospace",
-} as const;
-
 // Unitless base scale (a 4px/4dp grid). Platform adapters apply the unit:
 // web emits rem (value / 16), React Native uses the raw number as dp.
 export const space = {
@@ -138,8 +132,8 @@ export type TypeScaleToken = keyof typeof typeScale;
 // leaves the origin. The web adapter registers them in Tailwind's theme; React
 // Native will load the same families through its own font loader.
 export const fontFamily = {
-  display: "'Space Grotesk Variable', sans-serif",
-  body: "'IBM Plex Sans Variable', sans-serif",
+  display: "'Saira Variable', sans-serif",
+  body: "'Saira Variable', sans-serif",
   mono: "'IBM Plex Mono', monospace",
 } as const;
 
