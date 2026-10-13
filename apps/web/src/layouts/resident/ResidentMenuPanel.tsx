@@ -90,7 +90,7 @@ export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
                 {caption}
               </Text>
             </span>
-            <Avatar name={session.user.name} size="md" />
+            <Avatar src={session.user.photo} name={session.user.name} size="md" />
           </div>
         )}
 

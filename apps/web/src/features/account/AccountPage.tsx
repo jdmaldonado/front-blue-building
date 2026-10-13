@@ -41,7 +41,7 @@ export function AccountPage() {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
       <Card className="flex items-center gap-4">
-        <Avatar name={session.user.name} size="lg" />
+        <Avatar src={session.user.photo} name={session.user.name} size="lg" />
         <div className="flex min-w-0 flex-col">
           <Text as="h2" size="title-sm" weight="bold" truncate>
             {session.user.name}
