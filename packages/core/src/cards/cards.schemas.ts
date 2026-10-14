@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { IdSchema } from '../shared';
+import { IdSchema, SearchTextSchema } from '../shared';
 import { CardTypeSchema } from './cards.constants';
 
 // Same split as the resident list: the tag identifies the card and is what every
@@ -45,9 +45,9 @@ export type UpdateCardInput = z.infer<typeof UpdateCardInputSchema>;
 // Everything the card screen can be opened with. All optional: the screen asks
 // for whatever it was not given.
 export const CardsSearchSchema = z.object({
-  document: z.string().optional(),
-  buildingId: z.string().optional(),
-  doorId: z.string().optional(),
+  document: SearchTextSchema.optional(),
+  buildingId: SearchTextSchema.optional(),
+  doorId: SearchTextSchema.optional(),
 });
 export type CardsSearch = z.infer<typeof CardsSearchSchema>;
 

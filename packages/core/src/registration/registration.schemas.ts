@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { PASSWORD_MIN_LENGTH } from '../auth';
+import { SearchTextSchema } from '../shared';
 import { DocumentTypeSchema } from '../users';
 import { PHONE_DIGITS } from './registration.constants';
 
@@ -40,6 +41,6 @@ export type RegistrationForm = z.infer<typeof RegistrationFormSchema>;
 // `apartmentId` skips the picker, so a resident can share a link with their
 // apartment already chosen.
 export const RegistrationSearchSchema = z.object({
-  apartmentId: z.string().optional(),
+  apartmentId: SearchTextSchema.optional(),
 });
 export type RegistrationSearch = z.infer<typeof RegistrationSearchSchema>;

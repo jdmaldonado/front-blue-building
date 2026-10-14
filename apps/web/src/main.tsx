@@ -35,7 +35,8 @@ function bootstrap(): void {
   const services = createServices();
   setQueryLogger(services.logger);
 
-  const stopWatching = router.subscribe('onRendered', () => {
+  // `onResolved` and not `onRendered`: it also fires when the first page fails.
+  const stopWatching = router.subscribe('onResolved', () => {
     stopWatching();
     hideSplash();
   });

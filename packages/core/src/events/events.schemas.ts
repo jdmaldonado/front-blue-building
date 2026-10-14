@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { IdSchema } from '../shared';
+import { IdSchema, SearchTextSchema } from '../shared';
 import { EventOriginSchema, IncidentStatusSchema, MonitorLensSchema } from './events.constants';
 
 // These endpoints answer flat objects. Other parts of the API wrap each row in
@@ -148,7 +148,7 @@ export type ResolveIncidentInput = z.infer<typeof ResolveIncidentInputSchema>;
 // the critical lens over every building.
 export const MonitorSearchSchema = z.object({
   lens: MonitorLensSchema.optional(),
-  buildingId: z.string().optional(),
+  buildingId: SearchTextSchema.optional(),
   page: z.number().optional(),
 });
 export type MonitorSearch = z.infer<typeof MonitorSearchSchema>;
