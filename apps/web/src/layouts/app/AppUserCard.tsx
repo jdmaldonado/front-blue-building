@@ -36,7 +36,7 @@ export function AppUserCard({ collapsed }: AppUserCardProps) {
           activeProps={{ className: sidebarItemVariants({ collapsed: true, selected: true }) }}
           inactiveProps={{ className: sidebarItemVariants({ collapsed: true, selected: false }) }}
         >
-          <Avatar name={session.user.name} size="sm" />
+          <Avatar src={session.user.photo} name={session.user.name} size="sm" />
           <span className="sr-only">Perfil</span>
         </Link>
         {signOutButton}
@@ -52,7 +52,7 @@ export function AppUserCard({ collapsed }: AppUserCardProps) {
         activeProps={{ className: sidebarItemVariants({ selected: true }) }}
         inactiveProps={{ className: sidebarItemVariants({ selected: false }) }}
       >
-        <Avatar name={session.user.name} size="sm" />
+        <Avatar src={session.user.photo} name={session.user.name} size="sm" />
         <span className="flex min-w-0 flex-col">
           <Text as="span" size="body-sm" weight="medium" truncate>
             {session.user.name}

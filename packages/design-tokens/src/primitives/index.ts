@@ -8,6 +8,9 @@ export const palette = {
     300: 'oklch(0.80 0.10 213)',
     400: 'oklch(0.72 0.13 215)',
     500: 'oklch(0.60 0.125 224)',
+    // Between 500 and 600: the lightest brand cyan that still reads as text on
+    // the light surface (4.6:1). 500 only reaches 3.3:1.
+    550: 'oklch(0.525 0.095 222)',
     600: 'oklch(0.50 0.105 228)',
     700: 'oklch(0.40 0.085 232)',
   },
@@ -18,6 +21,8 @@ export const palette = {
     100: 'oklch(0.93 0.008 235)',
     200: 'oklch(0.865 0.012 235)',
     300: 'oklch(0.72 0.015 235)',
+    // Muted text on dark surfaces: 5:1 on a card, where 400 only reaches 3.9:1.
+    350: 'oklch(0.62 0.018 236)',
     400: 'oklch(0.55 0.02 236)',
     500: 'oklch(0.45 0.025 238)',
     600: 'oklch(0.35 0.03 240)',
@@ -39,12 +44,6 @@ export const palette = {
     400: 'oklch(0.72 0.14 155)',
     500: 'oklch(0.58 0.13 155)',
   },
-} as const;
-
-export const font = {
-  display: "'Space Grotesk', sans-serif",
-  body: "'IBM Plex Sans', sans-serif",
-  mono: "'IBM Plex Mono', monospace",
 } as const;
 
 // Unitless base scale (a 4px/4dp grid). Platform adapters apply the unit:
@@ -73,6 +72,15 @@ export const radius = {
 
 export type RadiusToken = keyof typeof radius;
 
+// The lean of the brand, taken from the current app (`front/src/components/form.css:71`).
+// Everything that leans uses this one angle: fields, buttons and the diagonal
+// mark. `gap` is how far a leaning frame pokes out sideways per 1px of height,
+// which is `tan(25deg)`; a 52px field needs 12px of room on each side.
+export const slant = {
+  angle: -25,
+  gap: 0.466,
+} as const;
+
 // Motion, by role. Durations are milliseconds on every platform.
 // `instant` is for state that must feel immediate (hover, focus). `slow` and
 // `slower` are for things that repeat by themselves (scan lines, breathing
@@ -83,6 +91,9 @@ export const duration = {
   base: 220,
   slow: 380,
   slower: 700,
+  // For a panel that takes the whole screen: the travel is long enough that the
+  // usual steps read as a jump.
+  slowest: 1200,
 } as const;
 
 export type DurationToken = keyof typeof duration;
@@ -123,8 +134,8 @@ export type TypeScaleToken = keyof typeof typeScale;
 // leaves the origin. The web adapter registers them in Tailwind's theme; React
 // Native will load the same families through its own font loader.
 export const fontFamily = {
-  display: "'Space Grotesk Variable', sans-serif",
-  body: "'IBM Plex Sans Variable', sans-serif",
+  display: "'Saira Variable', sans-serif",
+  body: "'Saira Variable', sans-serif",
   mono: "'IBM Plex Mono', monospace",
 } as const;
 
@@ -154,8 +165,8 @@ const HONEYCOMB_BRAND_STROKE = '%230e85b0';
 
 export const pattern = {
   honeycomb: `url("data:image/svg+xml,${honeycombSvg('%23ffffff', '0.08')}")`,
-  // For light surfaces, where the white one is invisible. Kept because the
-  // system needs it the day something light wants texture.
+  // For genuinely light surfaces. The stroke is brand blue, so it needs the
+  // surface to be near white: on the saturated one it separates 0.2 L*, nothing.
   'honeycomb-brand': `url("data:image/svg+xml,${honeycombSvg(HONEYCOMB_BRAND_STROKE, '0.07')}")`,
 } as const;
 

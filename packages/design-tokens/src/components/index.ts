@@ -101,15 +101,6 @@ export const componentTokens = {
   'menu-danger-foreground': 'destructive',
   'menu-danger-hover': 'destructive-subtle',
 
-  // The resident menu on a phone: a brand panel, the same family as the login.
-  'menu-panel-bg': 'brand-surface',
-  'menu-panel-gradient': 'brand-gradient',
-  'menu-panel-foreground': 'brand-foreground',
-  'menu-panel-muted': 'brand-muted',
-  'menu-panel-accent': 'brand-accent',
-  'menu-panel-border': 'brand-border',
-  'menu-panel-hover': 'brand-hover',
-
   'table-header-bg': 'surface-sunken',
   'table-row-hover': 'surface-sunken',
   'table-row-selected': 'accent-subtle',
@@ -145,6 +136,19 @@ export const componentTokens = {
   // Four L marks on the corners of a frame. Reads as an instrument, not a card.
   'corner-bracket-line': 'accent',
   'corner-bracket-line-muted': 'border-strong',
+
+  // Slanted field: the leaning frame carries the border, so these paint it.
+  'input-slanted-border': 'brand-vivid-border',
+  'input-slanted-border-focus': 'brand-vivid-foreground',
+  'input-slanted-ring': 'brand-vivid-ring',
+  'input-slanted-foreground': 'brand-vivid-foreground',
+  'input-slanted-placeholder': 'brand-vivid-placeholder',
+
+  // Slanted button: a light plate on the vivid surface. Both sides are fixed,
+  // because the surface under it does not flip with the theme.
+  'button-slanted-bg': 'brand-vivid-foreground',
+  'button-slanted-glow': 'brand-glow',
+  'button-slanted-foreground': 'brand-vivid-inverse',
 } as const satisfies Record<string, ComponentRef>;
 
 export type ComponentToken = keyof typeof componentTokens;

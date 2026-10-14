@@ -1,5 +1,5 @@
 import { componentTokens } from './components';
-import { animation, duration, easing, fontFamily, keyframes, pattern, radius, typeScale } from './primitives';
+import { animation, duration, easing, fontFamily, keyframes, pattern, radius, slant, typeScale } from './primitives';
 import { semanticDark, semanticLight } from './semantic';
 
 const REM_BASE = 16;
@@ -21,6 +21,12 @@ function durationVars(indent: string): string {
   return Object.entries(duration)
     .map(([name, value]) => `${indent}--duration-${name}: ${value}ms;`)
     .join('\n');
+}
+
+// The brand lean. Emitted as a plain var so a component writes `skew-x-(--slant)`
+// instead of repeating the angle, and `--slant-gap` sizes the room it needs.
+function slantVars(indent: string): string {
+  return [`${indent}--slant: ${slant.angle}deg;`, `${indent}--slant-gap: ${slant.gap};`].join('\n');
 }
 
 function keyframeBlocks(): string {
@@ -92,6 +98,7 @@ export function generateThemeCss(): string {
     ':root {',
     radiusVars('  '),
     durationVars('  '),
+    slantVars('  '),
     semanticVars(semanticLight, '  '),
     componentVars(componentTokens, '  '),
     '}',

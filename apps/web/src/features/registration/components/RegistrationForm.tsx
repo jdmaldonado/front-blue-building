@@ -16,6 +16,7 @@ import {
   Checkbox,
   Field,
   Input,
+  PasswordInput,
   PhotoInput,
   Select,
   Text,
@@ -140,6 +141,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
       <div className="flex flex-col gap-3.5">
         <Field label="Nombre completo" htmlFor="name" error={fieldErrors.name} required>
           <Input
+            appearance="slanted"
             id="name"
             autoComplete="name"
             placeholder="Como aparece en tu documento"
@@ -152,6 +154,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
 
         <Field label="Tipo de documento" htmlFor="documentType" required>
           <Select
+            appearance="slanted"
             id="documentType"
             options={documentOptions}
             value={documentType}
@@ -167,8 +170,8 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
           required
         >
           <Input
+            appearance="slanted"
             id="cedula"
-            className="font-mono"
             inputMode="numeric"
             autoComplete="username"
             value={cedula}
@@ -185,6 +188,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
           required
         >
           <Input
+            appearance="slanted"
             id="email"
             type="email"
             autoComplete="email"
@@ -204,8 +208,8 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
           required
         >
           <Input
+            appearance="slanted"
             id="phone"
-            className="font-mono"
             type="tel"
             inputMode="numeric"
             autoComplete="tel-national"
@@ -218,9 +222,9 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
         </Field>
 
         <Field label="Contraseña" htmlFor="password" error={fieldErrors.password} required>
-          <Input
+          <PasswordInput
+            appearance="slanted"
             id="password"
-            type="password"
             autoComplete="new-password"
             value={password}
             disabled={disabled}
@@ -230,9 +234,9 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
         </Field>
 
         <Field label="Repite la contraseña" htmlFor="passwordConfirm" error={fieldErrors.passwordConfirm} required>
-          <Input
+          <PasswordInput
+            appearance="slanted"
             id="passwordConfirm"
-            type="password"
             autoComplete="new-password"
             value={passwordConfirm}
             disabled={disabled}
@@ -277,7 +281,7 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
         ) : null}
       </div>
 
-      <Button type="submit" size="lg" loading={register.isPending} disabled={disabled}>
+      <Button type="submit" size="lg" shape="slanted" loading={register.isPending} disabled={disabled}>
         {register.isPending ? 'Enviando...' : 'Enviar solicitud'}
       </Button>
 

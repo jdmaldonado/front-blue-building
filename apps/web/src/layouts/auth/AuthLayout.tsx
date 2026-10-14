@@ -5,7 +5,7 @@ import { AuthFrame } from './AuthFrame';
 // route tree and uses `AuthFrame` directly.
 export function AuthLayout() {
   return (
-    <AuthFrame>
+    <AuthFrame branded>
       <Outlet />
     </AuthFrame>
   );

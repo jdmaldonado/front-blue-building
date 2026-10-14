@@ -8,6 +8,7 @@ import { ConfigErrorScreen } from './app/ConfigErrorScreen';
 import { queryClient, setQueryLogger } from './app/queryClient';
 import { router } from './app/router';
 import { createServices } from './app/services';
+import { hideSplash } from './app/splash';
 import { initAppConfig } from './config';
 import './styles/app.css';
 
@@ -27,11 +28,18 @@ function bootstrap(): void {
     initAppConfig();
   } catch (error) {
     root.render(<ConfigErrorScreen error={error} />);
+    hideSplash();
     return;
   }
 
   const services = createServices();
   setQueryLogger(services.logger);
+
+  // `onResolved` and not `onRendered`: it also fires when the first page fails.
+  const stopWatching = router.subscribe('onResolved', () => {
+    stopWatching();
+    hideSplash();
+  });
 
   root.render(
     <StrictMode>

@@ -1,5 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Toast, toastRegionVariants, type ToastTone } from '../ui';
+import { useTopModalDialog } from './useTopModalDialog';
 
 export interface ToastOptions {
   tone: ToastTone;
@@ -11,6 +13,7 @@ export type ShowToast = (options: ToastOptions) => void;
 
 const SUCCESS_DURATION_MS = 4000;
 const ERROR_DURATION_MS = 6000;
+const MAX_VISIBLE_TOASTS = 3;
 
 const ToastContext = createContext<ShowToast | null>(null);
 
@@ -25,9 +28,10 @@ export function useToast(): ShowToast {
 type ActiveToast = ToastOptions & { id: number };
 
 // One stack for the whole app. It lives in a popover so it stays on top of the
-// native dialogs, which the browser paints above everything else.
+// native dialogs, and inside the open one, or a tap on it would hit what is below.
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ActiveToast[]>([]);
+  const host = useTopModalDialog();
   const regionRef = useRef<HTMLDivElement>(null);
   const nextId = useRef(0);
 
@@ -39,7 +43,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     (options) => {
       nextId.current += 1;
       const id = nextId.current;
-      setToasts((current) => [...current, { ...options, id }]);
+      setToasts((current) => [...current, { ...options, id }].slice(-MAX_VISIBLE_TOASTS));
 
       const duration = options.tone === 'error' ? ERROR_DURATION_MS : SUCCESS_DURATION_MS;
       window.setTimeout(() => dismiss(id), duration);
@@ -59,23 +63,26 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     } else {
       region.hidePopover();
     }
-  }, [toasts.length]);
+  }, [toasts.length, host]);
 
   return (
     <ToastContext.Provider value={show}>
       {children}
 
-      <div ref={regionRef} popover="manual" role="status" aria-live="polite" className={toastRegionVariants()}>
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            tone={toast.tone}
-            title={toast.title}
-            message={toast.message}
-            onClose={() => dismiss(toast.id)}
-          />
-        ))}
-      </div>
+      {createPortal(
+        <div ref={regionRef} popover="manual" role="status" aria-live="polite" className={toastRegionVariants()}>
+          {toasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              tone={toast.tone}
+              title={toast.title}
+              message={toast.message}
+              onClose={() => dismiss(toast.id)}
+            />
+          ))}
+        </div>,
+        host ?? document.body,
+      )}
     </ToastContext.Provider>
   );
 }

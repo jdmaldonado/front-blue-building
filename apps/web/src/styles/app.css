@@ -1,8 +1,7 @@
 @import 'tailwindcss';
 
 /* Self-hosted families (no external request, works offline in the PWA). */
-@import '@fontsource-variable/space-grotesk';
-@import '@fontsource-variable/ibm-plex-sans';
+@import '@fontsource-variable/saira';
 @import '@fontsource/ibm-plex-mono/400.css';
 @import '@fontsource/ibm-plex-mono/500.css';
 
@@ -10,6 +9,47 @@
 
 body {
   font-family: var(--font-body);
+}
+
+/* Shared primitives take their colours from the app surface. On the vivid brand
+   surface that surface is gone and the polarity flips, so the roles are
+   re-pointed here once instead of every component growing a second palette. */
+.on-brand-vivid {
+  --text-primary: var(--brand-vivid-foreground);
+  --text-secondary: var(--brand-vivid-foreground);
+  --text-muted: var(--brand-vivid-muted);
+  --text-on-accent: var(--brand-vivid-inverse);
+  --border-default: var(--brand-vivid-border);
+  --border-focus: var(--brand-vivid-foreground);
+  --accent: var(--brand-vivid-foreground);
+  --accent-hover: var(--brand-vivid-muted);
+  --destructive: var(--brand-vivid-error);
+  /* A component token that aliases another one is resolved at :root, so the
+     roles above never reach it. The few that show up here are re-pointed by
+     name. */
+  --photo-input-bg: oklch(1 0 0/0.35);
+  --photo-input-border: var(--brand-vivid-border);
+  --photo-input-foreground: var(--brand-vivid-muted);
+}
+
+/* The browser paints its own background on an autofilled field, and it lands on
+   the straight input, not on the leaning frame, so it shows as a pale rectangle
+   sticking out of it. Clipping that background to the glyphs is what actually
+   removes it; the endless transition covers the moment before it applies. */
+.on-brand-vivid input:-webkit-autofill,
+.on-brand-vivid input:-webkit-autofill:hover,
+.on-brand-vivid input:-webkit-autofill:focus,
+.on-brand-vivid input:-webkit-autofill:active,
+.on-brand-vivid input:autofill {
+  -webkit-text-fill-color: var(--input-slanted-foreground);
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Edge draws its own eye on password fields; PasswordInput already has one. */
+input::-ms-reveal {
+  display: none;
 }
 
 /* One rule for the whole app: if the person asked their system for less motion,

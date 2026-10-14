@@ -49,7 +49,7 @@ export function BuildingActions({ building, align }: BuildingActionsProps) {
         align={align}
         groups={groups}
         trigger={
-          <IconButton label={`Acciones de ${building.name}`}>
+          <IconButton label={`Acciones de ${building.name}`} hintSide="left">
             <MoreVertical size={18} />
           </IconButton>
         }

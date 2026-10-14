@@ -8,6 +8,7 @@ import {
   type ReactNode,
   type SyntheticEvent,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '../cn';
 import { IconButton } from '../icon-button';
 import {
@@ -78,7 +79,9 @@ export function Dialog({
     }
   };
 
-  return (
+  // On the body and not where it is used: the brand surface turns text white,
+  // and a dialog inside it would inherit that on its light card.
+  return createPortal(
     <dialog
       ref={ref}
       onClose={handleClose}
@@ -107,6 +110,7 @@ export function Dialog({
 
         {footer === undefined ? null : <div className={dialogFooterVariants()}>{footer}</div>}
       </div>
-    </dialog>
+    </dialog>,
+    document.body,
   );
 }

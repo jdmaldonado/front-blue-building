@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { TowerSchema } from '../buildings';
 import { ReaderStateSchema } from '../readers/readers.schemas';
-import { IdSchema } from '../shared';
+import { IdSchema, SearchTextSchema } from '../shared';
 import { DoorType, LiveOrigin } from './access.constants';
 
 export const DoorTypeSchema = z.enum(DoorType);
@@ -71,7 +71,7 @@ export type DoorStatuses = z.infer<typeof DoorStatusesSchema>;
 // What the live screen can be opened with. `doorName` and not a door id because
 // that is what a critical event carries (see `findDoorByName`).
 export const LiveSearchSchema = z.object({
-  doorName: z.string().optional(),
+  doorName: SearchTextSchema.optional(),
   from: z.enum(LiveOrigin).optional(),
 });
 export type LiveSearch = z.infer<typeof LiveSearchSchema>;

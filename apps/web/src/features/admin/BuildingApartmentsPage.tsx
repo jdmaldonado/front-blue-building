@@ -102,6 +102,7 @@ export function BuildingApartmentsPage() {
               </Link>
             </Tooltip>
             <IconButton
+              hintSide="left"
               label={`Dar de baja ${row.original.name ?? 'apartamento'}`}
               tone="destructive"
               disabled={actions.pending}

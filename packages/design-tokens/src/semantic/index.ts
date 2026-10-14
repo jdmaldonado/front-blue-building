@@ -13,6 +13,9 @@ export const semanticLight = {
   'text-muted': palette.ink[400],
   'text-on-accent': palette.ink[0],
   'text-inverse': palette.ink[50],
+  // Brand colour for words. One step darker than `accent`, which is tuned for
+  // fills and borders: as text it only reaches 3.3:1 on the light surface.
+  'text-brand': palette.cyan[550],
 
   'border-default': palette.ink[200],
   'border-strong': palette.ink[300],
@@ -60,6 +63,22 @@ export const semanticLight = {
   'brand-border': 'oklch(0.86 0.03 235/.18)',
   'brand-hover': 'oklch(0.86 0.03 235/.10)',
 
+  // Cyan to blue like the current app (`front/src/components/form.css:14`), a bit
+  // darker so white text stays readable: about 3.5:1 where the small text sits.
+  'brand-vivid-surface':
+    'linear-gradient(180deg, oklch(0.64 0.11 212) 0%, oklch(0.61 0.108 228) 55%, oklch(0.585 0.12 243) 100%)',
+  'brand-vivid-foreground': palette.ink[0],
+  'brand-vivid-muted': 'oklch(0.86 0.03 235/.8)',
+  'brand-vivid-border': 'oklch(1 0 0/.75)',
+  'brand-vivid-ring': 'oklch(1 0 0/.3)',
+  'brand-vivid-placeholder': 'oklch(1 0 0/.9)',
+  // Red disappears on this blue, so errors use a pale amber like the current app.
+  'brand-vivid-error': 'oklch(0.88 0.11 85)',
+  // What sits on the light plate of a button on this surface.
+  'brand-vivid-inverse': palette.ink[900],
+  // The glow the current app drops under its button (`front/src/components/form.css:105`).
+  'brand-glow': '0 10px 30px oklch(0.48 0.09 238/.55)',
+
   'shadow-1': '0 1px 2px oklch(0.2 0.02 242/.06), 0 2px 8px oklch(0.2 0.02 242/.05)',
   'shadow-2': '0 4px 16px oklch(0.2 0.02 242/.12)',
   'shadow-3': '0 12px 40px oklch(0.2 0.02 242/.18), 0 4px 12px oklch(0.2 0.02 242/.08)',
@@ -73,9 +92,10 @@ export const semanticDark = {
 
   'text-primary': palette.ink[50],
   'text-secondary': palette.ink[300],
-  'text-muted': palette.ink[500],
+  'text-muted': palette.ink[350],
   'text-on-accent': palette.ink[975],
   'text-inverse': palette.ink[900],
+  'text-brand': palette.cyan[400],
 
   'border-default': palette.ink[800],
   'border-strong': palette.ink[600],
@@ -122,6 +142,22 @@ export const semanticDark = {
   // alpha, so they read on the dark panel without becoming a second colour.
   'brand-border': 'oklch(0.86 0.03 235/.18)',
   'brand-hover': 'oklch(0.86 0.03 235/.10)',
+
+  // Cyan to blue like the current app (`front/src/components/form.css:14`), a bit
+  // darker so white text stays readable: about 3.5:1 where the small text sits.
+  'brand-vivid-surface':
+    'linear-gradient(180deg, oklch(0.64 0.11 212) 0%, oklch(0.61 0.108 228) 55%, oklch(0.585 0.12 243) 100%)',
+  'brand-vivid-foreground': palette.ink[0],
+  'brand-vivid-muted': 'oklch(0.86 0.03 235/.8)',
+  'brand-vivid-border': 'oklch(1 0 0/.75)',
+  'brand-vivid-ring': 'oklch(1 0 0/.3)',
+  'brand-vivid-placeholder': 'oklch(1 0 0/.9)',
+  // Red disappears on this blue, so errors use a pale amber like the current app.
+  'brand-vivid-error': 'oklch(0.88 0.11 85)',
+  // What sits on the light plate of a button on this surface.
+  'brand-vivid-inverse': palette.ink[900],
+  // The glow the current app drops under its button (`front/src/components/form.css:105`).
+  'brand-glow': '0 10px 30px oklch(0.48 0.09 238/.55)',
 
   'shadow-1': '0 1px 2px oklch(0 0 0/.4), 0 2px 8px oklch(0 0 0/.3)',
   'shadow-2': '0 4px 16px oklch(0 0 0/.5)',

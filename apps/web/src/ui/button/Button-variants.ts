@@ -3,10 +3,12 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const buttonIntents = ['primary', 'neutral', 'destructive', 'success', 'warning'] as const;
 export const buttonAppearances = ['solid', 'outline', 'ghost'] as const;
 export const buttonSizes = ['sm', 'md', 'lg'] as const;
+export const buttonShapes = ['straight', 'slanted'] as const;
 
 export type ButtonIntent = (typeof buttonIntents)[number];
 export type ButtonAppearance = (typeof buttonAppearances)[number];
 export type ButtonSize = (typeof buttonSizes)[number];
+export type ButtonShape = (typeof buttonShapes)[number];
 
 // intent picks the color, appearance picks how it is applied, so the pairs live
 // in compoundVariants. Classes stay literal so Tailwind can find them.
@@ -36,6 +38,10 @@ export const buttonVariants = cva(
         sm: 'h-9 gap-2 px-3 text-body-sm',
         md: 'h-11 gap-2 px-4 text-body',
         lg: 'h-13 gap-2.5 px-5 text-body-lg',
+      },
+      shape: {
+        straight: '',
+        slanted: '',
       },
     },
     compoundVariants: [
@@ -116,11 +122,26 @@ export const buttonVariants = cva(
         intent: 'success',
         class: 'text-(--button-success-text) hover:bg-(--button-success-soft)',
       },
+      // The lean is painted by a backdrop behind the label, never on the button
+      // itself: skewing the button would skew its text and its focus ring too.
+      // Last in the list so it wins over the fill the intent already set.
+      {
+        shape: 'slanted',
+        class: [
+          'relative isolate bg-none bg-transparent text-(--button-slanted-foreground) hover:bg-transparent',
+          'font-normal uppercase tracking-[0.14em]',
+          'before:-z-10 before:absolute before:inset-y-0 before:right-6 before:left-6',
+          'before:skew-x-(--slant) before:bg-(--button-slanted-bg) before:content-[""]',
+          'before:shadow-[var(--button-slanted-glow)]',
+          'transition-[translate] duration-(--duration-fast) ease-standard enabled:hover:-translate-y-1',
+        ],
+      },
     ],
     defaultVariants: {
       intent: 'primary',
       appearance: 'solid',
       size: 'md',
+      shape: 'straight',
     },
   },
 );

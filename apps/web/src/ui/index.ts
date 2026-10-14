@@ -15,8 +15,8 @@ export {
   breadcrumbVariants,
 } from './breadcrumb';
 
-export { Button, buttonAppearances, buttonIntents, buttonSizes, buttonVariants } from './button';
-export type { ButtonAppearance, ButtonIntent, ButtonSize, ButtonVariants } from './button';
+export { Button, buttonAppearances, buttonIntents, buttonShapes, buttonSizes, buttonVariants } from './button';
+export type { ButtonAppearance, ButtonIntent, ButtonShape, ButtonSize, ButtonVariants } from './button';
 
 export { Card, cardPaddings, cardVariants } from './card';
 export type { CardPadding, CardVariants } from './card';
@@ -98,8 +98,17 @@ export type { FieldLabelVariants, FieldMessageVariants } from './field';
 export { IconButton, iconButtonSizes, iconButtonTones, iconButtonVariants } from './icon-button';
 export type { IconButtonSize, IconButtonTone, IconButtonVariants } from './icon-button';
 
-export { Input, inputSizes, inputVariants } from './input';
-export type { InputSize, InputVariants } from './input';
+export {
+  Input,
+  inputAppearances,
+  inputFrameVariants,
+  inputMarkSides,
+  inputMarkVariants,
+  inputSizes,
+  inputSlantVariants,
+  inputVariants,
+} from './input';
+export type { InputAppearance, InputMarkSide, InputSize, InputVariants } from './input';
 
 export { Link, linkVariants } from './link';
 export type { LinkVariants } from './link';
@@ -112,6 +121,14 @@ export type { LogoPart, LogoSize, LogoVariants } from './logo';
 
 export { Pagination, paginationStatusVariants, paginationVariants } from './pagination';
 export type { PaginationVariants } from './pagination';
+
+export {
+  PasswordInput,
+  passwordInputFieldVariants,
+  passwordInputVariants,
+  passwordToggleVariants,
+} from './password-input';
+export type { PasswordInputVariants } from './password-input';
 
 export {
   PhotoInput,
@@ -133,8 +150,15 @@ export {
 } from './radio-group';
 export type { RadioGroupAppearance, RadioGroupSize, RadioGroupVariants, RadioOption } from './radio-group';
 
-export { Select, selectSizes, selectVariants, sortOptionsByLabel, toSelectOptions } from './select';
-export type { NamedItem, SelectOption, SelectOptionsConfig, SelectSize, SelectVariants } from './select';
+export { Select, selectAppearances, selectSizes, selectVariants, sortOptionsByLabel, toSelectOptions } from './select';
+export type {
+  NamedItem,
+  SelectAppearance,
+  SelectOption,
+  SelectOptionsConfig,
+  SelectSize,
+  SelectVariants,
+} from './select';
 
 export {
   Sidebar,

@@ -94,7 +94,7 @@ export const dataTableCardVariants = cva(
 );
 
 export const dataTableCardRowVariants = cva('flex min-w-0 items-start justify-between gap-3');
-export const dataTableCardLabelVariants = cva('shrink-0 text-caption tracking-wide text-(--text-muted) uppercase');
+export const dataTableCardLabelVariants = cva('shrink-0 text-label tracking-wide text-(--text-muted) uppercase');
 export const dataTableCardValueVariants = cva('min-w-0 text-right text-body-sm text-(--text-primary)');
 
 export type DataTableVariants = VariantProps<typeof dataTableCellVariants>;

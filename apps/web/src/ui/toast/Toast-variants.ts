@@ -54,7 +54,7 @@ export const toastTextVariants = cva('text-body-sm', {
 // The stack sits over everything, including native dialogs, so it is a popover.
 // `pointer-events-none` keeps the empty area clickable.
 export const toastRegionVariants = cva([
-  'pointer-events-none inset-auto right-4 bottom-4 m-0 flex flex-col gap-2 border-0 bg-transparent p-0',
+  'pointer-events-none inset-auto right-4 bottom-4 m-0 flex flex-col gap-2 overflow-visible border-0 bg-transparent p-0',
 ]);
 
 export type ToastVariants = VariantProps<typeof toastVariants>;

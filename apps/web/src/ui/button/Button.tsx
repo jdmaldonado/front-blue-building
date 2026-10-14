@@ -13,6 +13,7 @@ export function Button({
   intent,
   appearance,
   size,
+  shape,
   loading = false,
   disabled,
   type = 'button',
@@ -25,7 +26,7 @@ export function Button({
       type={type}
       disabled={disabled ?? loading}
       aria-busy={loading}
-      className={cn(buttonVariants({ intent, appearance, size }), className)}
+      className={cn(buttonVariants({ intent, appearance, size, shape }), className)}
       {...props}
     >
       {loading ? <Spinner /> : null}

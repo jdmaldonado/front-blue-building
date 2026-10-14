@@ -5,7 +5,7 @@ import { useSessionBuilding } from '../app/BuildingContext';
 import { requireSession } from '../app/guards';
 import { AccountPage } from '../features/account';
 import { AppShell, AppTitle } from '../layouts/app';
-import { ResidentMobileNav } from '../layouts/resident';
+import { ResidentNav } from '../layouts/resident';
 
 export const Route = createFileRoute('/account')({
   beforeLoad: requireSession,
@@ -21,8 +21,8 @@ function RouteComponent() {
 
   return (
     <AppShell
-      header={<AppTitle title="Perfil" subtitle="Tus datos y tu sesión" />}
-      mobileNav={isResident ? <ResidentMobileNav buildingId={building.id} /> : undefined}
+      header={<AppTitle title="Perfil" subtitle="Tus datos y tu sesión" brand />}
+      bottomNav={isResident ? <ResidentNav buildingId={building.id} /> : undefined}
     >
       <AccountPage />
     </AppShell>

@@ -95,10 +95,15 @@ export function CardsTable({ cards, isPending, skipped = 0, onEdit, onRemove }: 
         meta: { actions: true },
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <IconButton label={`Editar la tarjeta ${row.original.tag}`} onClick={() => onEdit(row.original)}>
+            <IconButton
+              hintSide="left"
+              label={`Editar la tarjeta ${row.original.tag}`}
+              onClick={() => onEdit(row.original)}
+            >
               <Pencil size={16} />
             </IconButton>
             <IconButton
+              hintSide="left"
               label={`Borrar la tarjeta ${row.original.tag}`}
               tone="destructive"
               onClick={() => onRemove(row.original)}

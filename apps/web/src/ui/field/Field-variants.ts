@@ -20,9 +20,14 @@ export const fieldMessageVariants = cva('text-label', {
       error: 'text-(--destructive)',
       hint: 'text-(--text-muted)',
     },
+    inset: {
+      true: 'pl-10',
+      false: '',
+    },
   },
   defaultVariants: {
     tone: 'hint',
+    inset: false,
   },
 });
 

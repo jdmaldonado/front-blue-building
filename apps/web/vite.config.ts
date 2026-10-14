@@ -22,9 +22,10 @@ export default defineConfig({
         description: 'Administración y monitoreo de edificios',
         lang: 'es',
         dir: 'ltr',
-        // Brand colors, taken from the logo files of the current app.
+        // Brand colors, taken from the logo files of the current app. The
+        // background matches the splash in index.html, so Android shows no jump.
         theme_color: '#00BCDC',
-        background_color: '#16232C',
+        background_color: '#258fb6',
         display: 'standalone',
         start_url: '/',
         icons: [

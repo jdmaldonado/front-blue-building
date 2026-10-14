@@ -56,10 +56,11 @@ export function ForgotPasswordPage() {
           </Alert>
         ) : null}
 
-        <Field label="Documento" htmlFor="cedula" error={fieldError}>
+        <Field label="Documento" htmlFor="cedula" error={fieldError} hideLabel inset>
           <Input
+            appearance="slanted"
+            mark="left"
             id="cedula"
-            className="font-mono"
             inputMode="numeric"
             autoComplete="username"
             placeholder="Número de documento"
@@ -71,7 +72,13 @@ export function ForgotPasswordPage() {
           />
         </Field>
 
-        <Button type="submit" size="lg" loading={forgotPassword.isPending} disabled={forgotPassword.isPending}>
+        <Button
+          type="submit"
+          size="lg"
+          shape="slanted"
+          loading={forgotPassword.isPending}
+          disabled={forgotPassword.isPending}
+        >
           {forgotPassword.isPending ? 'Enviando...' : 'Enviar enlace'}
         </Button>
 

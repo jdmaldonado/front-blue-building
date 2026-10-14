@@ -14,6 +14,8 @@ export const UserSchema = z.object({
   name: z.string(),
   email: z.string().nullish(),
   phone: z.string().nullish(),
+  // Only the resident login sends it (api/src/controllers/users/auth/user_login_dto.ts).
+  photo: z.string().nullish().catch(null),
 });
 export type User = z.infer<typeof UserSchema>;
 
@@ -75,5 +77,10 @@ export const AdminLoginResponseSchema = z.object({
 
 // Discriminated by mode, so `spaces` only exists where it makes sense.
 export type Session =
-  | { mode: typeof LoginMode.Usuario; token: string; user: User; spaces: Space[] }
+  | {
+      mode: typeof LoginMode.Usuario;
+      token: string;
+      user: User;
+      spaces: Space[];
+    }
   | { mode: typeof LoginMode.Admin; token: string; user: AdminUser };

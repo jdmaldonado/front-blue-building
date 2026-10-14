@@ -1,28 +1,15 @@
 import { LoginInputSchema, LoginMode } from '@bb/core';
 import { useLogin } from '@bb/logic';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { useState, type SubmitEvent } from 'react';
-import { AppRoute, landingPathFor } from '../../app/navigation';
-import { Alert, Button, Field, Input, Text, linkVariants } from '../../ui';
-import { AuthHeading } from './components';
+import { landingPathFor } from '../../app/navigation';
+import { Alert, Button, Field, Input, PasswordInput } from '../../ui';
+import { AuthHeading, LoginLinks } from './components';
 import { loginErrorMessage } from './lib';
 
 type FieldErrors = {
   cedula?: string;
   password?: string;
-};
-
-// Each door calls a different endpoint, so the mode comes from the route and
-// nobody has to pick it. A resident never reads the word "administrador".
-const headings: Record<LoginMode, { title: string; description: string }> = {
-  [LoginMode.Usuario]: {
-    title: 'Acceso al edificio',
-    description: 'Ingresa con tu documento y contraseña.',
-  },
-  [LoginMode.Admin]: {
-    title: 'Panel de administración',
-    description: 'Acceso del equipo de Blue Building.',
-  },
 };
 
 type LoginPageProps = {
@@ -64,10 +51,16 @@ export function LoginPage({ mode }: LoginPageProps) {
 
   const alert = login.isError ? loginErrorMessage(login.error) : null;
   const disabled = login.isPending || login.isSuccess;
+  // The resident door carries the brand language; the staff one stays plain.
+  const branded = mode === LoginMode.Usuario;
 
   return (
     <>
-      <AuthHeading title={headings[mode].title} description={headings[mode].description} />
+      {branded ? (
+        <h1 className="sr-only">Iniciar sesión</h1>
+      ) : (
+        <AuthHeading title="Panel de administración" description="Acceso del equipo de Blue Building." />
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {alert ? (
@@ -82,11 +75,12 @@ export function LoginPage({ mode }: LoginPageProps) {
           </Alert>
         ) : null}
 
-        <div className="flex flex-col gap-3.5">
-          <Field label="Documento" htmlFor="cedula" error={fieldErrors.cedula}>
+        <div className={branded ? 'flex flex-col gap-7' : 'flex flex-col gap-3.5'}>
+          <Field label="Documento" htmlFor="cedula" error={fieldErrors.cedula} hideLabel={branded} inset={branded}>
             <Input
               id="cedula"
-              className="font-mono"
+              appearance={branded ? 'slanted' : 'plain'}
+              mark={branded ? 'left' : undefined}
               inputMode="numeric"
               autoComplete="username"
               placeholder="Número de documento"
@@ -98,10 +92,11 @@ export function LoginPage({ mode }: LoginPageProps) {
             />
           </Field>
 
-          <Field label="Contraseña" htmlFor="password" error={fieldErrors.password}>
-            <Input
+          <Field label="Contraseña" htmlFor="password" error={fieldErrors.password} hideLabel={branded} inset={branded}>
+            <PasswordInput
               id="password"
-              type="password"
+              appearance={branded ? 'slanted' : 'plain'}
+              mark={branded ? 'right' : undefined}
               autoComplete="current-password"
               placeholder="Contraseña"
               value={password}
@@ -113,17 +108,10 @@ export function LoginPage({ mode }: LoginPageProps) {
           </Field>
         </div>
 
-        {/* Recovery exists only for resident accounts: the API filters by
-            userType = USER, so it is hidden in admin mode. */}
-        {mode === LoginMode.Usuario ? (
-          <Link to={AppRoute.ForgotPassword} className={linkVariants({ className: 'self-end' })}>
-            ¿Olvidaste tu contraseña?
-          </Link>
-        ) : null}
-
         <Button
           type="submit"
           size="lg"
+          shape={branded ? 'slanted' : 'straight'}
           intent={login.isSuccess ? 'success' : 'primary'}
           loading={login.isPending}
           disabled={disabled}
@@ -132,23 +120,7 @@ export function LoginPage({ mode }: LoginPageProps) {
         </Button>
       </form>
 
-      {/* Registration is for residents only: an admin account is created by
-          Blue Building, never from here. */}
-      {mode === LoginMode.Usuario ? (
-        <div className="flex flex-col gap-2 border-(--border-default) border-t pt-5">
-          <Text as="span" size="body-sm" tone="secondary">
-            ¿Es la primera vez? Regístrate como...
-          </Text>
-          <div className="flex flex-wrap gap-x-5 gap-y-1">
-            <Link to={AppRoute.RegisterOwner} className={linkVariants()}>
-              Propietario o líder
-            </Link>
-            <Link to={AppRoute.RegisterResident} className={linkVariants()}>
-              Residente o colaborador
-            </Link>
-          </div>
-        </div>
-      ) : null}
+      {branded ? <LoginLinks /> : null}
     </>
   );
 }

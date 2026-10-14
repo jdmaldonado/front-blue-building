@@ -3,13 +3,13 @@ import { EventsDialog, useUserEventActions } from '../../features/building-event
 import { ResidentBottomBar } from './ResidentBottomBar';
 import { ResidentMenuPanel } from './ResidentMenuPanel';
 
-type ResidentMobileNavProps = {
+type ResidentNavProps = {
   buildingId: string;
 };
 
-// Everything the resident reaches from the bottom of a phone screen. On a
-// desktop the sidebar of the shell covers the same ground.
-export function ResidentMobileNav({ buildingId }: ResidentMobileNavProps) {
+// Everything the resident reaches from the bottom bar. The same at every
+// width: the current app has no second navigation and neither does this one.
+export function ResidentNav({ buildingId }: ResidentNavProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [eventsOpen, setEventsOpen] = useState(false);
   const events = useUserEventActions(buildingId);

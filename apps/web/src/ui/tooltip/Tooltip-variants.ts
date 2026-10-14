@@ -7,8 +7,9 @@ export const tooltipVariants = cva(
   [
     'pointer-events-none absolute z-50 w-max max-w-56 rounded-(--tooltip-radius) px-2.5 py-1.5',
     'bg-(--tooltip-bg) text-(--tooltip-foreground) text-label shadow-(--shadow-2)',
-    'opacity-0 transition-opacity duration-(--duration-fast) ease-standard',
-    'group-hover:opacity-100 group-focus-visible:opacity-100',
+    // Out of the layout while hidden: an invisible bubble still takes room and
+    // gave tables a sideways scroll.
+    'hidden group-hover:block group-focus-visible:block',
   ],
   {
     variants: {

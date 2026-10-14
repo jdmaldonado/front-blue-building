@@ -3,7 +3,7 @@ import { useResetPassword } from '@bb/logic';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useState, type SubmitEvent } from 'react';
 import { AppRoute } from '../../app/navigation';
-import { Alert, Button, Field, Input, linkVariants } from '../../ui';
+import { Alert, Button, Field, PasswordInput, linkVariants } from '../../ui';
 import { AuthHeading } from './components';
 import { recoveryErrorMessage } from './lib';
 
@@ -90,10 +90,13 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
             htmlFor="password"
             error={fieldErrors.password}
             hint={`Mínimo ${PASSWORD_MIN_LENGTH} caracteres.`}
+            hideLabel
+            inset
           >
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
+              appearance="slanted"
+              mark="left"
               autoComplete="new-password"
               placeholder="Contraseña nueva"
               value={password}
@@ -104,10 +107,16 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
             />
           </Field>
 
-          <Field label="Repite la contraseña" htmlFor="passwordConfirm" error={fieldErrors.passwordConfirm}>
-            <Input
+          <Field
+            label="Repite la contraseña"
+            htmlFor="passwordConfirm"
+            error={fieldErrors.passwordConfirm}
+            hideLabel
+            inset
+          >
+            <PasswordInput
               id="passwordConfirm"
-              type="password"
+              appearance="slanted"
               autoComplete="new-password"
               placeholder="Repite la contraseña"
               value={passwordConfirm}
@@ -122,6 +131,7 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
         <Button
           type="submit"
           size="lg"
+          shape="slanted"
           intent={resetPassword.isSuccess ? 'success' : 'primary'}
           loading={resetPassword.isPending}
           disabled={disabled}

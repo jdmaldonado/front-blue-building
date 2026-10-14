@@ -166,12 +166,14 @@ export function ResidentsTable({
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
             <IconButton
+              hintSide="left"
               label={`Editar teléfono de ${row.original.name}`}
               onClick={() => actions.startEdit(row.original)}
             >
               <Pencil size={16} />
             </IconButton>
             <IconButton
+              hintSide="left"
               label={`${row.original.active === true ? 'Desactivar' : 'Activar'} a ${row.original.name}`}
               tone={row.original.active === true ? 'destructive' : 'accent'}
               onClick={() => actions.startToggle(row.original)}

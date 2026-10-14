@@ -2,11 +2,10 @@ import { LoginMode } from '@bb/core';
 import { createFileRoute } from '@tanstack/react-router';
 import { BuildingProvider, useSessionBuilding } from '../app/BuildingContext';
 import { requireMode } from '../app/guards';
-import { BuildingEventsButton } from '../features/building-events';
 import { DoorsDashboardPage } from '../features/doors';
 import { AppShell, AppTitle } from '../layouts/app';
-import { ResidentMobileNav } from '../layouts/resident';
-import { Alert } from '../ui';
+import { ResidentNav } from '../layouts/resident';
+import { Alert, Logo } from '../ui';
 
 // Resident entry. The admin panel reaches the same screen with the building
 // taken from the route.
@@ -31,9 +30,10 @@ function RouteComponent() {
   return (
     <BuildingProvider building={building}>
       <AppShell
-        header={<AppTitle title={building.name} />}
-        headerActions={<BuildingEventsButton buildingId={building.id} />}
-        mobileNav={<ResidentMobileNav buildingId={building.id} />}
+        // The lettering, centred, the way the current app opens its home: no
+        // building name and no avatar, which is what the owner asked for.
+        header={<Logo size="2xl" parts="wordmark" className="mx-auto" />}
+        bottomNav={<ResidentNav buildingId={building.id} />}
       >
         <DoorsDashboardPage />
       </AppShell>

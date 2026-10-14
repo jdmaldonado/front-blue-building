@@ -1,4 +1,4 @@
-import { DoorStatus, findDoorByName, type Door, type DomainError, type Floor } from '@bb/core';
+import { DoorStatus, findDoorByName, isDoorOnPlan, type Door, type DomainError, type Floor } from '@bb/core';
 import {
   selectDoorStatus,
   selectReaderTelemetry,
@@ -123,38 +123,42 @@ export function useDoorsDashboard(buildingId: string, initialDoorName?: string):
     return () => window.clearTimeout(timer);
   }, [pendingOpen, toast]);
 
+  const visibleDoors = useMemo(() => (doors.data ?? []).filter(isDoorOnPlan), [doors.data]);
+
   // A floor with no doors has nothing to offer here, not even a plan to look at.
   const floorOptions: ReadonlyArray<TabItem<string>> = useMemo(
     () =>
       toSelectOptions(
-        (floors.data ?? []).filter((floor) => (doors.data ?? []).some((door) => door.floor?.id === floor.id)),
+        (floors.data ?? []).filter((floor) => visibleDoors.some((door) => door.floor?.id === floor.id)),
         { fallbackLabel: (floor) => `Piso ${floor.id}` },
       ),
-    [floors.data, doors.data],
+    [floors.data, visibleDoors],
   );
 
   // Default to the floor of the first door the user can reach: starting on a
   // floor with no doors looks like the plan is broken.
-  const defaultFloorId = doors.data?.[0]?.floor?.id ?? floorOptions[0]?.value ?? null;
+  const defaultFloorId = visibleDoors[0]?.floor?.id ?? floorOptions[0]?.value ?? null;
   const currentFloorId = floorId ?? defaultFloorId;
   const currentFloor: Floor | null = floors.data?.find((floor) => floor.id === currentFloorId) ?? null;
 
   const floorDoors = useMemo(
-    () => (doors.data ?? []).filter((door) => door.floor?.id === currentFloorId),
-    [doors.data, currentFloorId],
+    () => visibleDoors.filter((door) => door.floor?.id === currentFloorId),
+    [visibleDoors, currentFloorId],
   );
 
+  // Looked up among all the doors: the monitor can point at a parked one.
+  const selectedDoor = doors.data?.find((door) => door.id === selectedDoorId) ?? null;
   const selectedIndex = floorDoors.findIndex((door) => door.id === selectedDoorId);
 
   return {
     isPending: doors.isPending,
     isError: doors.isError,
-    hasDoors: (doors.data ?? []).length > 0,
+    hasDoors: visibleDoors.length > 0,
     floorOptions,
     currentFloorId,
     currentFloor,
     floorDoors,
-    selectedDoor: floorDoors[selectedIndex] ?? null,
+    selectedDoor,
     previousDoor: selectedIndex > 0 ? (floorDoors[selectedIndex - 1] ?? null) : null,
     nextDoor: selectedIndex >= 0 ? (floorDoors[selectedIndex + 1] ?? null) : null,
     openingDoorId: pendingOpen?.doorId ?? null,

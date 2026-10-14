@@ -1,5 +1,7 @@
-import { DoorStatus } from '@bb/core';
+import { DoorStatus, LoginMode } from '@bb/core';
+import { useSessionStore } from '@bb/logic';
 import { useBuilding } from '../../app/BuildingContext';
+import { PageSplash } from '../../app/PageSplash';
 import { Alert, Loading, Tabs, Text } from '../../ui';
 import { DoorDialog, FloorPlan } from './components';
 import { useDoorsDashboard } from './hooks';
@@ -12,9 +14,11 @@ type DoorsDashboardPageProps = {
 export function DoorsDashboardPage({ initialDoorName }: DoorsDashboardPageProps) {
   const building = useBuilding();
   const dashboard = useDoorsDashboard(building.id, initialDoorName);
+  const isResident = useSessionStore((state) => state.session?.mode === LoginMode.Usuario);
 
   if (dashboard.isPending) {
-    return <Loading layout="screen" size="lg" label="Cargando puertas..." />;
+    // The panel opens this same screen, and there the brand splash would be out of place.
+    return isResident ? <PageSplash /> : <Loading layout="screen" size="lg" label="Cargando puertas..." />;
   }
 
   if (dashboard.isError) {
@@ -40,6 +44,12 @@ export function DoorsDashboardPage({ initialDoorName }: DoorsDashboardPageProps)
             className="max-w-full"
           />
         ) : null}
+        {/* The building is named here and not in the header: the panel reaches
+            this same screen, and from there it is the only thing that says
+            which building is on screen. */}
+        <Text as="span" size="title-sm" weight="semibold" tone="accent" truncate>
+          {building.name}
+        </Text>
         <Text as="span" size="label" tone="muted">
           {doorCount} {doorCount === 1 ? 'puerta' : 'puertas'} en este piso
         </Text>
