@@ -12,17 +12,15 @@ export const Route = createFileRoute('/admin/buildings/$buildingId/live')({
 });
 
 function RouteComponent() {
-  const { buildingId } = Route.useParams();
   const search = Route.useSearch();
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3">
-      {/* Only when the monitor sent us here. Reached any other way, the
-          breadcrumb is the way out. */}
+      {/* Only when the monitor sent us here, and back to all of it: while one
+          event is handled, new ones can arrive from any building. */}
       {search.from === LiveOrigin.Monitor ? (
         <Link
-          to={AppRoute.AdminBuildingEvents}
-          params={{ buildingId }}
+          to={AppRoute.AdminMonitor}
           className={buttonVariants({ intent: 'neutral', appearance: 'ghost', size: 'sm', className: 'self-start' })}
         >
           <ArrowLeft size={16} />
