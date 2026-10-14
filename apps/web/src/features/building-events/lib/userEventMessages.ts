@@ -79,4 +79,6 @@ export const USER_EVENT_SENT_MESSAGE: Record<UserEvent, string> = {
   [UserEvent.RestartRpi]: 'Orden de reinicio enviada al edificio.',
 };
 
-export const USER_EVENT_ERROR_MESSAGE = 'El servidor rechazó la acción. Revisa tus permisos e intenta de nuevo.';
+// The API answers this mostly when the building is offline (api/src/hardware/index.ts:921).
+export const USER_EVENT_ERROR_MESSAGE =
+  'El edificio no recibió la acción. Puede estar sin conexión: intenta de nuevo en un momento.';

@@ -13,6 +13,7 @@ export type ShowToast = (options: ToastOptions) => void;
 
 const SUCCESS_DURATION_MS = 4000;
 const ERROR_DURATION_MS = 6000;
+const MAX_VISIBLE_TOASTS = 3;
 
 const ToastContext = createContext<ShowToast | null>(null);
 
@@ -42,7 +43,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     (options) => {
       nextId.current += 1;
       const id = nextId.current;
-      setToasts((current) => [...current, { ...options, id }]);
+      setToasts((current) => [...current, { ...options, id }].slice(-MAX_VISIBLE_TOASTS));
 
       const duration = options.tone === 'error' ? ERROR_DURATION_MS : SUCCESS_DURATION_MS;
       window.setTimeout(() => dismiss(id), duration);
