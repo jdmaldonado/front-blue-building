@@ -82,11 +82,13 @@ export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
 
         {session === null ? null : (
           <div className="ml-auto flex w-fit items-center gap-3 border-(--brand-vivid-border) border-b pb-4">
-            <span className="flex min-w-0 flex-col items-end">
-              <Text as="span" size="body" weight="medium" className="text-(--brand-vivid-foreground)" truncate>
+            {/* Narrow and wrapping: up here the diagonal leaves little room, and a
+                long name on one line runs across it. */}
+            <span className="flex max-w-32 min-w-0 flex-col items-end text-right">
+              <Text as="span" size="body" weight="medium" className="text-(--brand-vivid-foreground)">
                 {session.user.name}
               </Text>
-              <Text as="span" size="caption" className="text-(--brand-vivid-muted)" truncate>
+              <Text as="span" size="caption" className="text-(--brand-vivid-muted)">
                 {caption}
               </Text>
             </span>
