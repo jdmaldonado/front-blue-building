@@ -1,6 +1,7 @@
 import {
   DEFAULT_MASTER_HARDWARE,
   DEFAULT_SLAVE_HARDWARE,
+  HARDWARE_VALUE_MAX,
   LOGIC_FIELDS,
   ReaderTarget,
   defaultLogicConfig,
@@ -131,13 +132,14 @@ export function ReaderConfigDialog({ door, reported, pending, onClose, onSend }:
                   labelPosition="start"
                 />
               ) : (
-                <Field key={key} label={key} htmlFor={`hardware-${key}`}>
+                <Field key={key} label={key} htmlFor={`hardware-${key}`} hint={`De 0 a ${HARDWARE_VALUE_MAX}.`}>
                   <Input
                     id={`hardware-${key}`}
                     value={String(value)}
-                    onChange={(event) =>
-                      setHardware((current) => ({ ...current, [key]: Number(event.target.value.replace(/\D/g, '')) }))
-                    }
+                    onChange={(event) => {
+                      const typed = Number(event.target.value.replace(/\D/g, ''));
+                      setHardware((current) => ({ ...current, [key]: Math.min(HARDWARE_VALUE_MAX, typed) }));
+                    }}
                     inputMode="numeric"
                     className="font-mono"
                   />

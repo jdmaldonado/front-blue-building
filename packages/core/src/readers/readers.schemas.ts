@@ -66,6 +66,10 @@ export const LOGIC_FIELDS: readonly LogicField[] = [
 // Hardware switches and levels, master and slave. Kept as a loose record: the
 // firmware owns this list and it grows without us.
 export const ReaderHardwareConfigSchema = z.record(z.string(), z.union([z.boolean(), z.number()]));
+
+// Volumes and brightness are stored as a byte in the reader
+// (hardware/RFID_READER/include/domain/core/config.h:28-32).
+export const HARDWARE_VALUE_MAX = 255;
 export type ReaderHardwareConfig = z.infer<typeof ReaderHardwareConfigSchema>;
 
 export const ReaderLogicConfigSchema = z.record(z.string(), z.number());
