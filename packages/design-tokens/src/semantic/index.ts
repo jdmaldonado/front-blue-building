@@ -92,7 +92,7 @@ export const semanticDark = {
 
   'text-primary': palette.ink[50],
   'text-secondary': palette.ink[300],
-  'text-muted': palette.ink[500],
+  'text-muted': palette.ink[350],
   'text-on-accent': palette.ink[975],
   'text-inverse': palette.ink[900],
   'text-brand': palette.cyan[400],

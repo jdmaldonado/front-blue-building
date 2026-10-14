@@ -21,6 +21,8 @@ export const palette = {
     100: 'oklch(0.93 0.008 235)',
     200: 'oklch(0.865 0.012 235)',
     300: 'oklch(0.72 0.015 235)',
+    // Muted text on dark surfaces: 5:1 on a card, where 400 only reaches 3.9:1.
+    350: 'oklch(0.62 0.018 236)',
     400: 'oklch(0.55 0.02 236)',
     500: 'oklch(0.45 0.025 238)',
     600: 'oklch(0.35 0.03 240)',
