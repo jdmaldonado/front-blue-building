@@ -3,24 +3,13 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const dropdownMenuAligns = ['start', 'end'] as const;
 export type DropdownMenuAlign = (typeof dropdownMenuAligns)[number];
 
-export const dropdownMenuVariants = cva(
-  [
-    'absolute top-full z-40 mt-1.5 min-w-52 overflow-hidden p-1',
-    'rounded-(--menu-radius) border border-(--menu-border) bg-(--menu-bg) shadow-(--shadow-3)',
-    'origin-top animate-fade-in',
-  ],
-  {
-    variants: {
-      align: {
-        start: 'left-0',
-        end: 'right-0',
-      },
-    },
-    defaultVariants: {
-      align: 'end',
-    },
-  },
-);
+// A popover, so no table or card can clip it. Its place next to the trigger is
+// set from the component, because the browser cannot anchor it on its own here.
+export const dropdownMenuVariants = cva([
+  'inset-auto m-0 min-w-52 overflow-hidden p-1',
+  'rounded-(--menu-radius) border border-(--menu-border) bg-(--menu-bg) shadow-(--shadow-3)',
+  'origin-top animate-fade-in',
+]);
 
 export const dropdownMenuItemVariants = cva(
   [

@@ -190,6 +190,7 @@ export function ReadersPage() {
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
             <IconButton
+              hintSide="left"
               label={`Actualizar firmware de ${row.original.name ?? 'la lectora'}`}
               onClick={() => {
                 setConfiguring(null);
@@ -200,6 +201,7 @@ export function ReadersPage() {
               <HardDriveDownload size={16} />
             </IconButton>
             <IconButton
+              hintSide="left"
               label={`Configurar ${row.original.name ?? 'la lectora'}`}
               onClick={() => {
                 setUpdatingFirmware(null);
@@ -210,6 +212,7 @@ export function ReadersPage() {
               <Settings2 size={16} />
             </IconButton>
             <IconButton
+              hintSide="left"
               label={`Reiniciar ${row.original.name ?? 'la lectora'}`}
               tone="destructive"
               onClick={() => void requestReboot(row.original)}

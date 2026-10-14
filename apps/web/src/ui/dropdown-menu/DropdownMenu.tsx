@@ -1,13 +1,24 @@
 import type { LucideIcon } from 'lucide-react';
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type ReactNode,
+} from 'react';
 import { cn } from '../cn';
 import {
   dropdownMenuItemVariants,
   dropdownMenuLabelVariants,
   dropdownMenuSeparatorVariants,
   dropdownMenuVariants,
-  type DropdownMenuVariants,
+  type DropdownMenuAlign,
 } from './DropdownMenu-variants';
+
+const MENU_GAP_PX = 6;
 
 export interface DropdownMenuItem {
   id: string;
@@ -24,17 +35,52 @@ export interface DropdownMenuGroup {
   items: ReadonlyArray<DropdownMenuItem>;
 }
 
-type DropdownMenuProps = DropdownMenuVariants & {
+type DropdownMenuProps = {
+  // Which edge of the trigger the menu lines up with.
+  align?: DropdownMenuAlign;
   // The control that opens the menu. It receives no props: the menu wraps it.
   trigger: ReactNode;
   groups: ReadonlyArray<DropdownMenuGroup>;
   className?: string;
 };
 
-export function DropdownMenu({ trigger, groups, align, className }: DropdownMenuProps) {
+export function DropdownMenu({ trigger, groups, align = 'end', className }: DropdownMenuProps) {
   const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState<CSSProperties>({});
   const containerRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
+
+  // Below the trigger, or above it when there is no room left under it. Placed
+  // again when the page moves, so it follows its button.
+  useLayoutEffect(() => {
+    const menu = menuRef.current;
+    const anchor = containerRef.current;
+    if (!open || menu === null || anchor === null) {
+      return;
+    }
+
+    function place(): void {
+      if (menu === null || anchor === null) {
+        return;
+      }
+      const box = anchor.getBoundingClientRect();
+      const fitsBelow = box.bottom + MENU_GAP_PX + menu.offsetHeight <= window.innerHeight;
+      setPosition({
+        ...(fitsBelow ? { top: box.bottom + MENU_GAP_PX } : { bottom: window.innerHeight - box.top + MENU_GAP_PX }),
+        ...(align === 'start' ? { left: box.left } : { right: window.innerWidth - box.right }),
+      });
+    }
+
+    menu.showPopover();
+    place();
+    window.addEventListener('scroll', place, true);
+    window.addEventListener('resize', place);
+    return () => {
+      window.removeEventListener('scroll', place, true);
+      window.removeEventListener('resize', place);
+    };
+  }, [open, align]);
 
   useEffect(() => {
     if (!open) {
@@ -89,7 +135,15 @@ export function DropdownMenu({ trigger, groups, align, className }: DropdownMenu
       </span>
 
       {open ? (
-        <div id={menuId} role="menu" onKeyDown={handleMenuKeyDown} className={dropdownMenuVariants({ align })}>
+        <div
+          ref={menuRef}
+          id={menuId}
+          role="menu"
+          popover="manual"
+          onKeyDown={handleMenuKeyDown}
+          style={position}
+          className={dropdownMenuVariants()}
+        >
           {groups.map((group, index) => (
             <div key={group.id} role="group" aria-label={group.label}>
               {index === 0 ? null : <div className={dropdownMenuSeparatorVariants()} />}
