@@ -6,7 +6,9 @@ export type DialogSize = (typeof dialogSizes)[number];
 // Uses the native <dialog>, so backdrop, ESC and focus trap are free.
 export const dialogVariants = cva(
   [
-    'w-full max-h-[85dvh] p-0 backdrop:bg-black/60',
+    // Only the body scrolls. Without `overflow-hidden` the border adds 2px and the
+    // dialog grows a second scrollbar.
+    'w-full max-h-[85dvh] overflow-hidden p-0 backdrop:bg-black/60',
     // Bottom sheet on mobile, centered from sm up. `mx-auto` is explicit
     // because the vertical margins override the browser default.
     'mx-auto mt-auto mb-0 rounded-t-(--card-radius) rounded-b-none',
