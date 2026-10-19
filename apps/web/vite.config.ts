@@ -13,7 +13,10 @@ const APP_NAMES: Record<AppKind, { name: string; shortName: string }> = {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, import.meta.dirname);
-  const app = APP_NAMES[env.VITE_APP_KIND === AppKind.Admin ? AppKind.Admin : AppKind.Resident];
+  const kind = env.VITE_APP_KIND === AppKind.Admin ? AppKind.Admin : AppKind.Resident;
+  const app = APP_NAMES[kind];
+  // One set per app in public/icons, the PNGs exported from its icon.svg.
+  const icons = `/icons/${kind}`;
 
   return {
     plugins: [
@@ -22,10 +25,10 @@ export default defineConfig(({ mode }) => {
       tanstackRouter({ target: 'react', autoCodeSplitting: true }),
       react(),
       tailwindcss(),
-      // iOS names the home screen icon after these tags, not the manifest.
+      // iOS takes the home screen name and icon from these tags, not the manifest.
       {
-        name: 'app-name',
-        transformIndexHtml: (html: string) => html.replaceAll('%APP_NAME%', app.name),
+        name: 'app-identity',
+        transformIndexHtml: (html: string) => html.replaceAll('%APP_NAME%', app.name).replaceAll('%APP_ICONS%', icons),
       },
       VitePWA({
         registerType: 'autoUpdate',
@@ -45,9 +48,9 @@ export default defineConfig(({ mode }) => {
           display: 'standalone',
           start_url: '/',
           icons: [
-            { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-            { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-            { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+            { src: `${icons}/icon-192.png`, sizes: '192x192', type: 'image/png' },
+            { src: `${icons}/icon-512.png`, sizes: '512x512', type: 'image/png' },
+            { src: `${icons}/icon-maskable-512.png`, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
           ],
         },
       }),
