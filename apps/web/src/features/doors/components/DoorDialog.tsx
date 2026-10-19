@@ -1,6 +1,15 @@
-import type { Door, DoorStatus } from '@bb/core';
+import { LoginMode, type Door, type DoorStatus } from '@bb/core';
 import { selectIsSuperUser, useSessionStore, type ReaderTelemetry } from '@bb/logic';
-import { ArrowLeft, ArrowRight, Columns2, Columns3, Cpu, DoorOpen, RectangleHorizontal, RefreshCw } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Columns2,
+  Columns3,
+  Cpu,
+  DoorOpen,
+  RectangleHorizontal,
+  SwitchCamera,
+} from 'lucide-react';
 import { useState, type KeyboardEvent } from 'react';
 import { UserEventActions, useUserEventActions } from '../../building-events';
 import { ReaderTelemetryDialog } from '../../readers';
@@ -60,6 +69,8 @@ export function DoorDialog({
   const [showTelemetry, setShowTelemetry] = useState(false);
   // The hardware is staff business, and the API only answers it to SUPER_USER.
   const isSuperUser = useSessionStore(selectIsSuperUser);
+  // The resident already reads the status from the pin color on the plan.
+  const isResident = useSessionStore((state) => state.session?.mode === LoginMode.Usuario);
 
   const cameras = door?.cameras ?? [];
   const hasCameras = cameras.length > 0;
@@ -105,9 +116,11 @@ export function DoorDialog({
           // In the header and not in the body: the body scrolls, and the status
           // and the reload button have to stay reachable while it does.
           <div className="flex items-center gap-2">
-            <Badge tone={meta.tone} dot pulse={meta.pulse} className="whitespace-nowrap">
-              {meta.label}
-            </Badge>
+            {isResident ? null : (
+              <Badge tone={meta.tone} dot pulse={meta.pulse} className="whitespace-nowrap">
+                {meta.label}
+              </Badge>
+            )}
             {hasCameras ? (
               <>
                 {cameras.length > 1 ? (
@@ -123,7 +136,7 @@ export function DoorDialog({
                   />
                 ) : null}
                 <IconButton label="Recargar cámaras" onClick={() => setReloadToken((current) => current + 1)}>
-                  <RefreshCw size={16} />
+                  <SwitchCamera size={20} />
                 </IconButton>
               </>
             ) : null}
