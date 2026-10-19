@@ -15,6 +15,12 @@ export const AppKind = {
 } as const;
 export type AppKind = (typeof AppKind)[keyof typeof AppKind];
 
+// What a phone shows for each app once installed. Read by the build too.
+export const APP_IDENTITY: Record<AppKind, { name: string; shortName: string; icons: string }> = {
+  [AppKind.Resident]: { name: 'Blue Building', shortName: 'BlueBuilding', icons: '/icons/resident' },
+  [AppKind.Admin]: { name: 'Blue Building Admin', shortName: 'BB Admin', icons: '/icons/admin' },
+};
+
 const REQUIRED_URL = 'requerida, debe ser una URL http(s) con esquema (ej: http://localhost:3000)';
 
 // `protocol` is needed: plain `z.url()` accepts 'localhost:3000', because it

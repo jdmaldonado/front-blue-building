@@ -3,20 +3,12 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import { AppKind } from './src/config/app.config';
-
-// What a phone shows for each app once installed. The rest is shared.
-const APP_NAMES: Record<AppKind, { name: string; shortName: string }> = {
-  [AppKind.Resident]: { name: 'Blue Building', shortName: 'BlueBuilding' },
-  [AppKind.Admin]: { name: 'Blue Building Admin', shortName: 'BB Admin' },
-};
+import { APP_IDENTITY, AppKind } from './src/config/app.config';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, import.meta.dirname);
-  const kind = env.VITE_APP_KIND === AppKind.Admin ? AppKind.Admin : AppKind.Resident;
-  const app = APP_NAMES[kind];
-  // One set per app in public/icons, the PNGs exported from its icon.svg.
-  const icons = `/icons/${kind}`;
+  // The icons of each app are the PNGs exported from its public/icons/*/icon.svg.
+  const app = APP_IDENTITY[env.VITE_APP_KIND === AppKind.Admin ? AppKind.Admin : AppKind.Resident];
 
   return {
     plugins: [
@@ -28,7 +20,8 @@ export default defineConfig(({ mode }) => {
       // iOS takes the home screen name and icon from these tags, not the manifest.
       {
         name: 'app-identity',
-        transformIndexHtml: (html: string) => html.replaceAll('%APP_NAME%', app.name).replaceAll('%APP_ICONS%', icons),
+        transformIndexHtml: (html: string) =>
+          html.replaceAll('%APP_NAME%', app.name).replaceAll('%APP_ICONS%', app.icons),
       },
       VitePWA({
         registerType: 'autoUpdate',
@@ -48,9 +41,9 @@ export default defineConfig(({ mode }) => {
           display: 'standalone',
           start_url: '/',
           icons: [
-            { src: `${icons}/icon-192.png`, sizes: '192x192', type: 'image/png' },
-            { src: `${icons}/icon-512.png`, sizes: '512x512', type: 'image/png' },
-            { src: `${icons}/icon-maskable-512.png`, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+            { src: `${app.icons}/icon-192.png`, sizes: '192x192', type: 'image/png' },
+            { src: `${app.icons}/icon-512.png`, sizes: '512x512', type: 'image/png' },
+            { src: `${app.icons}/icon-maskable-512.png`, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
           ],
         },
       }),

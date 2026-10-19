@@ -10,6 +10,7 @@ import { router } from './app/router';
 import { createServices } from './app/services';
 import { hideSplash } from './app/splash';
 import { initAppConfig } from './config';
+import { listenForInstallPrompt } from './features/install';
 import './styles/app.css';
 
 const ICON_STROKE_WIDTH = 1.5;
@@ -32,6 +33,7 @@ function bootstrap(): void {
     return;
   }
 
+  listenForInstallPrompt();
   const services = createServices();
   setQueryLogger(services.logger);
 

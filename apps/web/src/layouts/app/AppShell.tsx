@@ -1,6 +1,7 @@
 import { Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
-import { Drawer, IconButton, Logo, Sidebar, cn } from '../../ui';
+import { InstallBanner } from '../../features/install';
+import { Drawer, IconButton, Logo, Sidebar } from '../../ui';
 import { AppNavigation } from './AppNavigation';
 import { AppUserCard } from './AppUserCard';
 import { useSidebarCollapsed } from './useSidebarCollapsed';
@@ -15,6 +16,7 @@ type AppShellProps = {
   sectionNav?: (state: { collapsed: boolean; onNavigate?: () => void }) => ReactNode;
   // Replaces the navigation at every width: no sidebar, no hamburger, and the
   // header actions move into the bar. The resident uses this, the panel does not.
+  // It sits at the bottom of the column, under the content, never over it.
   bottomNav?: ReactNode;
   children: ReactNode;
 };
@@ -93,18 +95,11 @@ export function AppShell({ header, headerActions, sectionNav, bottomNav, childre
           )}
         </header>
 
-        <main
-          className={cn(
-            'flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pt-4 sm:px-6 sm:pt-6',
-            // Room for the fixed bottom bar, which floats over the content.
-            withSidebar ? 'pb-4 sm:pb-6' : 'pb-[calc(6rem+env(safe-area-inset-bottom))]',
-          )}
-        >
-          {children}
-        </main>
-      </div>
+        <main className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 sm:p-6">{children}</main>
 
-      {bottomNav}
+        <InstallBanner />
+        {bottomNav}
+      </div>
     </div>
   );
 }

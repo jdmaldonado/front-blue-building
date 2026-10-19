@@ -14,13 +14,13 @@ const itemClassName = [
   'focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none',
 ].join(' ');
 
-// Fixed bar of the resident, at every width, like the one the current app
+// Bottom bar of the resident, at every width, like the one the current app
 // has: home, the alert button and the menu. Everything else lives inside those.
 export function ResidentBottomBar({ onOpenEvents, onOpenMenu }: ResidentBottomBarProps) {
   return (
     <nav
       aria-label="Navegación principal"
-      className="fixed inset-x-0 bottom-0 z-20 flex items-center gap-1 border-(--menu-border) border-t bg-(--menu-bg) px-2 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]"
+      className="flex flex-none items-center gap-1 border-(--menu-border) border-t bg-(--menu-bg) px-2 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]"
     >
       {/* The active colour goes through `cn` and not `activeProps`: the router
           concatenates classes without merging, so two text colours would fight
