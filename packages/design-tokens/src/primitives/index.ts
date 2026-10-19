@@ -130,6 +130,10 @@ export const typeScale = {
 
 export type TypeScaleToken = keyof typeof typeScale;
 
+// The resident app reads every step of the scale this many px bigger: many
+// residents are older.
+export const largeTextStep = 2;
+
 // Families are self-hosted (@fontsource) so the PWA works offline and no request
 // leaves the origin. The web adapter registers them in Tailwind's theme; React
 // Native will load the same families through its own font loader.

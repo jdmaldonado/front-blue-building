@@ -11,6 +11,15 @@ body {
   font-family: var(--font-body);
 }
 
+/* Takes the root size from the iPhone text size setting, so every rem follows.
+   iOS only (touch callout): on a Mac the same keyword means 13px. */
+@supports (font: -apple-system-body) and (-webkit-touch-callout: none) {
+  html {
+    font: -apple-system-body;
+    line-height: 1.5;
+  }
+}
+
 /* Shared primitives take their colours from the app surface. On the vivid brand
    surface that surface is gone and the polarity flips, so the roles are
    re-pointed here once instead of every component growing a second palette. */
