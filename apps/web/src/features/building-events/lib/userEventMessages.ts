@@ -1,5 +1,5 @@
 import { UserEvent } from '@bb/core';
-import { BellOff, Power, ShieldAlert, TriangleAlert, type LucideIcon } from 'lucide-react';
+import { BellOff, HatGlasses, Power, TriangleAlert, type LucideIcon } from 'lucide-react';
 import type { ButtonIntent } from '../../../ui';
 
 export type UserEventMeta = {
@@ -15,7 +15,7 @@ export const USER_EVENT_META: Record<UserEvent, UserEventMeta> = {
   [UserEvent.Intrusion]: {
     title: 'Alerta de seguridad',
     description: 'Para intrusos o accesos no autorizados.',
-    icon: ShieldAlert,
+    icon: HatGlasses,
     intent: 'destructive',
   },
   [UserEvent.Emergency]: {
@@ -40,7 +40,7 @@ export const USER_EVENT_META: Record<UserEvent, UserEventMeta> = {
 
 // What a resident sees, from most urgent to least. Restarting is staff only, so
 // it is not here.
-export const USER_EVENT_ORDER: UserEvent[] = [UserEvent.Intrusion, UserEvent.Emergency, UserEvent.Mute];
+export const USER_EVENT_ORDER = [UserEvent.Intrusion, UserEvent.Emergency, UserEvent.Mute] as const;
 
 export type ConfirmSpec = {
   title: string;
@@ -49,14 +49,18 @@ export type ConfirmSpec = {
   intent: ButtonIntent;
 };
 
-// An emergency has to go out the moment it is pressed: asking again costs
-// seconds that matter. The other two do ask.
-export const USER_EVENT_CONFIRM: Partial<Record<UserEvent, ConfirmSpec>> = {
+export const USER_EVENT_CONFIRM: Record<UserEvent, ConfirmSpec> = {
   [UserEvent.Intrusion]: {
     title: '¿Reportar una alerta de seguridad?',
     description: 'Se avisa al staff del edificio de un intruso o un acceso no autorizado.',
     cta: 'Reportar',
     intent: 'destructive',
+  },
+  [UserEvent.Emergency]: {
+    title: '¿Reportar una emergencia?',
+    description: 'Se activa la alarma de todo el edificio.',
+    cta: 'Reportar',
+    intent: 'warning',
   },
   [UserEvent.Mute]: {
     title: '¿Silenciar la alarma?',

@@ -1,47 +1,42 @@
 import { UserEvent } from '@bb/core';
-import { BellOff, TriangleAlert, Users } from 'lucide-react';
-import { Button, cn } from '../../../ui';
+import { IconButton, cn, type IconButtonTone } from '../../../ui';
 import type { UserEventActionsController } from '../hooks/useUserEventActions';
+import { USER_EVENT_META, USER_EVENT_ORDER } from '../lib';
 
 type UserEventActionsProps = {
   controller: UserEventActionsController;
   className?: string;
+  buttonClassName?: string;
 };
 
-// Buttons only: the feedback is rendered apart by `UserEventFeedback`, so the
-// row can share a line with the primary action of the screen.
-export function UserEventActions({ controller, className }: UserEventActionsProps) {
+const TONES: Record<(typeof USER_EVENT_ORDER)[number], IconButtonTone> = {
+  [UserEvent.Intrusion]: 'destructive',
+  [UserEvent.Emergency]: 'warning',
+  [UserEvent.Mute]: 'success',
+};
+
+// Icons only, so the row fits next to the primary action. Each one asks for
+// confirmation first: without text, a tap by mistake is easy.
+export function UserEventActions({ controller, className, buttonClassName }: UserEventActionsProps) {
   return (
     <div className={cn('flex min-w-0 gap-2', className)}>
-      <Button
-        intent="warning"
-        appearance="outline"
-        size="sm"
-        onClick={() => void controller.request(UserEvent.Intrusion)}
-        className="min-w-0 flex-1 px-2 sm:px-3"
-      >
-        <Users size={17} className="shrink-0" />
-        <span className="truncate">Intruso</span>
-      </Button>
-      <Button
-        intent="destructive"
-        size="sm"
-        onClick={() => void controller.request(UserEvent.Emergency)}
-        className="min-w-0 flex-1 px-2 sm:px-3"
-      >
-        <TriangleAlert size={17} className="shrink-0" />
-        <span className="truncate">Emergencia</span>
-      </Button>
-      <Button
-        intent="neutral"
-        appearance="outline"
-        size="sm"
-        onClick={() => void controller.request(UserEvent.Mute)}
-        className="min-w-0 flex-1 px-2 sm:px-3"
-      >
-        <BellOff size={17} className="shrink-0" />
-        <span className="truncate">Silenciar</span>
-      </Button>
+      {USER_EVENT_ORDER.map((event) => {
+        const meta = USER_EVENT_META[event];
+        const Icon = meta.icon;
+
+        return (
+          <IconButton
+            key={event}
+            label={meta.title}
+            tone={TONES[event]}
+            size="lg"
+            onClick={() => void controller.request(event)}
+            className={buttonClassName}
+          >
+            <Icon size={22} />
+          </IconButton>
+        );
+      })}
     </div>
   );
 }

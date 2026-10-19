@@ -136,19 +136,14 @@ export function DoorDialog({
         }
         footer={
           door === null ? null : (
-            // Reversed on mobile so the events sit above the primary action,
-            // while the DOM keeps "Abrir puerta" first for keyboard order.
-            <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:items-center">
-              <Button
-                size="lg"
-                onClick={() => onOpenDoor(door)}
-                loading={isOpening}
-                className="w-full sm:w-auto sm:flex-[2]"
-              >
+            // Two equal halves. On a phone the icons share their half; from sm
+            // up they keep their square size.
+            <div className="grid w-full grid-cols-2 gap-2">
+              <UserEventActions controller={events} buttonClassName="flex-1 sm:flex-none" />
+              <Button size="lg" onClick={() => onOpenDoor(door)} loading={isOpening} className="px-3 whitespace-nowrap">
                 {isOpening ? null : <DoorOpen size={18} />}
                 {isOpening ? 'Abriendo...' : 'Abrir puerta'}
               </Button>
-              <UserEventActions controller={events} className="sm:flex-[3]" />
             </div>
           )
         }
