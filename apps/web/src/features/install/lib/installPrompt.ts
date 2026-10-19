@@ -1,9 +1,7 @@
 // Chrome and Edge fire `beforeinstallprompt` once, early, when the app can be
 // installed. It is kept here so a button can open the install dialog later.
-type InstallPromptEvent = Event & { prompt: () => Promise<void> };
-
 type InstallState = {
-  prompt: InstallPromptEvent | null;
+  prompt: BeforeInstallPromptEvent | null;
   installed: boolean;
 };
 
@@ -20,7 +18,7 @@ export function listenForInstallPrompt(): void {
   window.addEventListener('beforeinstallprompt', (event) => {
     // Without this Chrome shows its own bar too, next to ours.
     event.preventDefault();
-    setState({ ...state, prompt: event as InstallPromptEvent });
+    setState({ ...state, prompt: event });
   });
   window.addEventListener('appinstalled', () => setState({ prompt: null, installed: true }));
 }

@@ -22,7 +22,7 @@ export function InstallStepsDialog({ open, appName, onClose }: InstallStepsDialo
       onClose={onClose}
       size="sm"
       title={`Instala ${appName}`}
-      description="En iPhone se instala desde el menú Compartir."
+      description="En iPhone y iPad se instala desde el menú Compartir."
       footer={<Button onClick={onClose}>Entendido</Button>}
     >
       <ol className="flex flex-col gap-4">

@@ -8,4 +8,4 @@ export {
   loadAppConfig,
   readAppKind,
 } from './app.config';
-export type { AppConfig } from './app.config';
+export type { AppConfig, AppIdentity } from './app.config';

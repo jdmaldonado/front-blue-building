@@ -15,8 +15,10 @@ export const AppKind = {
 } as const;
 export type AppKind = (typeof AppKind)[keyof typeof AppKind];
 
+export type AppIdentity = { name: string; shortName: string; icons: string };
+
 // What a phone shows for each app once installed. Read by the build too.
-export const APP_IDENTITY: Record<AppKind, { name: string; shortName: string; icons: string }> = {
+export const APP_IDENTITY: Record<AppKind, AppIdentity> = {
   [AppKind.Resident]: { name: 'Blue Building', shortName: 'BlueBuilding', icons: '/icons/resident' },
   [AppKind.Admin]: { name: 'Blue Building Admin', shortName: 'BB Admin', icons: '/icons/admin' },
 };

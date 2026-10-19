@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
 import { useState } from 'react';
-import { APP_IDENTITY, getAppConfig } from '../../../config';
+import { currentApp } from '../../../app/appIdentity';
 import { Button, IconButton, Text, cn } from '../../../ui';
 import { useInstallBanner } from '../hooks/useInstallBanner';
 import { InstallStepsDialog } from './InstallStepsDialog';
@@ -17,7 +17,7 @@ type InstallBannerProps = {
 export function InstallBanner({ onBrand = false, className }: InstallBannerProps) {
   const banner = useInstallBanner();
   const [stepsOpen, setStepsOpen] = useState(false);
-  const app = APP_IDENTITY[getAppConfig().kind];
+  const app = currentApp();
 
   if (!banner.visible) {
     return null;
