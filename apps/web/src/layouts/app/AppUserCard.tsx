@@ -1,8 +1,9 @@
 import { LoginMode } from '@bb/core';
 import { useSessionStore } from '@bb/logic';
 import { Link } from '@tanstack/react-router';
-import { LogOut } from 'lucide-react';
+import { LogOut, Moon, Sun } from 'lucide-react';
 import { AppRoute } from '../../app/navigation';
+import { Theme, useTheme } from '../../app/theme';
 import { Avatar, IconButton, Text, sidebarItemVariants } from '../../ui';
 import { useSignOut } from './useSignOut';
 
@@ -10,10 +11,12 @@ type AppUserCardProps = {
   collapsed: boolean;
 };
 
-// Who is signed in. The name opens the profile, the button ends the session.
+// Who is signed in. The name opens the profile; the buttons switch the theme
+// and end the session.
 export function AppUserCard({ collapsed }: AppUserCardProps) {
   const session = useSessionStore((state) => state.session);
   const signOut = useSignOut();
+  const theme = useTheme();
 
   if (session === null) {
     return null;
@@ -21,10 +24,16 @@ export function AppUserCard({ collapsed }: AppUserCardProps) {
 
   const caption = session.mode === LoginMode.Admin ? 'Administrador' : `Documento ${session.user.cedula}`;
 
-  const signOutButton = (
-    <IconButton label="Cerrar sesión" onClick={signOut}>
-      <LogOut size={18} />
-    </IconButton>
+  const isDark = theme.theme === Theme.Dark;
+  const buttons = (
+    <>
+      <IconButton label={isDark ? 'Modo claro' : 'Modo oscuro'} onClick={theme.toggle}>
+        {isDark ? <Sun size={18} /> : <Moon size={18} />}
+      </IconButton>
+      <IconButton label="Cerrar sesión" onClick={signOut}>
+        <LogOut size={18} />
+      </IconButton>
+    </>
   );
 
   if (collapsed) {
@@ -39,7 +48,7 @@ export function AppUserCard({ collapsed }: AppUserCardProps) {
           <Avatar src={session.user.photo} name={session.user.name} size="sm" />
           <span className="sr-only">Perfil</span>
         </Link>
-        {signOutButton}
+        {buttons}
       </div>
     );
   }
@@ -62,7 +71,7 @@ export function AppUserCard({ collapsed }: AppUserCardProps) {
           </Text>
         </span>
       </Link>
-      {signOutButton}
+      {buttons}
     </div>
   );
 }

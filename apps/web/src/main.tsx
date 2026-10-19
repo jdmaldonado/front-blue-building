@@ -9,6 +9,7 @@ import { queryClient, setQueryLogger } from './app/queryClient';
 import { router } from './app/router';
 import { createServices } from './app/services';
 import { hideSplash } from './app/splash';
+import { paintThemeBars } from './app/theme';
 import { initAppConfig } from './config';
 import { listenForInstallPrompt } from './features/install';
 import './styles/app.css';
@@ -34,6 +35,7 @@ function bootstrap(): void {
   }
 
   listenForInstallPrompt();
+  paintThemeBars();
   const services = createServices();
   setQueryLogger(services.logger);
 

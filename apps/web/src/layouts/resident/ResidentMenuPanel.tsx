@@ -2,9 +2,10 @@ import { listApprovalPlaces, LoginMode } from '@bb/core';
 import { duration } from '@bb/design-tokens';
 import { selectSpaces, usePendingApprovals, useSessionStore } from '@bb/logic';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { LogOut, ShieldCheck, User, X, type LucideIcon } from 'lucide-react';
+import { LogOut, Moon, ShieldCheck, Sun, User, X, type LucideIcon } from 'lucide-react';
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { AppRoute } from '../../app/navigation';
+import { Theme, useTheme } from '../../app/theme';
 import { Avatar, Badge, Drawer, Logo, Text } from '../../ui';
 import { useSignOut } from '../app/useSignOut';
 
@@ -33,6 +34,8 @@ export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
   const pending = usePendingApprovals(approvalPlaces);
   const signOut = useSignOut();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isDark = theme.theme === Theme.Dark;
 
   // Changing route unmounts this panel, and an unmounted element has no way to
   // animate itself out. So the panel closes first and the route follows. The
@@ -113,6 +116,11 @@ export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
             Perfil
             <OptionIcon icon={User} />
           </Link>
+          {/* Says where it goes, not where it is. */}
+          <button type="button" onClick={theme.toggle} className={optionClassName}>
+            {isDark ? 'Modo claro' : 'Modo oscuro'}
+            <OptionIcon icon={isDark ? Sun : Moon} />
+          </button>
           <span aria-hidden className="my-1 h-px w-full bg-(--brand-vivid-border)" />
           <button type="button" onClick={signOut} className={optionClassName}>
             Salir
