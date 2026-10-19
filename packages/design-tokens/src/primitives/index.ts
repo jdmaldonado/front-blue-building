@@ -130,6 +130,10 @@ export const typeScale = {
 
 export type TypeScaleToken = keyof typeof typeScale;
 
+// The resident app reads every step of the scale this many px bigger: many
+// residents are older.
+export const largeTextStep = 2;
+
 // Families are self-hosted (@fontsource) so the PWA works offline and no request
 // leaves the origin. The web adapter registers them in Tailwind's theme; React
 // Native will load the same families through its own font loader.
@@ -181,6 +185,9 @@ export type PatternToken = keyof typeof pattern;
 export const animation = {
   // Runs once, when a panel appears (menus, popovers).
   'fade-in': { value: 'fade-in 150ms cubic-bezier(0.05, 0.7, 0.1, 1)' },
+  // Runs once, when a page of a swipeable view comes in from that side.
+  'slide-from-right': { value: 'slide-from-right 220ms cubic-bezier(0.05, 0.7, 0.1, 1)' },
+  'slide-from-left': { value: 'slide-from-left 220ms cubic-bezier(0.05, 0.7, 0.1, 1)' },
   scan: { value: 'scan 3.2s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
   sweep: { value: 'sweep 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
   shimmer: { value: 'shimmer 1.6s linear infinite' },
@@ -193,6 +200,14 @@ export const keyframes = {
   'fade-in': {
     from: 'opacity: 0; transform: translateY(-4px) scale(0.98);',
     to: 'opacity: 1; transform: translateY(0) scale(1);',
+  },
+  'slide-from-right': {
+    from: 'opacity: 0; transform: translateX(32px);',
+    to: 'opacity: 1; transform: translateX(0);',
+  },
+  'slide-from-left': {
+    from: 'opacity: 0; transform: translateX(-32px);',
+    to: 'opacity: 1; transform: translateX(0);',
   },
   scan: {
     '0%': 'transform: translateY(-100%); opacity: 0;',

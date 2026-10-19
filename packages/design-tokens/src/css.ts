@@ -1,5 +1,16 @@
 import { componentTokens } from './components';
-import { animation, duration, easing, fontFamily, keyframes, pattern, radius, slant, typeScale } from './primitives';
+import {
+  animation,
+  duration,
+  easing,
+  fontFamily,
+  keyframes,
+  largeTextStep,
+  pattern,
+  radius,
+  slant,
+  typeScale,
+} from './primitives';
 import { semanticDark, semanticLight } from './semantic';
 
 const REM_BASE = 16;
@@ -77,6 +88,9 @@ function themeBlock(): string {
     '@theme {',
     '  --text-*: initial;',
     ...type,
+    // In px, not rem: when the root size grows to follow the phone's text size,
+    // only the text grows and the layout stays put.
+    '  --spacing: 4px;',
     '',
     ...families,
     ...patterns,
@@ -85,6 +99,15 @@ function themeBlock(): string {
     ...animations,
     '}',
   ].join('\n');
+}
+
+// The same scale a step bigger, switched on with `data-text-size="large"` on
+// <html>. Tailwind utilities read the vars, so `text-body` follows on its own.
+function largeTextBlock(): string {
+  const sizes = Object.entries(typeScale).map(
+    ([name, { size }]) => `  --text-${name}: ${(size + largeTextStep) / REM_BASE}rem;`,
+  );
+  return [`:root[data-text-size='large'] {`, ...sizes, '}'].join('\n');
 }
 
 // Emits CSS custom properties for both themes. The web app writes this to a .css
@@ -116,6 +139,8 @@ export function generateThemeCss(): string {
     ":root[data-theme='light'] {",
     semanticVars(semanticLight, '  '),
     '}',
+    '',
+    largeTextBlock(),
     '',
   ].join('\n');
 }

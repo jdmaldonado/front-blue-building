@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const iconButtonSizes = ['sm', 'md', 'lg'] as const;
 export type IconButtonSize = (typeof iconButtonSizes)[number];
 
-export const iconButtonTones = ['neutral', 'accent', 'destructive', 'warning'] as const;
+export const iconButtonTones = ['neutral', 'accent', 'destructive', 'warning', 'success'] as const;
 export type IconButtonTone = (typeof iconButtonTones)[number];
 
 export const iconButtonVariants = cva(
@@ -18,7 +18,8 @@ export const iconButtonVariants = cva(
         // 44px keeps the touch target usable on mobile.
         sm: 'size-9',
         md: 'size-11',
-        lg: 'size-12',
+        // Same height as a large Button, so they line up in a row.
+        lg: 'size-13',
       },
       tone: {
         neutral:
@@ -26,6 +27,7 @@ export const iconButtonVariants = cva(
         accent: 'border-(--border-default) bg-transparent text-(--accent) hover:bg-(--accent-subtle)',
         destructive: 'border-(--destructive) bg-(--destructive-subtle) text-(--destructive) hover:bg-transparent',
         warning: 'border-(--warning) bg-transparent text-(--warning) hover:bg-(--warning-subtle)',
+        success: 'border-(--success) bg-transparent text-(--success) hover:bg-(--success-subtle)',
       },
     },
     defaultVariants: {

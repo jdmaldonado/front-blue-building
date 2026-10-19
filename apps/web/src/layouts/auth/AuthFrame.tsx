@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { InstallBanner } from '../../features/install';
 import { Logo, cn } from '../../ui';
 import { BrandPanel } from './BrandPanel';
 
@@ -21,17 +22,21 @@ export function AuthFrame({ branded = false, children }: AuthFrameProps) {
     >
       {branded ? null : <BrandPanel />}
 
-      <div className="flex flex-1 items-center justify-center px-6 py-8 sm:px-10 md:px-12">
-        <div className={cn('flex w-full flex-col', branded ? 'max-w-[460px] gap-9' : 'max-w-[420px] gap-5')}>
-          {/* On the resident door the lettering is the headline, centred and on
+      <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 items-center justify-center px-6 py-8 sm:px-10 md:px-12">
+          <div className={cn('flex w-full flex-col', branded ? 'max-w-[460px] gap-9' : 'max-w-[420px] gap-5')}>
+            {/* On the resident door the lettering is the headline, centred and on
               its own, the way the current app opens. */}
-          {branded ? (
-            <Logo size="3xl" parts="wordmark" className="mb-4 justify-center" wordmarkClassName="max-w-full" />
-          ) : (
-            <Logo size="xl" className="md:hidden" />
-          )}
-          {children}
+            {branded ? (
+              <Logo size="3xl" parts="wordmark" className="mb-4 justify-center" wordmarkClassName="max-w-full" />
+            ) : (
+              <Logo size="xl" className="md:hidden" />
+            )}
+            {children}
+          </div>
         </div>
+
+        <InstallBanner onBrand={branded} className="pb-[calc(env(safe-area-inset-bottom)+0.75rem)]" />
       </div>
     </main>
   );

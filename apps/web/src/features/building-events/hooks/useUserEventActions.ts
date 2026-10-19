@@ -26,16 +26,14 @@ export function useUserEventActions(buildingId: string): UserEventActionsControl
   const request = useCallback(
     async (event: UserEvent) => {
       const spec = USER_EVENT_CONFIRM[event];
-      if (spec !== undefined) {
-        const confirmed = await confirm({
-          title: spec.title,
-          description: spec.description,
-          confirmLabel: spec.cta,
-          intent: spec.intent,
-        });
-        if (!confirmed) {
-          return false;
-        }
+      const confirmed = await confirm({
+        title: spec.title,
+        description: spec.description,
+        confirmLabel: spec.cta,
+        intent: spec.intent,
+      });
+      if (!confirmed) {
+        return false;
       }
 
       sendUserEvent(event);

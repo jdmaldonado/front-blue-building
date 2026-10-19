@@ -2,8 +2,8 @@ import { DoorStatus, LoginMode } from '@bb/core';
 import { useSessionStore } from '@bb/logic';
 import { useBuilding } from '../../app/BuildingContext';
 import { PageSplash } from '../../app/PageSplash';
-import { Alert, Loading, Tabs, Text } from '../../ui';
-import { DoorDialog, FloorPlan } from './components';
+import { Alert, Loading, Tabs } from '../../ui';
+import { CriticalAlerts, DoorDialog, FloorPlan } from './components';
 import { useDoorsDashboard } from './hooks';
 
 type DoorsDashboardPageProps = {
@@ -29,31 +29,20 @@ export function DoorsDashboardPage({ initialDoorName }: DoorsDashboardPageProps)
     );
   }
 
-  const doorCount = dashboard.floorDoors.length;
-
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
-      <div className="flex flex-none flex-wrap items-center gap-3">
-        {dashboard.floorOptions.length > 1 && dashboard.currentFloorId !== null ? (
-          <Tabs
-            items={dashboard.floorOptions}
-            value={dashboard.currentFloorId}
-            onChange={dashboard.selectFloor}
-            label="Piso"
-            appearance="pill"
-            className="max-w-full"
-          />
-        ) : null}
-        {/* The building is named here and not in the header: the panel reaches
-            this same screen, and from there it is the only thing that says
-            which building is on screen. */}
-        <Text as="span" size="title-sm" weight="semibold" tone="accent" truncate>
-          {building.name}
-        </Text>
-        <Text as="span" size="label" tone="muted">
-          {doorCount} {doorCount === 1 ? 'puerta' : 'puertas'} en este piso
-        </Text>
-      </div>
+      <CriticalAlerts />
+
+      {dashboard.floorOptions.length > 1 && dashboard.currentFloorId !== null ? (
+        <Tabs
+          items={dashboard.floorOptions}
+          value={dashboard.currentFloorId}
+          onChange={dashboard.selectFloor}
+          label="Piso"
+          appearance="pill"
+          className="max-w-full flex-none self-start"
+        />
+      ) : null}
 
       {dashboard.hasDoors ? (
         <FloorPlan
@@ -74,8 +63,7 @@ export function DoorsDashboardPage({ initialDoorName }: DoorsDashboardPageProps)
         door={dashboard.selectedDoor}
         status={dashboard.selectedDoor === null ? DoorStatus.Unknown : dashboard.statusOf(dashboard.selectedDoor)}
         buildingId={building.id}
-        previousDoor={dashboard.previousDoor}
-        nextDoor={dashboard.nextDoor}
+        doors={dashboard.floorDoors}
         isOpening={dashboard.openingDoorId !== null && dashboard.openingDoorId === dashboard.selectedDoor?.id}
         telemetry={dashboard.selectedDoor === null ? null : dashboard.telemetryOf(dashboard.selectedDoor)}
         onClose={() => dashboard.selectDoor(null)}

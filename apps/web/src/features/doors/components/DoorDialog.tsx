@@ -1,20 +1,22 @@
-import type { Door, DoorStatus } from '@bb/core';
+import { LoginMode, type Door, type DoorStatus } from '@bb/core';
 import { selectIsSuperUser, useSessionStore, type ReaderTelemetry } from '@bb/logic';
-import { ArrowLeft, ArrowRight, Columns2, Columns3, Cpu, DoorOpen, RectangleHorizontal, RefreshCw } from 'lucide-react';
+import { Columns2, Columns3, Cpu, DoorOpen, RectangleHorizontal, SwitchCamera } from 'lucide-react';
 import { useState, type KeyboardEvent } from 'react';
 import { UserEventActions, useUserEventActions } from '../../building-events';
 import { ReaderTelemetryDialog } from '../../readers';
-import { Badge, Button, Dialog, IconButton, RadioGroup, Text, cn, type RadioOption } from '../../../ui';
+import { Badge, Button, Dialog, IconButton, RadioGroup, Tabs, Text, cn, type RadioOption } from '../../../ui';
 import { CameraColumns, useCameraColumns, useSwipe } from '../hooks';
 import { doorStatusMeta } from '../lib';
 import { CameraTile } from './CameraTile';
+import { PageDots } from './PageDots';
+import { PageCorner } from './PageCorner';
 
 type DoorDialogProps = {
   door: Door | null;
   status: DoorStatus;
   buildingId: string;
-  previousDoor: Door | null;
-  nextDoor: Door | null;
+  // The doors of the floor, one tab each.
+  doors: Door[];
   isOpening: boolean;
   // Hardware of this door. Only staff gets to look at it.
   telemetry: ReaderTelemetry | null;
@@ -42,8 +44,7 @@ export function DoorDialog({
   door,
   status,
   buildingId,
-  previousDoor,
-  nextDoor,
+  doors,
   isOpening,
   telemetry,
   onClose,
@@ -60,26 +61,41 @@ export function DoorDialog({
   const [showTelemetry, setShowTelemetry] = useState(false);
   // The hardware is staff business, and the API only answers it to SUPER_USER.
   const isSuperUser = useSessionStore(selectIsSuperUser);
+  // The resident already reads the status from the pin color on the plan.
+  const isResident = useSessionStore((state) => state.session?.mode === LoginMode.Usuario);
 
   const cameras = door?.cameras ?? [];
   const hasCameras = cameras.length > 0;
 
+  const index = doors.findIndex((item) => item.id === door?.id);
+  // The next page comes in from the side it was asked from.
+  const [slideFrom, setSlideFrom] = useState<'left' | 'right'>('right');
+
+  const goTo = (doorId: string) => {
+    setSlideFrom(doors.findIndex((item) => item.id === doorId) < index ? 'left' : 'right');
+    onSelectDoor(doorId);
+  };
+
+  const hasTabs = doors.length > 1 && index >= 0;
+  const previous = index > 0 ? doors[index - 1] : undefined;
+  const next = index >= 0 ? doors[index + 1] : undefined;
+
   const goPrevious = () => {
-    if (previousDoor !== null) {
-      onSelectDoor(previousDoor.id);
+    if (previous !== undefined) {
+      goTo(previous.id);
     }
   };
 
   const goNext = () => {
-    if (nextDoor !== null) {
-      onSelectDoor(nextDoor.id);
+    if (next !== undefined) {
+      goTo(next.id);
     }
   };
 
   const swipe = useSwipe({ onSwipeLeft: goNext, onSwipeRight: goPrevious });
 
-  // The segmented control of camera columns also answers the arrows, and it
-  // calls preventDefault when it does.
+  // The tabs and the segmented control of camera columns also answer the
+  // arrows, and they call preventDefault when they do.
   const handleKeyDown = (event: KeyboardEvent<HTMLDialogElement>) => {
     if (event.defaultPrevented) {
       return;
@@ -99,15 +115,19 @@ export function DoorDialog({
         onClose={onClose}
         onKeyDown={handleKeyDown}
         size="xl"
-        title={door?.name ?? 'Puerta'}
-        description={door?.floor?.name ?? undefined}
+        // A fixed height when it pages, or it would grow and shrink from one
+        // door to the next.
+        className={hasTabs ? 'h-[85dvh]' : undefined}
+        title={door?.floor?.name ?? 'Puertas'}
         headerAside={
           // In the header and not in the body: the body scrolls, and the status
           // and the reload button have to stay reachable while it does.
           <div className="flex items-center gap-2">
-            <Badge tone={meta.tone} dot pulse={meta.pulse} className="whitespace-nowrap">
-              {meta.label}
-            </Badge>
+            {isResident ? null : (
+              <Badge tone={meta.tone} dot pulse={meta.pulse} className="whitespace-nowrap">
+                {meta.label}
+              </Badge>
+            )}
             {hasCameras ? (
               <>
                 {cameras.length > 1 ? (
@@ -123,7 +143,7 @@ export function DoorDialog({
                   />
                 ) : null}
                 <IconButton label="Recargar cámaras" onClick={() => setReloadToken((current) => current + 1)}>
-                  <RefreshCw size={16} />
+                  <SwitchCamera size={20} />
                 </IconButton>
               </>
             ) : null}
@@ -134,59 +154,81 @@ export function DoorDialog({
             ) : null}
           </div>
         }
+        subheader={
+          hasTabs ? (
+            <Tabs
+              items={doors.map((item) => ({ value: item.id, label: item.name ?? 'Puerta' }))}
+              value={doors[index]?.id ?? ''}
+              onChange={goTo}
+              label="Puertas del piso"
+            />
+          ) : undefined
+        }
+        bodyEnd={
+          // A strip of its own, so the corners never cover a camera.
+          hasTabs ? (
+            <div className="relative h-11 flex-none">
+              {previous === undefined ? null : (
+                <PageCorner
+                  side="left"
+                  label={previous.name ? `Puerta anterior: ${previous.name}` : 'Puerta anterior'}
+                  onClick={goPrevious}
+                />
+              )}
+              {next === undefined ? null : (
+                <PageCorner
+                  side="right"
+                  label={next.name ? `Puerta siguiente: ${next.name}` : 'Puerta siguiente'}
+                  onClick={goNext}
+                />
+              )}
+            </div>
+          ) : undefined
+        }
         footer={
           door === null ? null : (
-            // Reversed on mobile so the events sit above the primary action,
-            // while the DOM keeps "Abrir puerta" first for keyboard order.
-            <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:items-center">
-              <Button
-                size="lg"
-                onClick={() => onOpenDoor(door)}
-                loading={isOpening}
-                className="w-full sm:w-auto sm:flex-[2]"
-              >
+            // Two equal halves. On a phone the icons share their half; from sm
+            // up they keep their square size.
+            <div className="grid w-full grid-cols-2 gap-2">
+              <UserEventActions controller={events} buttonClassName="flex-1 sm:flex-none" />
+              <Button size="lg" onClick={() => onOpenDoor(door)} loading={isOpening} className="px-3 whitespace-nowrap">
                 {isOpening ? null : <DoorOpen size={18} />}
                 {isOpening ? 'Abriendo...' : 'Abrir puerta'}
               </Button>
-              <UserEventActions controller={events} className="sm:flex-[3]" />
             </div>
           )
         }
       >
         {door === null ? null : (
-          <div className="flex touch-pan-y flex-col gap-4" {...swipe}>
-            {previousDoor === null && nextDoor === null ? null : (
-              // Each arrow on its own edge, so the thumb finds them where the
-              // swipe would take it.
-              <div className="flex items-center justify-between gap-2">
-                {previousDoor === null ? (
-                  <span />
-                ) : (
-                  <Button intent="neutral" appearance="ghost" size="sm" onClick={goPrevious} className="min-w-0">
-                    <ArrowLeft size={16} />
-                    <span className="truncate">{previousDoor.name ?? 'Anterior'}</span>
-                  </Button>
+          // Fills the body, so a swipe works on the empty space too.
+          <div className="min-h-full touch-pan-y" {...swipe}>
+            {/* Clipped sideways so the page sliding in never shows a scrollbar. */}
+            <div className="overflow-x-clip">
+              <div
+                key={door.id}
+                className={cn(
+                  'flex flex-col gap-4',
+                  slideFrom === 'right' ? 'animate-slide-from-right' : 'animate-slide-from-left',
                 )}
-                {nextDoor === null ? (
-                  <span />
-                ) : (
-                  <Button intent="neutral" appearance="ghost" size="sm" onClick={goNext} className="min-w-0">
-                    <span className="truncate">{nextDoor.name ?? 'Siguiente'}</span>
-                    <ArrowRight size={16} />
-                  </Button>
-                )}
-              </div>
-            )}
+              >
+                <div className="flex flex-col gap-2">
+                  <Text as="h3" size="title" weight="bold">
+                    {door.name ?? 'Puerta'}
+                  </Text>
+                  {hasTabs ? <PageDots count={doors.length} current={index} /> : null}
+                </div>
 
-            {hasCameras ? (
-              <div className={cn('grid gap-3', columnClasses[columns])}>
-                {cameras.map((camera) => (
-                  <CameraTile key={`${camera.id}-${reloadToken}`} camera={camera} buildingId={buildingId} />
-                ))}
+                {hasCameras ? (
+                  <div className={cn('grid gap-3', columnClasses[columns])}>
+                    {cameras.map((camera) => (
+                      <CameraTile key={`${camera.id}-${reloadToken}`} camera={camera} buildingId={buildingId} />
+                    ))}
+                  </div>
+                ) : (
+                  <Text tone="secondary">Esta puerta no tiene cámaras asociadas.</Text>
+                )}
               </div>
-            ) : (
-              <Text tone="secondary">Esta puerta no tiene cámaras asociadas.</Text>
-            )}
+            </div>
           </div>
         )}
       </Dialog>

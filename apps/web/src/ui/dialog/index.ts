@@ -4,6 +4,7 @@ export {
   dialogFooterVariants,
   dialogHeaderVariants,
   dialogSizes,
+  dialogSubheaderVariants,
   dialogVariants,
 } from './Dialog-variants';
 export type { DialogSize, DialogVariants } from './Dialog-variants';

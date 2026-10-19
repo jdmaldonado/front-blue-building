@@ -1,6 +1,6 @@
 import type { Door, DoorStatus, Floor } from '@bb/core';
 import { useEffect, useRef, useState } from 'react';
-import { CornerBrackets, Text, cn } from '../../../ui';
+import { Text, cn } from '../../../ui';
 import { DoorPin } from './DoorPin';
 
 type FloorPlanProps = {
@@ -44,8 +44,6 @@ export function FloorPlan({ floor, doors, statusOf, selectedDoorId, onSelect, cl
         className,
       )}
     >
-      <CornerBrackets />
-
       {floor?.image ? (
         <>
           <img

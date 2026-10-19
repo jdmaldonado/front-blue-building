@@ -9,7 +9,9 @@ import { queryClient, setQueryLogger } from './app/queryClient';
 import { router } from './app/router';
 import { createServices } from './app/services';
 import { hideSplash } from './app/splash';
+import { paintThemeBars } from './app/theme';
 import { initAppConfig } from './config';
+import { listenForInstallPrompt } from './features/install';
 import './styles/app.css';
 
 const ICON_STROKE_WIDTH = 1.5;
@@ -32,6 +34,8 @@ function bootstrap(): void {
     return;
   }
 
+  listenForInstallPrompt();
+  paintThemeBars();
   const services = createServices();
   setQueryLogger(services.logger);
 
