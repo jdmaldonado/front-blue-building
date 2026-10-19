@@ -1,6 +1,7 @@
 import { listApprovalPlaces, LoginMode } from '@bb/core';
 import { selectCurrentSpace, selectSpaces, usePendingApprovals, useSessionStore } from '@bb/logic';
 import { Building2, CreditCard, ShieldAlert, ShieldCheck, Users } from 'lucide-react';
+import { useMatchRoute } from '@tanstack/react-router';
 import { AppRoute } from '../../app/navigation';
 import { useMemo } from 'react';
 import { AppNavigationItem } from './AppNavigationItem';
@@ -19,6 +20,11 @@ export function AppNavigation({ collapsed, onNavigate }: AppNavigationProps) {
   const spaces = useSessionStore(selectSpaces);
   const approvalPlaces = useMemo(() => listApprovalPlaces(spaces), [spaces]);
   const pending = usePendingApprovals(approvalPlaces);
+  const matchRoute = useMatchRoute();
+  // Every panel path starts with /admin, so the router alone would mark it
+  // everywhere. Buildings is the list and the screens of one building.
+  const inBuildings =
+    matchRoute({ to: AppRoute.Admin }) !== false || matchRoute({ to: AppRoute.AdminBuilding, fuzzy: true }) !== false;
 
   if (session === null) {
     return null;
@@ -28,9 +34,17 @@ export function AppNavigation({ collapsed, onNavigate }: AppNavigationProps) {
     return (
       <>
         <AppNavigationItem
-          link={{ to: AppRoute.Admin }}
+          link={{ to: AppRoute.AdminMonitor }}
+          icon={ShieldAlert}
+          label="Monitoreo"
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <AppNavigationItem
+          link={{ to: AppRoute.Admin, activeOptions: { exact: true } }}
           icon={Building2}
           label="Edificios"
+          selected={inBuildings}
           collapsed={collapsed}
           onNavigate={onNavigate}
         />
@@ -38,13 +52,6 @@ export function AppNavigation({ collapsed, onNavigate }: AppNavigationProps) {
           link={{ to: AppRoute.AdminUsers }}
           icon={Users}
           label="Usuarios"
-          collapsed={collapsed}
-          onNavigate={onNavigate}
-        />
-        <AppNavigationItem
-          link={{ to: AppRoute.AdminMonitor }}
-          icon={ShieldAlert}
-          label="Monitoreo"
           collapsed={collapsed}
           onNavigate={onNavigate}
         />

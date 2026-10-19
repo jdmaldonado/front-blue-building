@@ -42,8 +42,9 @@ export type AppRoute = (typeof AppRoute)[keyof typeof AppRoute];
 // in one place. The branch by RoleType will go here too.
 export function landingPathFor(session: Session): AppRoute {
   switch (session.mode) {
+    // Staff starts where the events are handled.
     case LoginMode.Admin:
-      return AppRoute.Admin;
+      return AppRoute.AdminMonitor;
     case LoginMode.Usuario:
       return AppRoute.Dashboard;
   }

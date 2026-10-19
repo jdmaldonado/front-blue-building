@@ -4,7 +4,7 @@
     {
       "source": "/",
       "has": [{ "type": "host", "value": "admin.bluebuilding.co" }],
-      "destination": "/admin",
+      "destination": "/admin/monitor",
       "permanent": false
     }
   ],
