@@ -1,39 +1,56 @@
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { AppKind } from './src/config/app.config';
 
-export default defineConfig({
-  plugins: [
-    // Must run before the React plugin: it generates src/routeTree.gen.ts from
-    // the files in src/routes.
-    tanstackRouter({ target: 'react', autoCodeSplitting: true }),
-    react(),
-    tailwindcss(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      manifest: {
-        // Without an id, changing `start_url` later makes browsers treat this as
-        // a different app.
-        id: '/',
-        name: 'Blue Building',
-        short_name: 'BlueBuilding',
-        description: 'Administración y monitoreo de edificios',
-        lang: 'es',
-        dir: 'ltr',
-        // Brand colors, taken from the logo files of the current app. The
-        // background matches the splash in index.html, so Android shows no jump.
-        theme_color: '#00BCDC',
-        background_color: '#258fb6',
-        display: 'standalone',
-        start_url: '/',
-        icons: [
-          { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-        ],
+// What a phone shows for each app once installed. The rest is shared.
+const APP_NAMES: Record<AppKind, { name: string; shortName: string }> = {
+  [AppKind.Resident]: { name: 'Blue Building', shortName: 'BlueBuilding' },
+  [AppKind.Admin]: { name: 'Blue Building Admin', shortName: 'BB Admin' },
+};
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, import.meta.dirname);
+  const app = APP_NAMES[env.VITE_APP_KIND === AppKind.Admin ? AppKind.Admin : AppKind.Resident];
+
+  return {
+    plugins: [
+      // Must run before the React plugin: it generates src/routeTree.gen.ts from
+      // the files in src/routes.
+      tanstackRouter({ target: 'react', autoCodeSplitting: true }),
+      react(),
+      tailwindcss(),
+      // iOS names the home screen icon after these tags, not the manifest.
+      {
+        name: 'app-name',
+        transformIndexHtml: (html: string) => html.replaceAll('%APP_NAME%', app.name),
       },
-    }),
-  ],
+      VitePWA({
+        registerType: 'autoUpdate',
+        manifest: {
+          // Without an id, changing `start_url` later makes browsers treat this as
+          // a different app. Both apps open at `/`, which sends to the right login.
+          id: '/',
+          name: app.name,
+          short_name: app.shortName,
+          description: 'Administración y monitoreo de edificios',
+          lang: 'es',
+          dir: 'ltr',
+          // Brand colors, taken from the logo files of the current app. The
+          // background matches the splash in index.html, so Android shows no jump.
+          theme_color: '#00BCDC',
+          background_color: '#258fb6',
+          display: 'standalone',
+          start_url: '/',
+          icons: [
+            { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+            { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+            { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          ],
+        },
+      }),
+    ],
+  };
 });

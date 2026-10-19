@@ -7,6 +7,14 @@ export const AppMode = {
 } as const;
 export type AppMode = (typeof AppMode)[keyof typeof AppMode];
 
+// The same code ships as two apps, each on its own URL so a phone installs them
+// apart. Each deploy says which one it is.
+export const AppKind = {
+  Resident: 'resident',
+  Admin: 'admin',
+} as const;
+export type AppKind = (typeof AppKind)[keyof typeof AppKind];
+
 const REQUIRED_URL = 'requerida, debe ser una URL http(s) con esquema (ej: http://localhost:3000)';
 
 // `protocol` is needed: plain `z.url()` accepts 'localhost:3000', because it
@@ -20,12 +28,16 @@ const EnvSchema = z.object({
   // socket.io starts over HTTP and upgrades on its own, so this is http(s),
   // not ws(s).
   VITE_SOCKET_URL: httpUrl,
+  // Optional, so a deploy that predates the split stays the resident app. An
+  // empty value counts as not set.
+  VITE_APP_KIND: z.preprocess((value) => (value === '' ? undefined : value), z.enum(AppKind).default(AppKind.Resident)),
   MODE: z.enum(AppMode).catch(AppMode.Production),
 });
 
 export interface AppConfig {
   readonly api: { readonly baseUrl: string };
   readonly socket: { readonly url: string };
+  readonly kind: AppKind;
   readonly mode: AppMode;
   readonly isDev: boolean;
 }
@@ -50,6 +62,7 @@ export function loadAppConfig(source: unknown): AppConfig {
   return Object.freeze({
     api: Object.freeze({ baseUrl: env.VITE_API_BASE_URL }),
     socket: Object.freeze({ url: env.VITE_SOCKET_URL }),
+    kind: env.VITE_APP_KIND,
     mode: env.MODE,
     isDev: env.MODE === AppMode.Development,
   });

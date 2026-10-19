@@ -1,14 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "redirects": [
+  "rewrites": [
     {
-      "source": "/",
-      "has": [{ "type": "host", "value": "admin.bluebuilding.co" }],
-      "destination": "/admin/monitor",
-      "permanent": false
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
     {
       "source": "/sw.js",
