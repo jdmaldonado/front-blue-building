@@ -1,7 +1,7 @@
 import type { DoorCamera } from '@bb/core';
 import { useCameraFrame } from '@bb/logic';
 import { useMemo } from 'react';
-import { Badge, CornerBrackets, cn } from '../../../ui';
+import { Badge, cn } from '../../../ui';
 
 type CameraTileProps = {
   camera: DoorCamera;
@@ -35,22 +35,15 @@ export function CameraTile({ camera, buildingId, className }: CameraTileProps) {
         />
       )}
 
-      <CornerBrackets tone={frame.isLive ? 'accent' : 'muted'} />
+      {/* Labels hug the edges so they cover as little of the scene as possible.
+          Only a problem gets a badge: a working camera says nothing. */}
+      {frame.isLive ? null : (
+        <Badge tone="danger" size="sm" dot className="absolute top-1 right-1">
+          Sin señal
+        </Badge>
+      )}
 
-      {/* Clear of the top-left bracket. */}
-      <div className="absolute top-2 left-6">
-        {frame.isLive ? (
-          <Badge tone="success" size="sm" dot pulse>
-            En vivo
-          </Badge>
-        ) : (
-          <Badge tone="danger" size="sm" dot>
-            Sin señal
-          </Badge>
-        )}
-      </div>
-
-      <span className="absolute bottom-2 left-6 rounded-(--radius-1) bg-black/60 px-2 py-0.5 font-mono text-caption text-white">
+      <span className="absolute right-1 bottom-1 rounded-(--radius-1) bg-black/60 px-1.5 text-caption text-white">
         {camera.name ?? 'Cámara'}
       </span>
     </div>
