@@ -39,6 +39,8 @@ export const dialogVariants = cva(
 
 export const dialogHeaderVariants = cva('flex items-start gap-3 border-(--card-border) border-b px-5 py-4 sm:px-6');
 
+export const dialogSubheaderVariants = cva('flex-none border-(--card-border) border-b px-5 sm:px-6');
+
 export const dialogBodyVariants = cva('flex-1 overflow-auto px-5 py-4 sm:px-6');
 
 export const dialogFooterVariants = cva(

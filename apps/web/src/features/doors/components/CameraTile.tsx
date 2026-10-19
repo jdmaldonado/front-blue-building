@@ -26,9 +26,10 @@ export function CameraTile({ camera, buildingId, className }: CameraTileProps) {
       {frame.src === null ? (
         <div className="flex size-full items-center justify-center text-body-sm text-(--text-muted)">Conectando...</div>
       ) : (
-        // `object-contain` and not `cover`: cameras are not always 16:9 and
-        // cropping hides part of the scene.
+        // `object-contain`: cameras are not always 16:9 and cropping hides part of
+        // the scene. Not draggable, or a mouse drag picks it up instead of swiping.
         <img
+          draggable={false}
           src={frame.src}
           alt={`Cámara ${camera.name ?? ''}`}
           className={cn('size-full object-contain', frame.isLive ? '' : 'opacity-60 grayscale')}

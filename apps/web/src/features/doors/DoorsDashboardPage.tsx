@@ -74,8 +74,7 @@ export function DoorsDashboardPage({ initialDoorName }: DoorsDashboardPageProps)
         door={dashboard.selectedDoor}
         status={dashboard.selectedDoor === null ? DoorStatus.Unknown : dashboard.statusOf(dashboard.selectedDoor)}
         buildingId={building.id}
-        previousDoor={dashboard.previousDoor}
-        nextDoor={dashboard.nextDoor}
+        doors={dashboard.floorDoors}
         isOpening={dashboard.openingDoorId !== null && dashboard.openingDoorId === dashboard.selectedDoor?.id}
         telemetry={dashboard.selectedDoor === null ? null : dashboard.telemetryOf(dashboard.selectedDoor)}
         onClose={() => dashboard.selectDoor(null)}

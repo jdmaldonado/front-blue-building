@@ -33,10 +33,6 @@ export interface DoorsDashboardController {
   currentFloor: Floor | null;
   floorDoors: Door[];
   selectedDoor: Door | null;
-  // The doors on either side of the selected one, to move without closing the
-  // dialog. Null at the ends: the list does not wrap around.
-  previousDoor: Door | null;
-  nextDoor: Door | null;
   // Set while an open order is waiting for the building to answer.
   openingDoorId: string | null;
   statusOf: (door: Door) => DoorStatus;
@@ -148,7 +144,6 @@ export function useDoorsDashboard(buildingId: string, initialDoorName?: string):
 
   // Looked up among all the doors: the monitor can point at a parked one.
   const selectedDoor = doors.data?.find((door) => door.id === selectedDoorId) ?? null;
-  const selectedIndex = floorDoors.findIndex((door) => door.id === selectedDoorId);
 
   return {
     isPending: doors.isPending,
@@ -159,8 +154,6 @@ export function useDoorsDashboard(buildingId: string, initialDoorName?: string):
     currentFloor,
     floorDoors,
     selectedDoor,
-    previousDoor: selectedIndex > 0 ? (floorDoors[selectedIndex - 1] ?? null) : null,
-    nextDoor: selectedIndex >= 0 ? (floorDoors[selectedIndex + 1] ?? null) : null,
     openingDoorId: pendingOpen?.doorId ?? null,
     statusOf: (door) => selectDoorStatus(statuses.data, door.id),
     telemetryOf: (door) => selectReaderTelemetry(statuses.data, door.id),

@@ -62,6 +62,12 @@ export function Tabs<TValue extends string>({
     };
   }, [items]);
 
+  // The value can change from outside, by a swipe for example, and the new tab
+  // may be out of view.
+  useEffect(() => {
+    listRef.current?.querySelector(`[data-value="${value}"]`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [value]);
+
   const fade = reach.start && reach.end ? 'both' : reach.start ? 'start' : reach.end ? 'end' : 'none';
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>): void {

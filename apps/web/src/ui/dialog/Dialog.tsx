@@ -15,6 +15,7 @@ import {
   dialogBodyVariants,
   dialogFooterVariants,
   dialogHeaderVariants,
+  dialogSubheaderVariants,
   dialogVariants,
   type DialogSize,
 } from './Dialog-variants';
@@ -28,6 +29,10 @@ type DialogProps = {
   // Rendered next to the title, before the close button. It stays visible while
   // the body scrolls.
   headerAside?: ReactNode;
+  // Under the header, outside the scroll, like a row of tabs.
+  subheader?: ReactNode;
+  // Under the body, outside the scroll, with no border of its own.
+  bodyEnd?: ReactNode;
   footer?: ReactNode;
   // Keys pressed anywhere inside the dialog bubble up to here.
   onKeyDown?: KeyboardEventHandler<HTMLDialogElement>;
@@ -42,6 +47,8 @@ export function Dialog({
   description,
   size,
   headerAside,
+  subheader,
+  bodyEnd,
   footer,
   onKeyDown,
   children,
@@ -90,7 +97,8 @@ export function Dialog({
       aria-labelledby={titleId}
       className={cn(dialogVariants({ size }), className)}
     >
-      <div className="flex max-h-[85dvh] flex-col">
+      {/* `h-full` passes down a height set on the dialog, so the body fills it. */}
+      <div className="flex h-full max-h-[85dvh] flex-col">
         <div className={dialogHeaderVariants()}>
           <div className="flex min-w-0 flex-col gap-0.5">
             <h2 id={titleId} className="font-display text-title-sm font-bold tracking-tight">
@@ -106,7 +114,11 @@ export function Dialog({
           </IconButton>
         </div>
 
+        {subheader === undefined ? null : <div className={dialogSubheaderVariants()}>{subheader}</div>}
+
         <div className={dialogBodyVariants()}>{children}</div>
+
+        {bodyEnd}
 
         {footer === undefined ? null : <div className={dialogFooterVariants()}>{footer}</div>}
       </div>
