@@ -1,12 +1,13 @@
 import { UserEvent } from '@bb/core';
 import { BellOff, HatGlasses, Power, TriangleAlert, type LucideIcon } from 'lucide-react';
-import type { ButtonIntent } from '../../../ui';
+import type { ButtonIntent, IconButtonTone } from '../../../ui';
 
 export type UserEventMeta = {
   title: string;
   description: string;
   icon: LucideIcon;
-  intent: ButtonIntent;
+  // A color both a Button and an IconButton have, so either can show the event.
+  intent: Extract<ButtonIntent, IconButtonTone>;
 };
 
 // Wording and colors come from the events screen of the current app: security

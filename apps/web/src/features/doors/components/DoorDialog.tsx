@@ -167,12 +167,20 @@ export function DoorDialog({
         bodyEnd={
           // A strip of its own, so the corners never cover a camera.
           hasTabs ? (
-            <div className="relative h-10 flex-none">
+            <div className="relative h-11 flex-none">
               {previous === undefined ? null : (
-                <PageCorner side="left" label={`Puerta anterior: ${previous.name ?? ''}`} onClick={goPrevious} />
+                <PageCorner
+                  side="left"
+                  label={previous.name ? `Puerta anterior: ${previous.name}` : 'Puerta anterior'}
+                  onClick={goPrevious}
+                />
               )}
               {next === undefined ? null : (
-                <PageCorner side="right" label={`Puerta siguiente: ${next.name ?? ''}`} onClick={goNext} />
+                <PageCorner
+                  side="right"
+                  label={next.name ? `Puerta siguiente: ${next.name}` : 'Puerta siguiente'}
+                  onClick={goNext}
+                />
               )}
             </div>
           ) : undefined

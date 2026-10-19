@@ -1,5 +1,4 @@
-import { UserEvent } from '@bb/core';
-import { IconButton, cn, type IconButtonTone } from '../../../ui';
+import { IconButton, cn } from '../../../ui';
 import type { UserEventActionsController } from '../hooks/useUserEventActions';
 import { USER_EVENT_META, USER_EVENT_ORDER } from '../lib';
 
@@ -7,12 +6,6 @@ type UserEventActionsProps = {
   controller: UserEventActionsController;
   className?: string;
   buttonClassName?: string;
-};
-
-const TONES: Record<(typeof USER_EVENT_ORDER)[number], IconButtonTone> = {
-  [UserEvent.Intrusion]: 'destructive',
-  [UserEvent.Emergency]: 'warning',
-  [UserEvent.Mute]: 'success',
 };
 
 // Icons only, so the row fits next to the primary action. Each one asks for
@@ -28,7 +21,7 @@ export function UserEventActions({ controller, className, buttonClassName }: Use
           <IconButton
             key={event}
             label={meta.title}
-            tone={TONES[event]}
+            tone={meta.intent}
             size="lg"
             onClick={() => void controller.request(event)}
             className={buttonClassName}

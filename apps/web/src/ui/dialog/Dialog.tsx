@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
 import {
-  useEffect,
+  useLayoutEffect,
   useId,
   useRef,
   type KeyboardEventHandler,
@@ -57,7 +57,9 @@ export function Dialog({
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
-  useEffect(() => {
+  // A layout effect, so the dialog is open before the effects of its content
+  // run: a child that scrolls or measures sees it visible.
+  useLayoutEffect(() => {
     const dialog = ref.current;
     if (dialog === null) {
       return;
