@@ -88,6 +88,9 @@ function themeBlock(): string {
     '@theme {',
     '  --text-*: initial;',
     ...type,
+    // In px, not rem: when the root size grows to follow the phone's text size,
+    // only the text grows and the layout stays put.
+    '  --spacing: 4px;',
     '',
     ...families,
     ...patterns,
