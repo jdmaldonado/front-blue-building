@@ -1,7 +1,7 @@
 import { listApprovalPlaces, LoginMode } from '@bb/core';
 import { selectIsSuperUser, selectSpaces, useSessionStore } from '@bb/logic';
 import { redirect } from '@tanstack/react-router';
-import { AppRoute, landingPathFor } from './navigation';
+import { AppRoute, landingPathFor, loginPathForApp } from './navigation';
 
 // `beforeLoad` is not a component, so we use `getState()` and not the hook.
 // A session in the wrong area is not an error: we send it to its own landing.
@@ -9,7 +9,7 @@ export function requireMode(mode: LoginMode) {
   return () => {
     const { session } = useSessionStore.getState();
     if (session === null) {
-      throw redirect({ to: AppRoute.Login });
+      throw redirect({ to: loginPathForApp() });
     }
     if (session.mode !== mode) {
       throw redirect({ to: landingPathFor(session) });
@@ -38,7 +38,7 @@ export function requireSuperUser(): void {
 export function requireApprover(): void {
   const state = useSessionStore.getState();
   if (state.session === null) {
-    throw redirect({ to: AppRoute.Login });
+    throw redirect({ to: loginPathForApp() });
   }
   if (listApprovalPlaces(selectSpaces(state)).length === 0) {
     throw redirect({ to: landingPathFor(state.session) });
@@ -49,7 +49,7 @@ export function requireApprover(): void {
 export function requireSession(): void {
   const { session } = useSessionStore.getState();
   if (session === null) {
-    throw redirect({ to: AppRoute.Login });
+    throw redirect({ to: loginPathForApp() });
   }
 }
 

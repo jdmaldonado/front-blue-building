@@ -3,12 +3,12 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import { APP_IDENTITY, AppKind } from './src/config/app.config';
+import { APP_IDENTITY, readAppKind } from './src/config/app.config';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, import.meta.dirname);
   // The icons of each app are the PNGs exported from its public/icons/*/icon.svg.
-  const app = APP_IDENTITY[env.VITE_APP_KIND === AppKind.Admin ? AppKind.Admin : AppKind.Resident];
+  const app = APP_IDENTITY[readAppKind(env)];
 
   return {
     plugins: [
@@ -18,10 +18,14 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
       // iOS takes the home screen name and icon from these tags, not the manifest.
+      // The short name, because iOS cuts long ones and both apps would read the same.
       {
         name: 'app-identity',
         transformIndexHtml: (html: string) =>
-          html.replaceAll('%APP_NAME%', app.name).replaceAll('%APP_ICONS%', app.icons),
+          html
+            .replaceAll('%APP_NAME%', app.name)
+            .replaceAll('%APP_SHORT_NAME%', app.shortName)
+            .replaceAll('%APP_ICONS%', app.icons),
       },
       VitePWA({
         registerType: 'autoUpdate',

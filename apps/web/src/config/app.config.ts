@@ -21,6 +21,23 @@ export const APP_IDENTITY: Record<AppKind, { name: string; shortName: string; ic
   [AppKind.Admin]: { name: 'Blue Building Admin', shortName: 'BB Admin', icons: '/icons/admin' },
 };
 
+// Optional, so a deploy that predates the split stays the resident app. An
+// empty value counts as not set.
+const AppKindSchema = z.preprocess(
+  (value) => (value === '' ? undefined : value),
+  z.enum(AppKind).default(AppKind.Resident),
+);
+
+// Also called by vite.config.ts, so a wrong value fails the build instead of
+// publishing an app that cannot start.
+export function readAppKind(source: Record<string, string | undefined>): AppKind {
+  const parsed = AppKindSchema.safeParse(source.VITE_APP_KIND);
+  if (!parsed.success) {
+    throw new Error(`VITE_APP_KIND inválida: "${source.VITE_APP_KIND}". Usa resident o admin.`);
+  }
+  return parsed.data;
+}
+
 const REQUIRED_URL = 'requerida, debe ser una URL http(s) con esquema (ej: http://localhost:3000)';
 
 // `protocol` is needed: plain `z.url()` accepts 'localhost:3000', because it
@@ -34,9 +51,7 @@ const EnvSchema = z.object({
   // socket.io starts over HTTP and upgrades on its own, so this is http(s),
   // not ws(s).
   VITE_SOCKET_URL: httpUrl,
-  // Optional, so a deploy that predates the split stays the resident app. An
-  // empty value counts as not set.
-  VITE_APP_KIND: z.preprocess((value) => (value === '' ? undefined : value), z.enum(AppKind).default(AppKind.Resident)),
+  VITE_APP_KIND: AppKindSchema,
   MODE: z.enum(AppMode).catch(AppMode.Production),
 });
 

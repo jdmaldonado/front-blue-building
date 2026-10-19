@@ -1,4 +1,5 @@
 import { LoginMode, type Session } from '@bb/core';
+import { AppKind, getAppConfig } from '../config';
 
 export const AppRoute = {
   Login: '/login',
@@ -37,6 +38,11 @@ export const AppRoute = {
   AdminMonitor: '/admin/monitor',
 } as const;
 export type AppRoute = (typeof AppRoute)[keyof typeof AppRoute];
+
+// Where someone without a session signs in: each app has its own door.
+export function loginPathForApp(): AppRoute {
+  return getAppConfig().kind === AppKind.Admin ? AppRoute.AdminLogin : AppRoute.Login;
+}
 
 // Where each session belongs. Login and guards both use this, so the rule lives
 // in one place. The branch by RoleType will go here too.

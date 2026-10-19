@@ -6,5 +6,6 @@ export {
   getAppConfig,
   initAppConfig,
   loadAppConfig,
+  readAppKind,
 } from './app.config';
 export type { AppConfig } from './app.config';
