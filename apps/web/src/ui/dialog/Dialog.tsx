@@ -24,6 +24,8 @@ type DialogProps = {
   open: boolean;
   onClose: () => void;
   title: string;
+  // With its description. Screen readers still read both: a dialog needs a name.
+  hideTitle?: boolean;
   description?: ReactNode;
   size?: DialogSize;
   // Rendered next to the title, before the close button. It stays visible while
@@ -42,6 +44,7 @@ export function Dialog({
   open,
   onClose,
   title,
+  hideTitle = false,
   description,
   size,
   headerAside,
@@ -99,7 +102,7 @@ export function Dialog({
       {/* `h-full` passes down a height set on the dialog, so the body fills it. */}
       <div className="flex h-full max-h-[85dvh] flex-col">
         <div className={dialogHeaderVariants()}>
-          <div className="flex min-w-0 flex-col gap-0.5">
+          <div className={cn('flex min-w-0 flex-col gap-0.5', hideTitle ? 'sr-only' : '')}>
             <h2 id={titleId} className="font-display text-title-sm font-bold tracking-tight">
               {title}
             </h2>

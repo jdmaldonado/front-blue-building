@@ -129,6 +129,8 @@ export function DoorDialog({
         // door to the next.
         className={hasTabs ? 'h-[85dvh]' : undefined}
         title={door?.floor?.name ?? 'Puertas'}
+        // The floor carries the building name, and a resident only has one.
+        hideTitle={isResident}
         headerAside={
           // In the header and not in the body: the body scrolls, and the status
           // and the reload button have to stay reachable while it does.
