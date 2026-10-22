@@ -43,7 +43,7 @@ export function AccountPage() {
       <Card className="flex items-center gap-4">
         <Avatar src={session.user.photo} name={session.user.name} size="lg" />
         <div className="flex min-w-0 flex-col">
-          <Text as="h2" size="subtitle" weight="bold" truncate>
+          <Text as="h2" size="title" weight="bold" truncate>
             {session.user.name}
           </Text>
           <Text as="span" size="body-sm" tone="muted">

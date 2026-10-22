@@ -11,6 +11,7 @@ import {
 import { createPortal } from 'react-dom';
 import { cn } from '../cn';
 import { IconButton } from '../icon-button';
+import { Text } from '../text';
 import {
   dialogBodyVariants,
   dialogFooterVariants,
@@ -103,11 +104,13 @@ export function Dialog({
       <div className="flex h-full max-h-[85dvh] flex-col">
         <div className={dialogHeaderVariants()}>
           <div className={cn('flex min-w-0 flex-col gap-0.5', hideTitle ? 'sr-only' : '')}>
-            <h2 id={titleId} className="font-display text-subtitle font-bold tracking-tight">
+            <Text as="h2" id={titleId} size="title" weight="bold">
               {title}
-            </h2>
+            </Text>
             {description === undefined ? null : (
-              <div className="text-body-sm text-(--text-secondary)">{description}</div>
+              <Text as="div" size="body-sm" tone="secondary">
+                {description}
+              </Text>
             )}
           </div>
           {headerAside}

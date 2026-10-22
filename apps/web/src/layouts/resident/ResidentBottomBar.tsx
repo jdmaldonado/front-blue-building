@@ -37,7 +37,7 @@ export function ResidentBottomBar({ onOpenEvents, onOpenMenu }: ResidentBottomBa
               )}
             />
             <House size={28} aria-hidden />
-            <Text as="span" size="caption" tone="inherit">
+            <Text as="span" size="body-sm" weight="medium" tone="inherit">
               Inicio
             </Text>
           </span>
@@ -46,14 +46,14 @@ export function ResidentBottomBar({ onOpenEvents, onOpenMenu }: ResidentBottomBa
 
       <button type="button" onClick={onOpenEvents} className={cn(itemClassName, 'text-(--destructive)')}>
         <Siren size={28} aria-hidden />
-        <Text as="span" size="caption" tone="inherit">
+        <Text as="span" size="body-sm" weight="medium" tone="inherit">
           Alerta
         </Text>
       </button>
 
       <button type="button" onClick={onOpenMenu} className={itemClassName}>
         <Menu size={28} aria-hidden />
-        <Text as="span" size="caption" tone="inherit">
+        <Text as="span" size="body-sm" weight="medium" tone="inherit">
           Menú
         </Text>
       </button>

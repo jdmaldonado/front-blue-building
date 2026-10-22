@@ -16,7 +16,7 @@ type ResidentMenuPanelProps = {
 
 const optionClassName = [
   'flex min-h-12 w-full items-center justify-end gap-3 rounded-(--radius-2) px-3',
-  textVariants({ weight: 'semibold', tone: 'inherit' }),
+  textVariants({ size: 'subtitle', weight: 'semibold', tone: 'inherit' }),
   'font-display text-(--brand-vivid-foreground)',
   'transition-colors duration-(--duration-fast) ease-standard hover:bg-(--brand-vivid-ring)',
   'focus-visible:ring-2 focus-visible:ring-(--brand-vivid-foreground) focus-visible:outline-none',
@@ -89,10 +89,10 @@ export function ResidentMenuPanel({ open, onClose }: ResidentMenuPanelProps) {
             {/* Narrow and wrapping: up here the diagonal leaves little room, and a
                 long name on one line runs across it. */}
             <span className="flex max-w-32 min-w-0 flex-col items-end text-right">
-              <Text as="span" size="body" weight="medium" className="text-(--brand-vivid-foreground)">
+              <Text as="span" size="subtitle" weight="semibold" className="text-(--brand-vivid-foreground)">
                 {session.user.name}
               </Text>
-              <Text as="span" size="caption" className="text-(--brand-vivid-muted)">
+              <Text as="span" size="body-sm" className="text-(--brand-vivid-muted)">
                 {caption}
               </Text>
             </span>

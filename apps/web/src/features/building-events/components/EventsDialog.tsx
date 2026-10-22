@@ -41,7 +41,7 @@ export function EventsDialog({ open, onClose, controller }: EventsDialogProps) {
             >
               <Icon size={22} className="mt-0.5 shrink-0" aria-hidden />
               <span className="flex min-w-0 flex-col gap-0.5">
-                <Text as="span" tone="inherit" weight="semibold">
+                <Text as="span" size="subtitle" tone="inherit" weight="semibold">
                   {meta.title}
                 </Text>
                 <Text as="span" size="body-sm" tone="inherit" className="opacity-90">
