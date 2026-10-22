@@ -172,7 +172,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
 
         {hasReportedHardware && (
           <div className="rounded-lg border border-(--border) bg-(--surface-sunken) p-3">
-            <Text as="p" size="label" tone="muted">
+            <Text as="p" size="caption" tone="muted">
               Hardware detectado: <strong className="text-(--foreground)">{hardwareSummary}</strong>
             </Text>
           </div>
@@ -221,7 +221,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
               className="font-mono text-(--accent)"
             />
             {target === FirmwareTarget.Both && (
-              <span className="font-mono text-label text-(--text-muted) break-all">Esclava: {slaveUrl}</span>
+              <span className="font-mono text-caption text-(--text-muted) break-all">Esclava: {slaveUrl}</span>
             )}
             {customUrl && (
               <div className="flex justify-end">
@@ -242,7 +242,7 @@ export function ReaderFirmwareDialog({ door, reported, pending, onClose, onSend 
         </Field>
 
         <div className="rounded-lg border border-(--border) bg-(--surface-sunken) p-3">
-          <Text as="p" size="label" tone="muted">
+          <Text as="p" size="caption" tone="muted">
             Resumen: Se actualizará <strong className="text-(--foreground)">{targetSummary}</strong> con versión{' '}
             <strong className="text-(--foreground)">{version}</strong>.
           </Text>

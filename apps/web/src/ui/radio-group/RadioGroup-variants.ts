@@ -44,7 +44,7 @@ export const radioGroupItemVariants = cva(
         segmented: 'flex-1 justify-center rounded-(--radio-track-radius)',
       },
       size: {
-        sm: 'text-label',
+        sm: 'text-caption',
         md: 'text-body-sm',
       },
       selected: {

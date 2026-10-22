@@ -19,8 +19,8 @@ export const selectVariants = cva(
         slanted: 'peer relative z-10 bg-transparent text-(--input-slanted-foreground) focus:outline-none',
       },
       selectSize: {
-        sm: 'py-2 pl-3 text-field sm:text-body-sm',
-        md: 'py-2.5 pl-3.5 text-field sm:text-body',
+        sm: 'py-2 pl-3 text-body sm:text-body-sm',
+        md: 'py-2.5 pl-3.5 text-body',
       },
     },
     compoundVariants: [

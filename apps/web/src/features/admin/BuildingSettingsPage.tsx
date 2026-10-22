@@ -18,7 +18,7 @@ export function BuildingSettingsPage() {
       <Card className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <Wrench size={18} aria-hidden className="text-(--text-secondary)" />
-          <Text as="h2" size="title-sm" weight="medium">
+          <Text as="h2" size="subtitle" weight="medium">
             Mantenimiento
           </Text>
         </div>
@@ -47,7 +47,7 @@ export function BuildingSettingsPage() {
       <Card className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <BellOff size={18} aria-hidden className="text-(--text-secondary)" />
-          <Text as="h2" size="title-sm" weight="medium">
+          <Text as="h2" size="subtitle" weight="medium">
             Silenciar alarma
           </Text>
         </div>
@@ -64,7 +64,7 @@ export function BuildingSettingsPage() {
       <Card className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <Power size={18} aria-hidden className="text-(--text-secondary)" />
-          <Text as="h2" size="title-sm" weight="medium">
+          <Text as="h2" size="subtitle" weight="medium">
             Reiniciar equipo
           </Text>
         </div>

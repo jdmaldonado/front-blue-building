@@ -6,7 +6,7 @@ export type TooltipSide = (typeof tooltipSides)[number];
 export const tooltipVariants = cva(
   [
     'pointer-events-none absolute z-50 w-max max-w-56 rounded-(--tooltip-radius) px-2.5 py-1.5',
-    'bg-(--tooltip-bg) text-(--tooltip-foreground) text-label shadow-(--shadow-2)',
+    'bg-(--tooltip-bg) text-(--tooltip-foreground) text-caption shadow-(--shadow-2)',
     // Out of the layout while hidden: an invisible bubble still takes room and
     // gave tables a sideways scroll.
     'hidden group-hover:block group-focus-visible:block',

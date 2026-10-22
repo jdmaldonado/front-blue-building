@@ -12,7 +12,7 @@ export const avatarVariants = cva(
     variants: {
       size: {
         sm: 'size-7 text-caption',
-        md: 'size-9 text-label',
+        md: 'size-9 text-caption',
         lg: 'size-12 text-body',
       },
     },

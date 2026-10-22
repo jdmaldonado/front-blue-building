@@ -42,7 +42,7 @@ export function BuildingSummaryPage({ building }: BuildingSummaryPageProps) {
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
       <Card className="flex flex-col gap-3">
-        <Text size="label" tone="muted">
+        <Text size="caption" tone="muted">
           Estado
         </Text>
         {/* TODO: show whether the building box is online. The API does not
@@ -53,7 +53,7 @@ export function BuildingSummaryPage({ building }: BuildingSummaryPageProps) {
 
       {details.length === 0 ? null : (
         <Card className="flex flex-col gap-3">
-          <Text size="label" tone="muted">
+          <Text size="caption" tone="muted">
             Datos
           </Text>
           <dl className="flex flex-col gap-2">
@@ -81,7 +81,7 @@ export function BuildingSummaryPage({ building }: BuildingSummaryPageProps) {
                 <Text as="span" weight="medium">
                   {section.title}
                 </Text>
-                <Text as="span" size="label" tone="muted">
+                <Text as="span" size="caption" tone="muted">
                   {section.description}
                 </Text>
               </div>

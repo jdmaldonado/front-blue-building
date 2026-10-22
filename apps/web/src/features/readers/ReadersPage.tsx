@@ -107,7 +107,7 @@ export function ReadersPage() {
             <Text as="span" weight="medium" truncate>
               {row.original.name ?? 'Sin nombre'}
             </Text>
-            <Text as="span" size="label" className="font-mono text-(--accent)">
+            <Text as="span" size="caption" className="font-mono text-(--accent)">
               {row.original.localId}
             </Text>
           </div>

@@ -38,7 +38,7 @@ export function OpenDoorLens({ buildingId }: OpenDoorLensProps) {
             <Text as="span" weight="medium" truncate>
               {row.original.doorName ?? 'Puerta sin nombre'}
             </Text>
-            <Text as="span" size="label" tone="muted" truncate>
+            <Text as="span" size="caption" tone="muted" truncate>
               {formatEventDate(row.original.timestampEvent ?? row.original.createdAt)}
             </Text>
           </div>
@@ -95,7 +95,7 @@ export function OpenDoorLens({ buildingId }: OpenDoorLensProps) {
         meta: { actions: true },
         cell: ({ row }) =>
           row.original.imageUrl === null || row.original.imageUrl === undefined ? (
-            <Text as="span" size="label" tone="muted">
+            <Text as="span" size="caption" tone="muted">
               Sin foto
             </Text>
           ) : (

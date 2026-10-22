@@ -75,7 +75,7 @@ export function BuildingBreadcrumb({ building }: BuildingBreadcrumbProps) {
         </Breadcrumb>
       )}
 
-      <h1 className="truncate font-display text-title-sm font-bold tracking-tight">{title}</h1>
+      <h1 className="truncate font-display text-subtitle font-bold tracking-tight">{title}</h1>
     </div>
   );
 }

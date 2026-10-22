@@ -60,7 +60,7 @@ export function ResidentsTable({
               <Text as="span" weight="medium" truncate>
                 {row.original.name}
               </Text>
-              <Text as="span" size="label" tone="muted" truncate className="font-mono">
+              <Text as="span" size="caption" tone="muted" truncate className="font-mono">
                 {row.original.cedula}
               </Text>
             </div>

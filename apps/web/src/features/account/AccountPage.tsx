@@ -43,7 +43,7 @@ export function AccountPage() {
       <Card className="flex items-center gap-4">
         <Avatar src={session.user.photo} name={session.user.name} size="lg" />
         <div className="flex min-w-0 flex-col">
-          <Text as="h2" size="title-sm" weight="bold" truncate>
+          <Text as="h2" size="subtitle" weight="bold" truncate>
             {session.user.name}
           </Text>
           <Text as="span" size="body-sm" tone="muted">
@@ -53,7 +53,7 @@ export function AccountPage() {
       </Card>
 
       <Card className="flex flex-col gap-4">
-        <Text as="h3" size="label" tone="muted" weight="semibold">
+        <Text as="h3" size="caption" tone="muted" weight="semibold">
           DATOS DE CONTACTO
         </Text>
         <AccountField icon={IdCard} label="Documento" value={session.user.cedula} />
@@ -65,7 +65,7 @@ export function AccountPage() {
 
       {spaces.map((space, index) => (
         <Card key={`${space.building.id}-${space.apartment?.id ?? index}`} className="flex flex-col gap-4">
-          <Text as="h3" size="label" tone="muted" weight="semibold">
+          <Text as="h3" size="caption" tone="muted" weight="semibold">
             {spaces.length > 1 ? `ESPACIO ${index + 1}` : 'MI ESPACIO'}
           </Text>
           <AccountField icon={Building2} label="Edificio" value={space.building.name} />

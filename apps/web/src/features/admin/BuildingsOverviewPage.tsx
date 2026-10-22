@@ -27,7 +27,7 @@ export function BuildingsOverviewPage() {
             <Text as="span" weight="medium" truncate>
               {row.original.name}
             </Text>
-            <Text as="span" size="label" tone="muted" truncate>
+            <Text as="span" size="caption" tone="muted" truncate>
               {[row.original.city, row.original.address1].filter(Boolean).join(' · ') || row.original.id}
             </Text>
           </div>

@@ -77,7 +77,7 @@ export function CardsPage({ search, onSearchChange }: CardsPageProps) {
               <Text weight="medium" truncate>
                 {user.data.name}
               </Text>
-              <Text size="label" tone="muted" className="font-mono">
+              <Text size="caption" tone="muted" className="font-mono">
                 {user.data.cedula}
               </Text>
             </div>

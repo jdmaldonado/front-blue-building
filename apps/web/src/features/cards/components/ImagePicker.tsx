@@ -30,7 +30,7 @@ export function ImagePicker({ label, file, onPick }: ImagePickerProps) {
     // `relative` holds the hidden file input inside the label. Without it the
     // input is placed against the page and makes the whole page scroll.
     <label className="relative flex cursor-pointer flex-col gap-2">
-      <Text as="span" size="label" weight="medium">
+      <Text as="span" size="caption" weight="medium">
         {label}
       </Text>
 

@@ -39,7 +39,7 @@ export function ReaderBoardStatus({ title, state, spiOk, isConfigured = true }: 
     // Fixed columns: the labels change on every frame, and without a reserved
     // width the whole row jumps sideways each time one arrives.
     <div className="flex min-w-0 items-center gap-3">
-      <Text as="span" size="label" weight="medium" className="w-14 flex-none">
+      <Text as="span" size="caption" weight="medium" className="w-14 flex-none">
         {title}
       </Text>
 
@@ -51,7 +51,7 @@ export function ReaderBoardStatus({ title, state, spiOk, isConfigured = true }: 
       </span>
 
       <span className="flex flex-none items-center gap-1.5">
-        <Text as="span" size="label" tone="muted">
+        <Text as="span" size="caption" tone="muted">
           SPI
         </Text>
         <StatusDot state={spi.dotState} />

@@ -36,7 +36,7 @@ export function IntrusionSequenceDialog({ event, onClose }: IntrusionSequenceDia
       {event === null ? null : (
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Text size="label" weight="medium">
+            <Text size="caption" weight="medium">
               Secuencia ({event.imageCount})
             </Text>
             {event.imageUrls.length === 0 ? (
@@ -67,7 +67,7 @@ export function IntrusionSequenceDialog({ event, onClose }: IntrusionSequenceDia
           </div>
 
           <div className="flex flex-col gap-2">
-            <Text size="label" weight="medium">
+            <Text size="caption" weight="medium">
               En vivo
             </Text>
             {canStream ? (

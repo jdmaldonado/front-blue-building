@@ -103,7 +103,7 @@ export function Dialog({
       <div className="flex h-full max-h-[85dvh] flex-col">
         <div className={dialogHeaderVariants()}>
           <div className={cn('flex min-w-0 flex-col gap-0.5', hideTitle ? 'sr-only' : '')}>
-            <h2 id={titleId} className="font-display text-title-sm font-bold tracking-tight">
+            <h2 id={titleId} className="font-display text-subtitle font-bold tracking-tight">
               {title}
             </h2>
             {description === undefined ? null : (

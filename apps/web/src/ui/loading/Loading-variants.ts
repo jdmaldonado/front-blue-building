@@ -14,7 +14,7 @@ export const loadingVariants = cva('flex items-center gap-3 text-(--text-seconda
       screen: 'min-h-dvh w-full flex-col justify-center',
     },
     size: {
-      sm: 'text-label',
+      sm: 'text-caption',
       md: 'text-body-sm',
       lg: 'text-body',
     },

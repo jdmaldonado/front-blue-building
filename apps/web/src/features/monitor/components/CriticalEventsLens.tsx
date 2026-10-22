@@ -63,7 +63,7 @@ export function CriticalEventsLens({ buildingId }: CriticalEventsLensProps) {
           onChange={setState}
           className="sm:w-auto"
         />
-        <Text as="span" size="label" tone="muted">
+        <Text as="span" size="caption" tone="muted">
           {visible.length} de {events.data?.events.length ?? 0} eventos
         </Text>
       </div>

@@ -14,7 +14,7 @@ export const fieldLabelVariants = cva('text-body-sm font-medium', {
   },
 });
 
-export const fieldMessageVariants = cva('text-label', {
+export const fieldMessageVariants = cva('text-caption', {
   variants: {
     tone: {
       error: 'text-(--destructive)',

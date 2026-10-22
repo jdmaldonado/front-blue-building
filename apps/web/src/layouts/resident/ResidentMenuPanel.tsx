@@ -16,7 +16,7 @@ type ResidentMenuPanelProps = {
 
 const optionClassName = [
   'flex min-h-12 w-full items-center justify-end gap-3 rounded-(--radius-2) px-3',
-  'font-display text-body-lg font-semibold text-(--brand-vivid-foreground)',
+  'font-display text-body font-semibold text-(--brand-vivid-foreground)',
   'transition-colors duration-(--duration-fast) ease-standard hover:bg-(--brand-vivid-ring)',
   'focus-visible:ring-2 focus-visible:ring-(--brand-vivid-foreground) focus-visible:outline-none',
 ].join(' ');

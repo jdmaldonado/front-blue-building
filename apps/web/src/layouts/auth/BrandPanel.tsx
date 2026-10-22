@@ -14,10 +14,10 @@ export function BrandPanel() {
       <Logo size="xl" className="text-(--brand-accent)" />
 
       <div className="flex max-w-[380px] flex-col gap-3">
-        <h2 className="font-display text-display leading-tight font-bold tracking-tight lg:text-display-lg">
+        <h2 className="font-display text-display leading-tight font-bold tracking-tight">
           Control de acceso para tu edificio.
         </h2>
-        <p className="text-body leading-relaxed text-(--brand-muted) lg:text-body-lg">
+        <p className="text-body leading-relaxed text-(--brand-muted)">
           Puertas, tarjetas RFID y alarmas, administradas desde un solo lugar.
         </p>
       </div>
