@@ -219,7 +219,7 @@ export function DoorDialog({
       >
         {door === null ? null : (
           // Fills the body, so a swipe works on the empty space too.
-          <div className="min-h-full touch-pan-y" {...swipe}>
+          <div className="min-h-full touch-pan-y touch-pinch-zoom" {...swipe}>
             {/* Clipped sideways so the page sliding in never shows a scrollbar. */}
             <div className="overflow-x-clip">
               <div
