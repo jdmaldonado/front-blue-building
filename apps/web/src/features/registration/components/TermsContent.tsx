@@ -1,7 +1,7 @@
-import { linkVariants } from '../../../ui';
+import { linkVariants, textVariants } from '../../../ui';
 
-const paragraph = 'text-body-sm leading-relaxed text-(--text-secondary)';
-const heading = 'font-semibold text-(--text-primary) text-body';
+const paragraph = textVariants({ size: 'body-sm', tone: 'secondary', className: 'leading-relaxed' });
+const heading = textVariants({ weight: 'semibold' });
 const link = linkVariants();
 
 // Copied word for word from the old app

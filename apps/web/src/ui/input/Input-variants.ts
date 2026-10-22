@@ -27,8 +27,8 @@ export const inputVariants = cva(
         ],
       },
       inputSize: {
-        sm: 'px-3 py-2 text-field sm:text-body-sm',
-        md: 'px-3.5 py-2.5 text-field sm:text-body',
+        sm: 'px-3 py-2 text-body sm:text-body-sm',
+        md: 'px-3.5 py-2.5 text-body',
       },
     },
     compoundVariants: [

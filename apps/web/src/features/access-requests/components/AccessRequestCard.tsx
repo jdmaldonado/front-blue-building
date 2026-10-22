@@ -58,8 +58,12 @@ function Detail({ label, value }: { label: string; value?: string | null }) {
 
   return (
     <div className="flex gap-2">
-      <dt className="text-(--text-muted) text-body-sm">{label}</dt>
-      <dd className="text-body-sm">{value}</dd>
+      <Text as="dt" size="body-sm" tone="muted">
+        {label}
+      </Text>
+      <Text as="dd" size="body-sm">
+        {value}
+      </Text>
     </div>
   );
 }

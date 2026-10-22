@@ -1,7 +1,16 @@
-import { LoginMode, type Door, type DoorStatus } from '@bb/core';
+import { LoginMode, sortCamerasByName, type Door, type DoorStatus } from '@bb/core';
 import { selectIsSuperUser, useSessionStore, type ReaderTelemetry } from '@bb/logic';
-import { Columns2, Columns3, Cpu, DoorOpen, RectangleHorizontal, SwitchCamera } from 'lucide-react';
-import { useState, type KeyboardEvent } from 'react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Columns2,
+  Columns3,
+  Cpu,
+  DoorOpen,
+  RectangleHorizontal,
+  SwitchCamera,
+} from 'lucide-react';
+import { useMemo, useState, type KeyboardEvent } from 'react';
 import { UserEventActions, useUserEventActions } from '../../building-events';
 import { ReaderTelemetryDialog } from '../../readers';
 import { Badge, Button, Dialog, IconButton, RadioGroup, Tabs, Text, cn, type RadioOption } from '../../../ui';
@@ -9,7 +18,6 @@ import { CameraColumns, useCameraColumns, useSwipe } from '../hooks';
 import { doorStatusMeta } from '../lib';
 import { CameraTile } from './CameraTile';
 import { PageDots } from './PageDots';
-import { PageCorner } from './PageCorner';
 
 type DoorDialogProps = {
   door: Door | null;
@@ -64,8 +72,10 @@ export function DoorDialog({
   // The resident already reads the status from the pin color on the plan.
   const isResident = useSessionStore((state) => state.session?.mode === LoginMode.Usuario);
 
-  const cameras = door?.cameras ?? [];
+  const cameras = useMemo(() => sortCamerasByName(door?.cameras ?? []), [door]);
   const hasCameras = cameras.length > 0;
+  // A door with no local id has no reader behind it, so nothing would open.
+  const canOpen = door?.localId !== null && door?.localId !== undefined;
 
   const index = doors.findIndex((item) => item.id === door?.id);
   // The next page comes in from the side it was asked from.
@@ -119,6 +129,8 @@ export function DoorDialog({
         // door to the next.
         className={hasTabs ? 'h-[85dvh]' : undefined}
         title={door?.floor?.name ?? 'Puertas'}
+        // The floor carries the building name, and a resident only has one.
+        hideTitle={isResident}
         headerAside={
           // In the header and not in the body: the body scrolls, and the status
           // and the reload button have to stay reachable while it does.
@@ -147,7 +159,7 @@ export function DoorDialog({
                 </IconButton>
               </>
             ) : null}
-            {isSuperUser && door?.localId !== null && door?.localId !== undefined ? (
+            {isSuperUser && canOpen ? (
               <IconButton label="Estado del equipo" onClick={() => setShowTelemetry(true)}>
                 <Cpu size={16} />
               </IconButton>
@@ -156,52 +168,58 @@ export function DoorDialog({
         }
         subheader={
           hasTabs ? (
-            <Tabs
-              items={doors.map((item) => ({ value: item.id, label: item.name ?? 'Puerta' }))}
-              value={doors[index]?.id ?? ''}
-              onChange={goTo}
-              label="Puertas del piso"
-            />
-          ) : undefined
-        }
-        bodyEnd={
-          // A strip of its own, so the corners never cover a camera.
-          hasTabs ? (
-            <div className="relative h-11 flex-none">
-              {previous === undefined ? null : (
-                <PageCorner
-                  side="left"
-                  label={previous.name ? `Puerta anterior: ${previous.name}` : 'Puerta anterior'}
-                  onClick={goPrevious}
-                />
-              )}
-              {next === undefined ? null : (
-                <PageCorner
-                  side="right"
-                  label={next.name ? `Puerta siguiente: ${next.name}` : 'Puerta siguiente'}
-                  onClick={goNext}
-                />
-              )}
+            // Disabled at the ends instead of hidden, so the tabs never move.
+            <div className="flex items-center gap-1">
+              <IconButton
+                label={previous?.name ? `Puerta anterior: ${previous.name}` : 'Puerta anterior'}
+                hint={false}
+                disabled={previous === undefined}
+                onClick={goPrevious}
+              >
+                <ChevronLeft size={20} />
+              </IconButton>
+              <Tabs
+                items={doors.map((item) => ({ value: item.id, label: item.name ?? 'Puerta' }))}
+                value={doors[index]?.id ?? ''}
+                onChange={goTo}
+                label="Puertas del piso"
+                className="min-w-0 flex-1"
+              />
+              <IconButton
+                label={next?.name ? `Puerta siguiente: ${next.name}` : 'Puerta siguiente'}
+                hint={false}
+                disabled={next === undefined}
+                onClick={goNext}
+              >
+                <ChevronRight size={20} />
+              </IconButton>
             </div>
           ) : undefined
         }
         footer={
           door === null ? null : (
             // Two equal halves. On a phone the icons share their half; from sm
-            // up they keep their square size.
-            <div className="grid w-full grid-cols-2 gap-2">
+            // up they keep their square size. With no door to open they take the row.
+            <div className={cn('grid w-full gap-2', canOpen ? 'grid-cols-2' : 'grid-cols-1')}>
               <UserEventActions controller={events} buttonClassName="flex-1 sm:flex-none" />
-              <Button size="lg" onClick={() => onOpenDoor(door)} loading={isOpening} className="px-3 whitespace-nowrap">
-                {isOpening ? null : <DoorOpen size={18} />}
-                {isOpening ? 'Abriendo...' : 'Abrir puerta'}
-              </Button>
+              {canOpen ? (
+                <Button
+                  size="lg"
+                  onClick={() => onOpenDoor(door)}
+                  loading={isOpening}
+                  className="px-3 whitespace-nowrap"
+                >
+                  {isOpening ? null : <DoorOpen size={18} />}
+                  {isOpening ? 'Abriendo...' : 'Abrir puerta'}
+                </Button>
+              ) : null}
             </div>
           )
         }
       >
         {door === null ? null : (
           // Fills the body, so a swipe works on the empty space too.
-          <div className="min-h-full touch-pan-y" {...swipe}>
+          <div className="min-h-full touch-pan-y touch-pinch-zoom" {...swipe}>
             {/* Clipped sideways so the page sliding in never shows a scrollbar. */}
             <div className="overflow-x-clip">
               <div

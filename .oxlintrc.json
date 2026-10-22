@@ -12,7 +12,7 @@
   },
   "overrides": [
     {
-      "files": ["packages/logger/**"],
+      "files": ["packages/logger/**", "scripts/**"],
       "rules": {
         "no-console": "off"
       }

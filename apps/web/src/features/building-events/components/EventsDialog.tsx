@@ -1,4 +1,4 @@
-import { Button, Dialog } from '../../../ui';
+import { Button, Dialog, Text } from '../../../ui';
 import type { UserEventActionsController } from '../hooks/useUserEventActions';
 import { USER_EVENT_META, USER_EVENT_ORDER } from '../lib';
 
@@ -41,8 +41,12 @@ export function EventsDialog({ open, onClose, controller }: EventsDialogProps) {
             >
               <Icon size={22} className="mt-0.5 shrink-0" aria-hidden />
               <span className="flex min-w-0 flex-col gap-0.5">
-                <span className="text-body font-semibold">{meta.title}</span>
-                <span className="text-body-sm font-normal opacity-90">{meta.description}</span>
+                <Text as="span" size="subtitle" tone="inherit" weight="semibold">
+                  {meta.title}
+                </Text>
+                <Text as="span" size="body-sm" tone="inherit" className="opacity-90">
+                  {meta.description}
+                </Text>
               </span>
             </Button>
           );

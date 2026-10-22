@@ -109,30 +109,21 @@ export const easing = {
 
 export type EasingToken = keyof typeof easing;
 
-// Type scale by role, not by raw size. A component picks the role ("this is a
-// label", "this is the page title") and the scale decides the number, so nobody
-// writes `text-[23px]` again. Sizes are px; the web adapter converts to rem.
+// Type scale by role, not by raw size: a component picks the role and the scale
+// decides the number. Steps of 2px for text and 4px or more for titles, so each
+// step is visibly bigger than the one before. Sizes are px; the web uses rem.
 export const typeScale = {
-  caption: { size: 11, lineHeight: 1.45 },
-  label: { size: 12, lineHeight: 1.45 },
-  'body-sm': { size: 13, lineHeight: 1.5 },
-  body: { size: 14, lineHeight: 1.5 },
-  'body-lg': { size: 15, lineHeight: 1.5 },
-  // Form controls on a phone. Under 16px Safari zooms the page the moment the
-  // field takes focus, and the layout jumps.
-  field: { size: 16, lineHeight: 1.5 },
-  'title-sm': { size: 17, lineHeight: 1.35 },
+  caption: { size: 12, lineHeight: 1.45 },
+  'body-sm': { size: 14, lineHeight: 1.5 },
+  // Also form fields: under 16px Safari zooms the page when a field takes focus.
+  body: { size: 16, lineHeight: 1.5 },
+  subtitle: { size: 18, lineHeight: 1.4 },
   title: { size: 20, lineHeight: 1.3 },
-  'title-lg': { size: 23, lineHeight: 1.25 },
-  display: { size: 28, lineHeight: 1.15 },
-  'display-lg': { size: 36, lineHeight: 1.1 },
+  'title-lg': { size: 24, lineHeight: 1.25 },
+  display: { size: 32, lineHeight: 1.15 },
 } as const;
 
 export type TypeScaleToken = keyof typeof typeScale;
-
-// The resident app reads every step of the scale this many px bigger: many
-// residents are older.
-export const largeTextStep = 2;
 
 // Families are self-hosted (@fontsource) so the PWA works offline and no request
 // leaves the origin. The web adapter registers them in Tailwind's theme; React

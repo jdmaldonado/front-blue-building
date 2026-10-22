@@ -26,24 +26,22 @@ function iosTextScale(): number {
   return Math.min(Math.max(size / IOS_DEFAULT_BODY_PX, 1), MAX_TEXT_SCALE);
 }
 
-// The resident app reads bigger: a step more (see `largeTextStep`) and the
-// iPhone text size. On <html>, because dialogs render outside the app tree.
+// The resident app follows the iPhone text size. On the root font size, so the
+// whole scale grows in proportion and titles still stand out.
 export function useResidentTextSize(): void {
   const mode = useSessionStore((state) => state.session?.mode ?? null);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   // Without a session, the path says which app this is.
-  const large = mode === null ? !pathname.startsWith(AppRoute.Admin) : mode === LoginMode.Usuario;
+  const resident = mode === null ? !pathname.startsWith(AppRoute.Admin) : mode === LoginMode.Usuario;
 
   useLayoutEffect(() => {
     const root = document.documentElement;
-    root.dataset.textSize = large ? 'large' : 'normal';
-
     const applyScale = () => {
-      root.style.fontSize = large ? `${iosTextScale() * 100}%` : '';
+      root.style.fontSize = resident ? `${iosTextScale() * 100}%` : '';
     };
     applyScale();
     // The setting is changed in the iPhone settings, so read it again on return.
     document.addEventListener('visibilitychange', applyScale);
     return () => document.removeEventListener('visibilitychange', applyScale);
-  }, [large]);
+  }, [resident]);
 }

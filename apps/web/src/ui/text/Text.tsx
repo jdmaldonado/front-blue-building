@@ -4,7 +4,7 @@ import { textVariants, type TextVariants } from './Text-variants';
 
 // Which tag to render. The look comes from `size`, so a heading can be small
 // and a paragraph can be big without lying about the structure of the page.
-const textElements = ['p', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'strong'] as const;
+const textElements = ['p', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'strong', 'dt', 'dd'] as const;
 export type TextElement = (typeof textElements)[number];
 
 type TextProps = ComponentProps<'p'> &

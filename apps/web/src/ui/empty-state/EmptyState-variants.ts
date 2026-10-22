@@ -27,7 +27,7 @@ export const emptyStateIconVariants = cva(
   },
 );
 
-export const emptyStateTitleVariants = cva('text-title-sm font-medium text-(--text-primary)');
+export const emptyStateTitleVariants = cva('text-subtitle font-medium text-(--text-primary)');
 export const emptyStateTextVariants = cva('max-w-sm text-body-sm text-(--text-secondary)');
 
 export type EmptyStateVariants = VariantProps<typeof emptyStateVariants>;

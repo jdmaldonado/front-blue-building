@@ -18,10 +18,10 @@ export function AccountField({ icon: Icon, label, value }: AccountFieldProps) {
     <div className="flex items-start gap-3">
       <Icon size={18} className="mt-0.5 shrink-0 text-(--text-muted)" aria-hidden />
       <div className="flex min-w-0 flex-col">
-        <Text as="span" size="caption" tone="muted">
+        <Text as="span" size="body-sm" tone="muted">
           {label}
         </Text>
-        <Text as="span" size="body-sm">
+        <Text as="span" weight="medium">
           {value}
         </Text>
       </div>

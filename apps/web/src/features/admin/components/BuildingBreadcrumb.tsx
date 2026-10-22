@@ -3,7 +3,13 @@ import { useApartments } from '@bb/logic';
 import { Link, useLocation, useParams } from '@tanstack/react-router';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AppRoute } from '../../../app/navigation';
-import { Breadcrumb, breadcrumbItemVariants, breadcrumbLinkVariants, breadcrumbSeparatorVariants } from '../../../ui';
+import {
+  Breadcrumb,
+  Text,
+  breadcrumbItemVariants,
+  breadcrumbLinkVariants,
+  breadcrumbSeparatorVariants,
+} from '../../../ui';
 import { BUILDING_SECTIONS, buildingSectionPath } from '../lib';
 
 type BuildingBreadcrumbProps = {
@@ -75,7 +81,9 @@ export function BuildingBreadcrumb({ building }: BuildingBreadcrumbProps) {
         </Breadcrumb>
       )}
 
-      <h1 className="truncate font-display text-title-sm font-bold tracking-tight">{title}</h1>
+      <Text as="h1" size="subtitle" weight="bold" truncate>
+        {title}
+      </Text>
     </div>
   );
 }

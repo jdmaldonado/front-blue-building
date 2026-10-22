@@ -1,16 +1,5 @@
 import { componentTokens } from './components';
-import {
-  animation,
-  duration,
-  easing,
-  fontFamily,
-  keyframes,
-  largeTextStep,
-  pattern,
-  radius,
-  slant,
-  typeScale,
-} from './primitives';
+import { animation, duration, easing, fontFamily, keyframes, pattern, radius, slant, typeScale } from './primitives';
 import { semanticDark, semanticLight } from './semantic';
 
 const REM_BASE = 16;
@@ -101,15 +90,6 @@ function themeBlock(): string {
   ].join('\n');
 }
 
-// The same scale a step bigger, switched on with `data-text-size="large"` on
-// <html>. Tailwind utilities read the vars, so `text-body` follows on its own.
-function largeTextBlock(): string {
-  const sizes = Object.entries(typeScale).map(
-    ([name, { size }]) => `  --text-${name}: ${(size + largeTextStep) / REM_BASE}rem;`,
-  );
-  return [`:root[data-text-size='large'] {`, ...sizes, '}'].join('\n');
-}
-
 // Emits CSS custom properties for both themes. The web app writes this to a .css
 // file so Tailwind and plain CSS can consume the semantic layer.
 export function generateThemeCss(): string {
@@ -139,8 +119,6 @@ export function generateThemeCss(): string {
     ":root[data-theme='light'] {",
     semanticVars(semanticLight, '  '),
     '}',
-    '',
-    largeTextBlock(),
     '',
   ].join('\n');
 }

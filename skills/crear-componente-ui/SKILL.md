@@ -77,9 +77,11 @@ Reglas de la estructura:
   hex o `rgb()` en un componente. Si falta el token, se agrega primero
   (`agregar-design-token`).
 - **Tipografía solo por escala.** Los tamaños salen de la escala del sistema:
-  `text-caption`, `text-label`, `text-body-sm`, `text-body`, `text-body-lg`,
-  `text-title-sm`, `text-title`, `text-title-lg`, `text-display`,
-  `text-display-lg`. Prohibido `text-[23px]` y también `text-sm` / `text-2xl`:
+  `text-caption`, `text-body-sm`, `text-body`, `text-subtitle`, `text-title`,
+  `text-title-lg`, `text-display`. Esas clases solo se usan dentro de `ui/`;
+  en las vistas el texto va con `<Text size="...">` o `textVariants(...)`, y
+  `pnpm lint` falla si no (`scripts/check-text-sizes.mjs`). Prohibido
+  `text-[23px]` y también `text-sm` / `text-2xl`:
   la escala de Tailwind está borrada a propósito
   (`packages/design-tokens/src/css.ts:30-47`), esas clases ya no existen. Si
   falta un paso, se agrega en `typeScale` (`agregar-design-token`), no en la
@@ -122,7 +124,7 @@ export const badgeTones = ['neutral', 'success', 'danger'] as const;
 export type BadgeTone = (typeof badgeTones)[number];
 
 export const badgeVariants = cva(
-  'inline-flex items-center gap-1 rounded-(--badge-radius) px-2 py-0.5 text-label font-medium',
+  'inline-flex items-center gap-1 rounded-(--badge-radius) px-2 py-0.5 text-caption font-medium',
   {
     variants: {
       tone: {

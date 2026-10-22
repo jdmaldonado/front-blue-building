@@ -1,20 +1,18 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
-export const textSizes = [
-  'caption',
-  'label',
-  'body-sm',
-  'body',
-  'body-lg',
-  'title-sm',
-  'title',
-  'title-lg',
-  'display',
-  'display-lg',
-] as const;
+export const textSizes = ['caption', 'body-sm', 'body', 'subtitle', 'title', 'title-lg', 'display'] as const;
 export type TextSize = (typeof textSizes)[number];
 
-export const textTones = ['primary', 'secondary', 'muted', 'inverse', 'accent', 'destructive', 'success'] as const;
+export const textTones = [
+  'primary',
+  'secondary',
+  'muted',
+  'inverse',
+  'accent',
+  'destructive',
+  'success',
+  'inherit',
+] as const;
 export type TextTone = (typeof textTones)[number];
 
 export const textWeights = ['normal', 'medium', 'semibold', 'bold'] as const;
@@ -26,15 +24,12 @@ export const textVariants = cva('', {
   variants: {
     size: {
       caption: 'text-caption',
-      label: 'text-label',
       'body-sm': 'text-body-sm',
       body: 'text-body',
-      'body-lg': 'text-body-lg',
-      'title-sm': 'font-display text-title-sm tracking-tight',
+      subtitle: 'font-display text-subtitle tracking-tight',
       title: 'font-display text-title tracking-tight',
       'title-lg': 'font-display text-title-lg tracking-tight',
       display: 'font-display text-display tracking-tight',
-      'display-lg': 'font-display text-display-lg tracking-tight',
     },
     tone: {
       primary: 'text-(--text-primary)',
@@ -44,6 +39,8 @@ export const textVariants = cva('', {
       accent: 'text-(--text-brand)',
       destructive: 'text-(--destructive)',
       success: 'text-(--success)',
+      // Text on a colored surface or inside a button: it takes the parent's color.
+      inherit: '',
     },
     weight: {
       normal: 'font-normal',

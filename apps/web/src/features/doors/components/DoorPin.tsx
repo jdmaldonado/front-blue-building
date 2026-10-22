@@ -1,27 +1,36 @@
 import type { Door, DoorStatus } from '@bb/core';
-import { cn } from '../../../ui';
-import { doorStatusMeta } from '../lib';
+import { Text, cn } from '../../../ui';
+import { doorStatusMeta, preferredLabelSide, type LabelSide } from '../lib';
 
 const PLAN_MIDDLE_PERCENT = 50;
+
+const labelPlacement: Record<LabelSide, string> = {
+  left: 'top-1/2 right-full mr-1.5 -translate-y-1/2 sm:mr-2',
+  right: 'top-1/2 left-full ml-1.5 -translate-y-1/2 sm:ml-2',
+};
 
 type DoorPinProps = {
   door: Door;
   status: DoorStatus;
   selected: boolean;
+  // Chosen by the plan, which sees the other labels. Until then, the preferred one.
+  labelSide?: LabelSide;
   onSelect: (door: Door) => void;
 };
 
 // `left` and `top` are percentages from the API. Only the dot is anchored on
 // them: the label hangs to the side, so a door near the edge is still in place.
-export function DoorPin({ door, status, selected, onSelect }: DoorPinProps) {
+export function DoorPin({ door, status, selected, labelSide, onSelect }: DoorPinProps) {
   const meta = doorStatusMeta(status);
-  // The label hangs toward the wider side, so a long name stays on the plan.
-  const labelOnLeft = (door.left ?? PLAN_MIDDLE_PERCENT) > PLAN_MIDDLE_PERCENT;
+  const preferred = preferredLabelSide(door);
+  const side = labelSide ?? preferred;
 
   return (
     <button
       type="button"
       aria-pressed={selected}
+      data-pin={door.id}
+      data-preferred={preferred}
       onClick={() => onSelect(door)}
       style={{ left: `${door.left ?? PLAN_MIDDLE_PERCENT}%`, top: `${door.top ?? PLAN_MIDDLE_PERCENT}%` }}
       className={cn(
@@ -43,17 +52,23 @@ export function DoorPin({ door, status, selected, onSelect }: DoorPinProps) {
         />
       </span>
 
-      <span
+      <Text
+        as="span"
+        size="body-sm"
+        weight="semibold"
+        tone="inherit"
+        data-pin-label
+        data-side={side}
         className={cn(
-          'absolute top-1/2 inline-flex w-max max-w-36 -translate-y-1/2 items-center rounded-(--radius-2) border sm:max-w-56',
+          'absolute inline-flex w-max max-w-28 items-center rounded-(--radius-2) border sm:max-w-56',
           'px-1.5 py-0.5 sm:px-2.5 sm:py-1',
-          'bg-black/80 text-caption leading-tight text-white shadow-(--shadow-2)',
-          labelOnLeft ? 'right-full mr-1.5 sm:mr-2' : 'left-full ml-1.5 sm:ml-2',
+          'bg-black/80 leading-tight text-white shadow-(--shadow-2)',
+          labelPlacement[side],
           selected ? 'border-(--accent)' : 'border-white/30',
         )}
       >
         {door.name ?? door.localId ?? 'Puerta'}
-      </span>
+      </Text>
     </button>
   );
 }

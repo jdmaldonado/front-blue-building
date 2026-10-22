@@ -11,6 +11,7 @@ import {
 import { createPortal } from 'react-dom';
 import { cn } from '../cn';
 import { IconButton } from '../icon-button';
+import { Text } from '../text';
 import {
   dialogBodyVariants,
   dialogFooterVariants,
@@ -24,6 +25,8 @@ type DialogProps = {
   open: boolean;
   onClose: () => void;
   title: string;
+  // With its description. Screen readers still read both: a dialog needs a name.
+  hideTitle?: boolean;
   description?: ReactNode;
   size?: DialogSize;
   // Rendered next to the title, before the close button. It stays visible while
@@ -31,8 +34,6 @@ type DialogProps = {
   headerAside?: ReactNode;
   // Under the header, outside the scroll, like a row of tabs.
   subheader?: ReactNode;
-  // Under the body, outside the scroll, with no border of its own.
-  bodyEnd?: ReactNode;
   footer?: ReactNode;
   // Keys pressed anywhere inside the dialog bubble up to here.
   onKeyDown?: KeyboardEventHandler<HTMLDialogElement>;
@@ -44,11 +45,11 @@ export function Dialog({
   open,
   onClose,
   title,
+  hideTitle = false,
   description,
   size,
   headerAside,
   subheader,
-  bodyEnd,
   footer,
   onKeyDown,
   children,
@@ -102,12 +103,14 @@ export function Dialog({
       {/* `h-full` passes down a height set on the dialog, so the body fills it. */}
       <div className="flex h-full max-h-[85dvh] flex-col">
         <div className={dialogHeaderVariants()}>
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <h2 id={titleId} className="font-display text-title-sm font-bold tracking-tight">
+          <div className={cn('flex min-w-0 flex-col gap-0.5', hideTitle ? 'sr-only' : '')}>
+            <Text as="h2" id={titleId} size="title" weight="bold">
               {title}
-            </h2>
+            </Text>
             {description === undefined ? null : (
-              <div className="text-body-sm text-(--text-secondary)">{description}</div>
+              <Text as="div" size="body-sm" tone="secondary">
+                {description}
+              </Text>
             )}
           </div>
           {headerAside}
@@ -119,8 +122,6 @@ export function Dialog({
         {subheader === undefined ? null : <div className={dialogSubheaderVariants()}>{subheader}</div>}
 
         <div className={dialogBodyVariants()}>{children}</div>
-
-        {bodyEnd}
 
         {footer === undefined ? null : <div className={dialogFooterVariants()}>{footer}</div>}
       </div>

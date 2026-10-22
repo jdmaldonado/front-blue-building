@@ -60,7 +60,7 @@ export function ResidentsTable({
               <Text as="span" weight="medium" truncate>
                 {row.original.name}
               </Text>
-              <Text as="span" size="label" tone="muted" truncate className="font-mono">
+              <Text as="span" size="caption" tone="muted" truncate className="font-mono">
                 {row.original.cedula}
               </Text>
             </div>
@@ -124,9 +124,11 @@ export function ResidentsTable({
             type="button"
             onClick={() => setCardsOf(row.original)}
             aria-label={`Ver las tarjetas de ${row.original.name}`}
-            className="font-mono text-body-sm text-(--accent) underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none"
+            className="font-mono text-(--accent) underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-(--border-focus) focus-visible:outline-none"
           >
-            {row.original.tags.length}
+            <Text as="span" size="body-sm" tone="inherit">
+              {row.original.tags.length}
+            </Text>
           </button>
         ),
       },

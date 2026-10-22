@@ -16,15 +16,15 @@ type SwipeHandlers = {
   onPointerCancel: () => void;
 };
 
-// Horizontal swipe, by finger, pen or mouse drag. The element that takes these
-// handlers needs `touch-pan-y`, or the browser claims the drag for scrolling
-// and cancels the pointer before it ends.
+// Horizontal swipe, by finger, pen or mouse drag. The element needs `touch-pan-y`
+// so the browser leaves the drag to us, and `touch-pinch-zoom` to keep the zoom.
 export function useSwipe({ onSwipeLeft, onSwipeRight }: SwipeInput): SwipeHandlers {
   const start = useRef<{ x: number; y: number } | null>(null);
 
   return {
     onPointerDown: (event) => {
-      start.current = { x: event.clientX, y: event.clientY };
+      // A second finger means a pinch, not a swipe.
+      start.current = event.isPrimary ? { x: event.clientX, y: event.clientY } : null;
     },
     onPointerCancel: () => {
       start.current = null;
@@ -32,7 +32,9 @@ export function useSwipe({ onSwipeLeft, onSwipeRight }: SwipeInput): SwipeHandle
     onPointerUp: (event) => {
       const from = start.current;
       start.current = null;
-      if (from === null) {
+      // Zoomed in, a sideways drag is someone looking around the picture.
+      const zoomed = (window.visualViewport?.scale ?? 1) > 1;
+      if (from === null || zoomed) {
         return;
       }
 

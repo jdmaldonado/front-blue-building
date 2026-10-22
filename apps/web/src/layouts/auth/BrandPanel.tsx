@@ -1,4 +1,4 @@
-import { Logo } from '../../ui';
+import { Logo, Text } from '../../ui';
 
 // Stays dark in both themes: the brand-* tokens do not flip.
 export function BrandPanel() {
@@ -14,15 +14,17 @@ export function BrandPanel() {
       <Logo size="xl" className="text-(--brand-accent)" />
 
       <div className="flex max-w-[380px] flex-col gap-3">
-        <h2 className="font-display text-display leading-tight font-bold tracking-tight lg:text-display-lg">
+        <Text as="h2" size="display" weight="bold" tone="inherit">
           Control de acceso para tu edificio.
-        </h2>
-        <p className="text-body leading-relaxed text-(--brand-muted) lg:text-body-lg">
+        </Text>
+        <Text tone="inherit" className="leading-relaxed text-(--brand-muted)">
           Puertas, tarjetas RFID y alarmas, administradas desde un solo lugar.
-        </p>
+        </Text>
       </div>
 
-      <span className="font-mono text-caption tracking-wider text-(--brand-muted)">BLUE BUILDING</span>
+      <Text as="span" size="caption" tone="inherit" className="font-mono tracking-wider text-(--brand-muted)">
+        BLUE BUILDING
+      </Text>
     </div>
   );
 }

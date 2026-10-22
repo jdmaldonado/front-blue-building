@@ -33,7 +33,7 @@ export const dropdownMenuItemVariants = cva(
 );
 
 export const dropdownMenuLabelVariants = cva(
-  'px-3 py-1.5 text-label tracking-wide text-(--text-muted) uppercase sm:px-2.5 sm:text-caption',
+  'px-3 py-1.5 text-caption tracking-wide text-(--text-muted) uppercase sm:px-2.5 sm:text-caption',
 );
 
 export const dropdownMenuSeparatorVariants = cva('my-1 h-px bg-(--menu-border)');
