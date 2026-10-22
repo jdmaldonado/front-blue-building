@@ -1,7 +1,7 @@
-import { LoginMode, type Door, type DoorStatus } from '@bb/core';
+import { LoginMode, sortCamerasByName, type Door, type DoorStatus } from '@bb/core';
 import { selectIsSuperUser, useSessionStore, type ReaderTelemetry } from '@bb/logic';
 import { Columns2, Columns3, Cpu, DoorOpen, RectangleHorizontal, SwitchCamera } from 'lucide-react';
-import { useState, type KeyboardEvent } from 'react';
+import { useMemo, useState, type KeyboardEvent } from 'react';
 import { UserEventActions, useUserEventActions } from '../../building-events';
 import { ReaderTelemetryDialog } from '../../readers';
 import { Badge, Button, Dialog, IconButton, RadioGroup, Tabs, Text, cn, type RadioOption } from '../../../ui';
@@ -64,7 +64,7 @@ export function DoorDialog({
   // The resident already reads the status from the pin color on the plan.
   const isResident = useSessionStore((state) => state.session?.mode === LoginMode.Usuario);
 
-  const cameras = door?.cameras ?? [];
+  const cameras = useMemo(() => sortCamerasByName(door?.cameras ?? []), [door]);
   const hasCameras = cameras.length > 0;
 
   const index = doors.findIndex((item) => item.id === door?.id);
