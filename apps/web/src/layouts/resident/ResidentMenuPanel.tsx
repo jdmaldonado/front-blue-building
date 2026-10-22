@@ -6,7 +6,7 @@ import { LogOut, Moon, ShieldCheck, Sun, User, X, type LucideIcon } from 'lucide
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { AppRoute } from '../../app/navigation';
 import { Theme, useTheme } from '../../app/theme';
-import { Avatar, Badge, Drawer, Logo, Text } from '../../ui';
+import { Avatar, Badge, Drawer, Logo, Text, textVariants } from '../../ui';
 import { useSignOut } from '../app/useSignOut';
 
 type ResidentMenuPanelProps = {
@@ -16,7 +16,8 @@ type ResidentMenuPanelProps = {
 
 const optionClassName = [
   'flex min-h-12 w-full items-center justify-end gap-3 rounded-(--radius-2) px-3',
-  'font-display text-body font-semibold text-(--brand-vivid-foreground)',
+  textVariants({ weight: 'semibold', tone: 'inherit' }),
+  'font-display text-(--brand-vivid-foreground)',
   'transition-colors duration-(--duration-fast) ease-standard hover:bg-(--brand-vivid-ring)',
   'focus-visible:ring-2 focus-visible:ring-(--brand-vivid-foreground) focus-visible:outline-none',
 ].join(' ');

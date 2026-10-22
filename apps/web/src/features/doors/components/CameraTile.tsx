@@ -1,7 +1,7 @@
 import type { DoorCamera } from '@bb/core';
 import { useCameraFrame } from '@bb/logic';
 import { useMemo } from 'react';
-import { Badge, cn } from '../../../ui';
+import { Badge, Text, cn } from '../../../ui';
 
 type CameraTileProps = {
   camera: DoorCamera;
@@ -24,7 +24,9 @@ export function CameraTile({ camera, buildingId, className }: CameraTileProps) {
       )}
     >
       {frame.src === null ? (
-        <div className="flex size-full items-center justify-center text-body-sm text-(--text-muted)">Conectando...</div>
+        <Text as="div" size="body-sm" tone="muted" className="flex size-full items-center justify-center">
+          Conectando...
+        </Text>
       ) : (
         // `object-contain`: cameras are not always 16:9 and cropping hides part of
         // the scene. Not draggable, or a mouse drag picks it up instead of swiping.
@@ -44,9 +46,14 @@ export function CameraTile({ camera, buildingId, className }: CameraTileProps) {
         </Badge>
       )}
 
-      <span className="absolute right-1 bottom-1 rounded-(--radius-1) bg-black/60 px-1.5 text-caption text-white">
+      <Text
+        as="span"
+        size="caption"
+        tone="inherit"
+        className="absolute right-1 bottom-1 rounded-(--radius-1) bg-black/60 px-1.5 text-white"
+      >
         {camera.name ?? 'Cámara'}
-      </span>
+      </Text>
     </div>
   );
 }

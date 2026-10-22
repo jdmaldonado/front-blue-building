@@ -269,7 +269,11 @@ export function RegistrationForm({ role, apartment, onSuccess }: RegistrationFor
           checked={acceptTerms}
           onChange={setAcceptTerms}
           disabled={disabled}
-          label={<span className="text-body-sm">Acepto los términos y condiciones</span>}
+          label={
+            <Text as="span" size="body-sm">
+              Acepto los términos y condiciones
+            </Text>
+          }
         />
         <Button appearance="ghost" size="sm" className="self-start" onClick={() => setTermsOpen(true)}>
           Leer los términos

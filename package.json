@@ -6,7 +6,7 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
-    "lint": "oxlint",
+    "lint": "oxlint && node scripts/check-text-sizes.mjs",
     "lint:fix": "oxlint --fix",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",

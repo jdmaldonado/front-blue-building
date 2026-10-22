@@ -118,11 +118,13 @@ function Detail({ label, value, icon = false }: { label: string; value: string |
 
   return (
     <div className="flex min-w-0 flex-col">
-      <dt className="text-caption text-(--text-muted)">{label}</dt>
-      <dd className="flex min-w-0 items-center gap-1.5 truncate text-body-sm">
+      <Text as="dt" size="caption" tone="muted">
+        {label}
+      </Text>
+      <Text as="dd" size="body-sm" className="flex min-w-0 items-center gap-1.5 truncate">
         {icon ? <DoorOpen size={14} aria-hidden className="flex-none text-(--text-muted)" /> : null}
         {value}
-      </dd>
+      </Text>
     </div>
   );
 }

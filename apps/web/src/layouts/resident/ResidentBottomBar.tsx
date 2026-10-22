@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { House, Menu, Siren } from 'lucide-react';
 import { AppRoute } from '../../app/navigation';
-import { cn } from '../../ui';
+import { Text, cn } from '../../ui';
 
 type ResidentBottomBarProps = {
   onOpenEvents: () => void;
@@ -37,19 +37,25 @@ export function ResidentBottomBar({ onOpenEvents, onOpenMenu }: ResidentBottomBa
               )}
             />
             <House size={28} aria-hidden />
-            <span className="text-caption">Inicio</span>
+            <Text as="span" size="caption" tone="inherit">
+              Inicio
+            </Text>
           </span>
         )}
       </Link>
 
       <button type="button" onClick={onOpenEvents} className={cn(itemClassName, 'text-(--destructive)')}>
         <Siren size={28} aria-hidden />
-        <span className="text-caption">Alerta</span>
+        <Text as="span" size="caption" tone="inherit">
+          Alerta
+        </Text>
       </button>
 
       <button type="button" onClick={onOpenMenu} className={itemClassName}>
         <Menu size={28} aria-hidden />
-        <span className="text-caption">Menú</span>
+        <Text as="span" size="caption" tone="inherit">
+          Menú
+        </Text>
       </button>
     </nav>
   );

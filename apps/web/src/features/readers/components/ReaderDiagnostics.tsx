@@ -69,8 +69,12 @@ export function ReaderDiagnostics({ reported }: ReaderDiagnosticsProps) {
         <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:grid-cols-3">
           {entries.map((entry) => (
             <div key={entry.label} className="flex min-w-0 flex-col">
-              <dt className="text-caption text-(--text-muted)">{entry.label}</dt>
-              <dd className="truncate font-mono text-body-sm">{entry.value}</dd>
+              <Text as="dt" size="caption" tone="muted">
+                {entry.label}
+              </Text>
+              <Text as="dd" size="body-sm" truncate className="font-mono">
+                {entry.value}
+              </Text>
             </div>
           ))}
         </dl>

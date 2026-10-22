@@ -3,7 +3,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const textSizes = ['caption', 'body-sm', 'body', 'subtitle', 'title', 'title-lg', 'display'] as const;
 export type TextSize = (typeof textSizes)[number];
 
-export const textTones = ['primary', 'secondary', 'muted', 'inverse', 'accent', 'destructive', 'success'] as const;
+export const textTones = [
+  'primary',
+  'secondary',
+  'muted',
+  'inverse',
+  'accent',
+  'destructive',
+  'success',
+  'inherit',
+] as const;
 export type TextTone = (typeof textTones)[number];
 
 export const textWeights = ['normal', 'medium', 'semibold', 'bold'] as const;
@@ -30,6 +39,8 @@ export const textVariants = cva('', {
       accent: 'text-(--text-brand)',
       destructive: 'text-(--destructive)',
       success: 'text-(--success)',
+      // Text on a colored surface or inside a button: it takes the parent's color.
+      inherit: '',
     },
     weight: {
       normal: 'font-normal',

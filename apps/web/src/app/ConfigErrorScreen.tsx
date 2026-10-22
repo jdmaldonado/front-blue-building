@@ -1,5 +1,5 @@
 import { AppConfigError } from '../config';
-import { Alert, Card } from '../ui';
+import { Alert, Card, Text } from '../ui';
 
 // Shown instead of the app when the config is wrong. It must work without any
 // service, so it only uses primitives.
@@ -12,9 +12,13 @@ export function ConfigErrorScreen({ error }: { error: unknown }) {
         <Alert variant="error" title="La aplicación no pudo iniciar">
           Falta configuración del entorno. Revisa el archivo <code>.env</code> contra <code>.env.example</code>.
         </Alert>
-        <ul className="mt-4 flex flex-col gap-1 text-body-sm text-(--text-secondary)">
+        <ul className="mt-4 flex flex-col gap-1">
           {issues.map((issue) => (
-            <li key={issue}>{issue}</li>
+            <li key={issue}>
+              <Text as="span" size="body-sm" tone="secondary">
+                {issue}
+              </Text>
+            </li>
           ))}
         </ul>
       </Card>

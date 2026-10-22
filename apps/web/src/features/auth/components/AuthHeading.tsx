@@ -9,7 +9,9 @@ type AuthHeadingProps = {
 export function AuthHeading({ title, description }: AuthHeadingProps) {
   return (
     <div className="flex flex-col gap-1">
-      <h1 className="font-display text-title-lg font-bold tracking-tight md:text-display">{title}</h1>
+      <Text as="h1" size="title-lg" weight="bold">
+        {title}
+      </Text>
       <Text as="span" tone="secondary">
         {description}
       </Text>

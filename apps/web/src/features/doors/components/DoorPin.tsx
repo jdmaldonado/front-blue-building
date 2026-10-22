@@ -1,5 +1,5 @@
 import type { Door, DoorStatus } from '@bb/core';
-import { cn } from '../../../ui';
+import { Text, cn } from '../../../ui';
 import { doorStatusMeta, preferredLabelSide, type LabelSide } from '../lib';
 
 const PLAN_MIDDLE_PERCENT = 50;
@@ -54,19 +54,22 @@ export function DoorPin({ door, status, selected, labelSide, onSelect }: DoorPin
         />
       </span>
 
-      <span
+      <Text
+        as="span"
+        size="caption"
+        tone="inherit"
         data-pin-label
         data-side={side}
         className={cn(
           'absolute inline-flex w-max max-w-36 items-center rounded-(--radius-2) border sm:max-w-56',
           'px-1.5 py-0.5 sm:px-2.5 sm:py-1',
-          'bg-black/80 text-caption leading-tight text-white shadow-(--shadow-2)',
+          'bg-black/80 leading-tight text-white shadow-(--shadow-2)',
           labelPlacement[side],
           selected ? 'border-(--accent)' : 'border-white/30',
         )}
       >
         {door.name ?? door.localId ?? 'Puerta'}
-      </span>
+      </Text>
     </button>
   );
 }

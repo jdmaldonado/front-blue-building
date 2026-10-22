@@ -165,10 +165,10 @@ export function ReadersPage() {
           const masterHardware = reportedReaders?.master?.hardware_version;
           const slaveHardware = reportedReaders?.slave?.hardware_version;
           return (
-            <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
+            <Text as="div" size="body-sm" tone="muted" className="flex flex-col font-mono">
               <span>M: {formatHardwareVersion(masterHardware)}</span>
               {Boolean(row.original.readerConfig?.hasSlave) && <span>E: {formatHardwareVersion(slaveHardware)}</span>}
-            </div>
+            </Text>
           );
         },
       },
@@ -181,12 +181,12 @@ export function ReadersPage() {
         header: 'Flash',
         meta: { hideOnMobile: true },
         cell: ({ row }) => (
-          <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
+          <Text as="div" size="body-sm" tone="muted" className="flex flex-col font-mono">
             <span>M: {statuses.data?.[row.original.id]?.readerState?.readers?.master?.flash_size_mb ?? '—'}</span>
             {Boolean(row.original.readerConfig?.hasSlave) && (
               <span>E: {statuses.data?.[row.original.id]?.readerState?.readers?.slave?.flash_size_mb ?? '—'}</span>
             )}
-          </div>
+          </Text>
         ),
       },
       {
@@ -195,12 +195,12 @@ export function ReadersPage() {
         header: 'Firmware',
         meta: { hideOnMobile: true },
         cell: ({ row }) => (
-          <div className="flex flex-col font-mono text-body-sm text-(--text-muted)">
+          <Text as="div" size="body-sm" tone="muted" className="flex flex-col font-mono">
             <span>M: {statuses.data?.[row.original.id]?.readerState?.readers?.master?.firmware_version ?? '—'}</span>
             {Boolean(row.original.readerConfig?.hasSlave) && (
               <span>E: {statuses.data?.[row.original.id]?.readerState?.readers?.slave?.firmware_version ?? '—'}</span>
             )}
-          </div>
+          </Text>
         ),
       },
       {

@@ -33,9 +33,10 @@ primitiva, nunca un color literal.
 ## Tipografía
 
 La escala vive en `typeScale` (`packages/design-tokens/src/primitives/index.ts`)
-y se nombra por rol, no por tamaño: `caption`, `label`, `body-sm`, `body`,
-`body-lg`, `title-sm`, `title`, `title-lg`, `display`, `display-lg`. Cada paso
-lleva su `lineHeight`.
+y se nombra por rol, no por tamaño: `caption` 12, `body-sm` 14, `body` 16,
+`subtitle` 18, `title` 20, `title-lg` 24, `display` 32. Pasos de 2px en el texto
+y de 4px o más en los títulos, para que cada paso se note. Cada paso lleva su
+`lineHeight`. Si `typeScale` cambia, `cn` lo sigue solo (`apps/web/src/ui/cn.ts`).
 
 Se emite dentro de `@theme`, y ahí mismo se borra la escala por defecto de
 Tailwind con `--text-*: initial` (`packages/design-tokens/src/css.ts:30-47`). Por
