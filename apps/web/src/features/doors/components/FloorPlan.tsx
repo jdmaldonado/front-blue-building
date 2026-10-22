@@ -1,6 +1,7 @@
 import type { Door, DoorStatus, Floor } from '@bb/core';
 import { useEffect, useRef, useState } from 'react';
 import { Text, cn } from '../../../ui';
+import { usePinLabelSides } from '../hooks';
 import { DoorPin } from './DoorPin';
 
 type FloorPlanProps = {
@@ -19,7 +20,9 @@ type Box = { width: number; height: number };
 // first breaks that: the wrapper has auto height and the image overflows.
 export function FloorPlan({ floor, doors, statusOf, selectedDoorId, onSelect, className }: FloorPlanProps) {
   const imageRef = useRef<HTMLImageElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<Box | null>(null);
+  const labelSides = usePinLabelSides(overlayRef, box, doors);
 
   // The pins go on an overlay of exactly the rendered image size. Measuring is
   // the only way to know it: `object-contain` leaves empty space around the
@@ -54,6 +57,7 @@ export function FloorPlan({ floor, doors, statusOf, selectedDoorId, onSelect, cl
           />
           {box === null ? null : (
             <div
+              ref={overlayRef}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
               style={{ width: box.width, height: box.height }}
             >
@@ -63,6 +67,7 @@ export function FloorPlan({ floor, doors, statusOf, selectedDoorId, onSelect, cl
                   door={door}
                   status={statusOf(door)}
                   selected={door.id === selectedDoorId}
+                  labelSide={labelSides[door.id]}
                   onSelect={onSelect}
                 />
               ))}
