@@ -7,8 +7,6 @@ const PLAN_MIDDLE_PERCENT = 50;
 const labelPlacement: Record<LabelSide, string> = {
   left: 'top-1/2 right-full mr-1.5 -translate-y-1/2 sm:mr-2',
   right: 'top-1/2 left-full ml-1.5 -translate-y-1/2 sm:ml-2',
-  top: 'bottom-full left-1/2 mb-1.5 -translate-x-1/2 sm:mb-2',
-  bottom: 'top-full left-1/2 mt-1.5 -translate-x-1/2 sm:mt-2',
 };
 
 type DoorPinProps = {
@@ -56,12 +54,13 @@ export function DoorPin({ door, status, selected, labelSide, onSelect }: DoorPin
 
       <Text
         as="span"
-        size="caption"
+        size="body-sm"
+        weight="semibold"
         tone="inherit"
         data-pin-label
         data-side={side}
         className={cn(
-          'absolute inline-flex w-max max-w-36 items-center rounded-(--radius-2) border sm:max-w-56',
+          'absolute inline-flex w-max max-w-28 items-center rounded-(--radius-2) border sm:max-w-56',
           'px-1.5 py-0.5 sm:px-2.5 sm:py-1',
           'bg-black/80 leading-tight text-white shadow-(--shadow-2)',
           labelPlacement[side],

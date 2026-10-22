@@ -2,18 +2,9 @@ import type { Door } from '@bb/core';
 import { useLayoutEffect, useState, type RefObject } from 'react';
 import { LabelSide, pickLabelSides, type PinLayout } from '../lib';
 
-// The space the CSS left between the dot and the label, wherever it is drawn.
+// The space the CSS left between the dot and the label, on either side.
 function measureGap(dot: DOMRect, label: DOMRect, side: string | undefined): number {
-  if (side === LabelSide.Left) {
-    return dot.left - label.right;
-  }
-  if (side === LabelSide.Top) {
-    return dot.top - label.bottom;
-  }
-  if (side === LabelSide.Bottom) {
-    return label.top - dot.bottom;
-  }
-  return label.left - dot.right;
+  return side === LabelSide.Left ? dot.left - label.right : label.left - dot.right;
 }
 
 // Measures the pins drawn on `overlay` and moves each label to where it covers

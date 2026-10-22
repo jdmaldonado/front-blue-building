@@ -1,11 +1,8 @@
 import type { Door } from '@bb/core';
 
-export const LabelSide = {
-  Left: 'left',
-  Right: 'right',
-  Top: 'top',
-  Bottom: 'bottom',
-} as const;
+// Always beside the dot, never above or below: that is how the name reads as
+// belonging to its door.
+export const LabelSide = { Left: 'left', Right: 'right' } as const;
 export type LabelSide = (typeof LabelSide)[keyof typeof LabelSide];
 
 export type Rect = { left: number; top: number; width: number; height: number };
@@ -20,9 +17,10 @@ export type PinLayout = {
 };
 
 const PLAN_MIDDLE_PERCENT = 50;
-// A name cut by the edge of the plan, or a dot under a label, is lost. A name
-// that touches another can still be read. So the first two count much more.
-const HIDDEN_WEIGHT = 10;
+// A dot under a label is hard to tap, and a name cut by the edge cannot be read
+// at all. Both count much more than two names touching, the cut name the most.
+const DOT_WEIGHT = 10;
+const OUTSIDE_WEIGHT = 30;
 // A few passes are enough to settle.
 const PASSES = 3;
 
@@ -31,25 +29,15 @@ export function preferredLabelSide(door: Door): LabelSide {
   return (door.left ?? PLAN_MIDDLE_PERCENT) > PLAN_MIDDLE_PERCENT ? LabelSide.Left : LabelSide.Right;
 }
 
-// Beside the dot first, the way it reads best. Above or below only when both
-// sides are taken.
 function sidesToTry(preferred: LabelSide): LabelSide[] {
-  const other = preferred === LabelSide.Left ? LabelSide.Right : LabelSide.Left;
-  return [preferred, other, LabelSide.Bottom, LabelSide.Top];
+  return [preferred, preferred === LabelSide.Left ? LabelSide.Right : LabelSide.Left];
 }
 
 function labelRect(pin: PinLayout, side: LabelSide): Rect {
   const { dot, label, gap } = pin;
-  const middleX = dot.left + dot.width / 2 - label.width / 2;
-  const middleY = dot.top + dot.height / 2 - label.height / 2;
-  const positions: Record<LabelSide, Pick<Rect, 'left' | 'top'>> = {
-    left: { left: dot.left - gap - label.width, top: middleY },
-    right: { left: dot.left + dot.width + gap, top: middleY },
-    top: { left: middleX, top: dot.top - gap - label.height },
-    bottom: { left: middleX, top: dot.top + dot.height + gap },
-  };
-
-  return { ...positions[side], ...label };
+  const top = dot.top + dot.height / 2 - label.height / 2;
+  const left = side === LabelSide.Left ? dot.left - gap - label.width : dot.left + dot.width + gap;
+  return { left, top, ...label };
 }
 
 function overlap(a: Rect, b: Rect): number {
@@ -63,7 +51,7 @@ function cost(label: Rect, dots: Rect[], labels: Rect[], plan: Rect): number {
   const outside = label.width * label.height - overlap(label, plan);
   const onDots = dots.reduce((sum, dot) => sum + overlap(label, dot), 0);
   const onLabels = labels.reduce((sum, other) => sum + overlap(label, other), 0);
-  return (outside + onDots) * HIDDEN_WEIGHT + onLabels;
+  return outside * OUTSIDE_WEIGHT + onDots * DOT_WEIGHT + onLabels;
 }
 
 // Each label takes the side that covers the least, given where all the others
