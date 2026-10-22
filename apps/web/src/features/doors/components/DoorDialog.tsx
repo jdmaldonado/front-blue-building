@@ -74,6 +74,8 @@ export function DoorDialog({
 
   const cameras = useMemo(() => sortCamerasByName(door?.cameras ?? []), [door]);
   const hasCameras = cameras.length > 0;
+  // A door with no local id has no reader behind it, so nothing would open.
+  const canOpen = door?.localId !== null && door?.localId !== undefined;
 
   const index = doors.findIndex((item) => item.id === door?.id);
   // The next page comes in from the side it was asked from.
@@ -155,7 +157,7 @@ export function DoorDialog({
                 </IconButton>
               </>
             ) : null}
-            {isSuperUser && door?.localId !== null && door?.localId !== undefined ? (
+            {isSuperUser && canOpen ? (
               <IconButton label="Estado del equipo" onClick={() => setShowTelemetry(true)}>
                 <Cpu size={16} />
               </IconButton>
@@ -195,13 +197,20 @@ export function DoorDialog({
         footer={
           door === null ? null : (
             // Two equal halves. On a phone the icons share their half; from sm
-            // up they keep their square size.
-            <div className="grid w-full grid-cols-2 gap-2">
+            // up they keep their square size. With no door to open they take the row.
+            <div className={cn('grid w-full gap-2', canOpen ? 'grid-cols-2' : 'grid-cols-1')}>
               <UserEventActions controller={events} buttonClassName="flex-1 sm:flex-none" />
-              <Button size="lg" onClick={() => onOpenDoor(door)} loading={isOpening} className="px-3 whitespace-nowrap">
-                {isOpening ? null : <DoorOpen size={18} />}
-                {isOpening ? 'Abriendo...' : 'Abrir puerta'}
-              </Button>
+              {canOpen ? (
+                <Button
+                  size="lg"
+                  onClick={() => onOpenDoor(door)}
+                  loading={isOpening}
+                  className="px-3 whitespace-nowrap"
+                >
+                  {isOpening ? null : <DoorOpen size={18} />}
+                  {isOpening ? 'Abriendo...' : 'Abrir puerta'}
+                </Button>
+              ) : null}
             </div>
           )
         }
