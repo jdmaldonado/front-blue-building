@@ -39,7 +39,13 @@ export const tabsItemVariants = cva(
   {
     variants: {
       appearance: {
-        underline: 'px-3 py-2.5 text-body-sm',
+        // A short line between tabs, in the middle of the gap, so they read as
+        // separate tabs and not as one line of text.
+        underline: [
+          'px-3 py-2.5 text-body-sm',
+          'not-first:before:absolute not-first:before:top-1/2 not-first:before:-left-0.5 not-first:before:h-4',
+          'not-first:before:w-px not-first:before:-translate-y-1/2 not-first:before:bg-(--border-default)',
+        ],
         pill: 'rounded-(--tab-radius) px-3.5 py-1.5 text-body-sm',
       },
       active: {
@@ -58,7 +64,7 @@ export const tabsItemVariants = cva(
 // Grows from the middle when the tab becomes active.
 export const tabsIndicatorVariants = cva(
   [
-    'absolute inset-x-0 -bottom-px h-0.5 rounded-(--radius-round) bg-(--tab-indicator)',
+    'absolute inset-x-0 -bottom-px h-[3px] rounded-(--radius-round) bg-(--tab-indicator)',
     'origin-center transition-transform duration-(--duration-base) ease-standard',
   ],
   {

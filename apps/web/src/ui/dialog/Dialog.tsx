@@ -31,8 +31,6 @@ type DialogProps = {
   headerAside?: ReactNode;
   // Under the header, outside the scroll, like a row of tabs.
   subheader?: ReactNode;
-  // Under the body, outside the scroll, with no border of its own.
-  bodyEnd?: ReactNode;
   footer?: ReactNode;
   // Keys pressed anywhere inside the dialog bubble up to here.
   onKeyDown?: KeyboardEventHandler<HTMLDialogElement>;
@@ -48,7 +46,6 @@ export function Dialog({
   size,
   headerAside,
   subheader,
-  bodyEnd,
   footer,
   onKeyDown,
   children,
@@ -119,8 +116,6 @@ export function Dialog({
         {subheader === undefined ? null : <div className={dialogSubheaderVariants()}>{subheader}</div>}
 
         <div className={dialogBodyVariants()}>{children}</div>
-
-        {bodyEnd}
 
         {footer === undefined ? null : <div className={dialogFooterVariants()}>{footer}</div>}
       </div>
