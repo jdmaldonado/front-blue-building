@@ -1,4 +1,12 @@
-import { DoorStatus, findDoorByName, isDoorOnPlan, type Door, type DomainError, type Floor } from '@bb/core';
+import {
+  DoorStatus,
+  findDoorByName,
+  isDoorOnPlan,
+  sortDoorsByLocalId,
+  type Door,
+  type DomainError,
+  type Floor,
+} from '@bb/core';
 import {
   selectDoorStatus,
   selectReaderTelemetry,
@@ -137,8 +145,9 @@ export function useDoorsDashboard(buildingId: string, initialDoorName?: string):
   const currentFloorId = floorId ?? defaultFloorId;
   const currentFloor: Floor | null = floors.data?.find((floor) => floor.id === currentFloorId) ?? null;
 
+  // Sorted here because the order is the one of the tabs in the dialog.
   const floorDoors = useMemo(
-    () => visibleDoors.filter((door) => door.floor?.id === currentFloorId),
+    () => sortDoorsByLocalId(visibleDoors.filter((door) => door.floor?.id === currentFloorId)),
     [visibleDoors, currentFloorId],
   );
 
