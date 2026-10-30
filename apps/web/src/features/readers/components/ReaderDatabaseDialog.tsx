@@ -7,4 +7,7 @@ export interface ReaderDatabaseDialogProps {
   slaveChecksum?: string | null;
   pending: boolean;
   onClose: () => void;
+  onUpdate: () => void;
+  onRead: () => void;
+  onDelete: () => void;
 }
