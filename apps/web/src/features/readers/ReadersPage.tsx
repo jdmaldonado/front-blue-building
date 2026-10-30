@@ -102,6 +102,17 @@ export function ReadersPage() {
     if (localId !== null && localId !== undefined) control.readDatabase(localId);
   };
 
+  const requestDbUpdate = async (): Promise<void> => {
+    const localId = managingDb?.localId;
+    if (localId === null || localId === undefined) return;
+    const confirmed = await confirm({
+      title: '¿Actualizar base de datos?',
+      description: `Sincroniza las tarjetas autorizadas en ${managingDb?.name ?? 'la lectora'}.`,
+      confirmLabel: 'Actualizar',
+    });
+    if (confirmed) control.updateDatabase(localId);
+  };
+
   const columns = useMemo<Array<ColumnDef<Door, unknown>>>(
     () => [
       {
@@ -332,7 +343,7 @@ export function ReadersPage() {
         reported={managingDb ? (statuses.data?.[managingDb.id]?.readerState ?? null) : null}
         pending={control.pending !== null}
         onClose={() => setManagingDb(null)}
-        onUpdate={() => {}}
+        onUpdate={() => void requestDbUpdate()}
         onRead={requestDbRead}
         onDelete={() => {}}
       />
