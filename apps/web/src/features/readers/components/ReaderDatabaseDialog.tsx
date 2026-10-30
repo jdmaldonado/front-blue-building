@@ -37,6 +37,11 @@ export function ReaderDatabaseDialog(props: ReaderDatabaseDialogProps) {
             Tarjetas locales
           </Text>
           <span>M: {formatChecksum(props.masterChecksum ?? props.reported?.readers?.master?.db_checksum)}</span>
+          {Boolean(door?.readerConfig?.hasSlave) && (
+            <span className="ml-4">
+              E: {formatChecksum(props.slaveChecksum ?? props.reported?.readers?.slave?.db_checksum)}
+            </span>
+          )}
         </div>
       </div>
     </Dialog>
