@@ -90,3 +90,7 @@ export const READER_SENT_MESSAGE = 'La orden salió. La lectora no confirma si l
 
 export const FIRMWARE_UPDATE_SENT_MESSAGE =
   'La orden de actualización fue confirmada por el controlador y enviada a la lectora.';
+
+export const DB_UPDATE_SENT_MESSAGE = 'Orden de actualización de base de datos enviada a la lectora.';
+export const DB_READ_SENT_MESSAGE = 'Consulta de estado de base de datos solicitada a la lectora.';
+export const DB_DELETE_SENT_MESSAGE = 'Orden de eliminación de base de datos enviada a la lectora.';
