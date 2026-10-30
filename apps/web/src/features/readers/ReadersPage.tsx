@@ -1,20 +1,14 @@
 import { ReaderHealth, readerHealthFromState, type Door, type FirmwareUpdateParams, type ReaderConfig } from '@bb/core';
-import { ReaderCommand, selectDoorStatus, useBuildingDoors, useDoorStatuses, useReaderControl } from '@bb/logic';
+import { selectDoorStatus, useBuildingDoors, useDoorStatuses, useReaderControl } from '@bb/logic';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Cpu, HardDriveDownload, RotateCw, Settings2 } from 'lucide-react';
+import { Cpu, Database, HardDriveDownload, RotateCw, Settings2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useBuilding } from '../../app/BuildingContext';
 import { useConfirm } from '../../app/ConfirmProvider';
 import { useToast } from '../../app/ToastProvider';
 import { Alert, DataTable, DataTableToolbar, EmptyState, IconButton, Text, useDataTableFilters } from '../../ui';
-import { ReaderBoardStatus, ReaderConfigDialog, ReaderFirmwareDialog } from './components';
-import {
-  FIRMWARE_UPDATE_SENT_MESSAGE,
-  READER_HEALTH_META,
-  READER_SENT_MESSAGE,
-  readerErrorMessage,
-  resolveReaderDbChecksum,
-} from './lib';
+import { ReaderBoardStatus, ReaderConfigDialog, ReaderDatabaseDialog, ReaderFirmwareDialog } from './components';
+import { READER_HEALTH_META, readerErrorMessage, readerSuccessMessage, resolveReaderDbChecksum } from './lib';
 
 export function ReadersPage() {
   const building = useBuilding();
@@ -25,12 +19,14 @@ export function ReadersPage() {
   const toast = useToast();
   const [configuring, setConfiguring] = useState<Door | null>(null);
   const [updatingFirmware, setUpdatingFirmware] = useState<Door | null>(null);
+  const [managingDb, setManagingDb] = useState<Door | null>(null);
 
   const control = useReaderControl(building.id, {
     onSuccess: (command) => {
       setConfiguring(null);
       setUpdatingFirmware(null);
-      const message = command === ReaderCommand.FirmwareUpdate ? FIRMWARE_UPDATE_SENT_MESSAGE : READER_SENT_MESSAGE;
+      setManagingDb(null);
+      const message = readerSuccessMessage(command);
       toast({ tone: 'info', title: 'Orden enviada', message });
     },
     onError: (_command, error) => {
@@ -99,6 +95,33 @@ export function ReadersPage() {
       intent: 'destructive',
     });
     if (confirmed) control.updateFirmware(localId, params);
+  };
+
+  const requestDbRead = (): void => {
+    const localId = managingDb?.localId;
+    if (localId !== null && localId !== undefined) control.readDatabase(localId);
+  };
+
+  const requestDbUpdate = async (): Promise<void> => {
+    const localId = managingDb?.localId;
+    if (localId === null || localId === undefined) return;
+    const confirmed = await confirm({
+      title: '¿Actualizar base de datos?',
+      description: `Sincroniza las tarjetas autorizadas en ${managingDb?.name ?? 'la lectora'}.`,
+      confirmLabel: 'Actualizar',
+    });
+    if (confirmed) control.updateDatabase(localId);
+  };
+
+  const requestDbDelete = async (): Promise<void> => {
+    if (!managingDb?.localId) return;
+    const ok = await confirm({
+      title: '¿Eliminar base de datos?',
+      description: `${managingDb.name ?? 'La lectora'} no validará tarjetas sin conexión.`,
+      confirmLabel: 'Eliminar',
+      intent: 'destructive',
+    });
+    if (ok) control.deleteDatabase(managingDb.localId);
   };
 
   const columns = useMemo<Array<ColumnDef<Door, unknown>>>(
@@ -232,6 +255,14 @@ export function ReadersPage() {
           <div className="flex justify-end gap-2">
             <IconButton
               hintSide="left"
+              label={`Base de datos de ${row.original.name ?? 'la lectora'}`}
+              onClick={() => setManagingDb(row.original)}
+              disabled={control.pending !== null}
+            >
+              <Database size={16} />
+            </IconButton>
+            <IconButton
+              hintSide="left"
               label={`Actualizar firmware de ${row.original.name ?? 'la lectora'}`}
               onClick={() => {
                 setConfiguring(null);
@@ -316,6 +347,18 @@ export function ReadersPage() {
         pending={control.pending !== null}
         onClose={() => setUpdatingFirmware(null)}
         onSend={(params: FirmwareUpdateParams) => void requestFirmwareUpdate(params)}
+      />
+
+      <ReaderDatabaseDialog
+        door={managingDb}
+        reported={managingDb ? (statuses.data?.[managingDb.id]?.readerState ?? null) : null}
+        masterChecksum={managingDb ? statuses.data?.[managingDb.id]?.masterDbChecksum : null}
+        slaveChecksum={managingDb ? statuses.data?.[managingDb.id]?.slaveDbChecksum : null}
+        pending={control.pending !== null}
+        onClose={() => setManagingDb(null)}
+        onUpdate={() => void requestDbUpdate()}
+        onRead={requestDbRead}
+        onDelete={() => void requestDbDelete()}
       />
     </div>
   );

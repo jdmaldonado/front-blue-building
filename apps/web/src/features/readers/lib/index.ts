@@ -10,6 +10,7 @@ export {
   formatDuration,
   formatUptime,
   readerErrorMessage,
+  readerSuccessMessage,
   resolveReaderDbChecksum,
 } from './readerMessages';
 export type { ReaderHealthMeta } from './readerMessages';
