@@ -20,5 +20,15 @@ export function ReaderDatabaseDialog(props: ReaderDatabaseDialogProps) {
       Cerrar
     </Button>
   );
-  return <Dialog open={door !== null} onClose={onClose} size="md" title="Base de datos local" footer={footer} />;
+  const description = door?.name ? `${door.name} (${door.localId ?? ''})` : 'Lectora';
+  return (
+    <Dialog
+      open={door !== null}
+      onClose={onClose}
+      size="md"
+      title="Base de datos local"
+      description={description}
+      footer={footer}
+    />
+  );
 }
