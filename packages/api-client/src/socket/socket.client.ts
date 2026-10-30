@@ -3,7 +3,13 @@ import type { DomainError, DoorUpdate, FirmwareUpdateParams, ReaderConfig, UserE
 import type { Logger } from '@bb/logger';
 import { io, type Socket } from 'socket.io-client';
 import { z } from 'zod';
-import { configureReader, rebootReader, setupCardReader, updateReaderFirmware } from './socket.readers';
+import {
+  configureReader,
+  rebootReader,
+  setupCardReader,
+  updateReaderDatabase,
+  updateReaderFirmware,
+} from './socket.readers';
 import type { CardReaderCallbacks, ReaderCallbacks, ReaderTarget } from './socket.readers';
 import { SocketRooms } from './socket.rooms';
 import type { Unsubscribe } from './socket.types';
@@ -135,6 +141,10 @@ export class SocketClient {
     callbacks: ReaderCallbacks,
   ): Unsubscribe {
     return updateReaderFirmware(this.socket, input, callbacks);
+  }
+
+  updateReaderDatabase(input: ReaderTarget, callbacks: ReaderCallbacks): Unsubscribe {
+    return updateReaderDatabase(this.socket, input, callbacks);
   }
 
   subscribeDoorStatus(buildingId: string): void {
