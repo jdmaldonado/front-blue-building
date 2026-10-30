@@ -1,4 +1,5 @@
 import { LogicFieldUnit, ReaderHealth, ReaderTimeoutError, type DomainError, type DoorEventData } from '@bb/core';
+import { ReaderCommand } from '@bb/logic';
 import type { BadgeTone } from '../../../ui';
 
 export type ReaderHealthMeta = {
@@ -94,3 +95,14 @@ export const FIRMWARE_UPDATE_SENT_MESSAGE =
 export const DB_UPDATE_SENT_MESSAGE = 'Orden de actualización de base de datos enviada a la lectora.';
 export const DB_READ_SENT_MESSAGE = 'Consulta de estado de base de datos solicitada a la lectora.';
 export const DB_DELETE_SENT_MESSAGE = 'Orden de eliminación de base de datos enviada a la lectora.';
+
+const COMMAND_SUCCESS_MESSAGES: Record<string, string> = {
+  [ReaderCommand.FirmwareUpdate]: FIRMWARE_UPDATE_SENT_MESSAGE,
+  [ReaderCommand.DbUpdate]: DB_UPDATE_SENT_MESSAGE,
+  [ReaderCommand.DbRead]: DB_READ_SENT_MESSAGE,
+  [ReaderCommand.DbDelete]: DB_DELETE_SENT_MESSAGE,
+};
+
+export function readerSuccessMessage(command: ReaderCommand): string {
+  return COMMAND_SUCCESS_MESSAGES[command] ?? READER_SENT_MESSAGE;
+}
