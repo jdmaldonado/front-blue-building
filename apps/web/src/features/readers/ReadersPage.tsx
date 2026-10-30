@@ -352,6 +352,8 @@ export function ReadersPage() {
       <ReaderDatabaseDialog
         door={managingDb}
         reported={managingDb ? (statuses.data?.[managingDb.id]?.readerState ?? null) : null}
+        masterChecksum={managingDb ? statuses.data?.[managingDb.id]?.masterDbChecksum : null}
+        slaveChecksum={managingDb ? statuses.data?.[managingDb.id]?.slaveDbChecksum : null}
         pending={control.pending !== null}
         onClose={() => setManagingDb(null)}
         onUpdate={() => void requestDbUpdate()}
