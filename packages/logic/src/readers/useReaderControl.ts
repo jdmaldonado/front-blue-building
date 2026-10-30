@@ -13,6 +13,7 @@ export const ReaderCommand = {
   FirmwareUpdate: 'FIRMWARE_UPDATE',
   DbUpdate: 'DB_UPDATE',
   DbRead: 'DB_READ',
+  DbDelete: 'DB_DELETE',
 } as const;
 export type ReaderCommand = (typeof ReaderCommand)[keyof typeof ReaderCommand];
 
@@ -25,6 +26,7 @@ export interface ReaderControl {
   updateFirmware: (localId: string, params: FirmwareUpdateParams) => void;
   updateDatabase: (localId: string) => void;
   readDatabase: (localId: string) => void;
+  deleteDatabase: (localId: string) => void;
 }
 
 export function useReaderControl(buildingId: string, callbacks: ReaderControlCallbacks): ReaderControl {
@@ -72,5 +74,7 @@ export function useReaderControl(buildingId: string, callbacks: ReaderControlCal
       run(ReaderCommand.DbUpdate, (done) => socketClient.updateReaderDatabase({ buildingId, localId }, done)),
     readDatabase: (localId) =>
       run(ReaderCommand.DbRead, (done) => socketClient.readReaderDatabase({ buildingId, localId }, done)),
+    deleteDatabase: (localId) =>
+      run(ReaderCommand.DbDelete, (done) => socketClient.deleteReaderDatabase({ buildingId, localId }, done)),
   };
 }
