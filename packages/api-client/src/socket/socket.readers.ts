@@ -139,6 +139,16 @@ export function updateReaderDatabase(socket: Socket, input: ReaderTarget, callba
   });
 }
 
+export function readReaderDatabase(socket: Socket, input: ReaderTarget, callbacks: ReaderCallbacks): Unsubscribe {
+  return commandReader(socket, {
+    answer: 'reader:database',
+    request: 'frontend:reader:db_read',
+    input,
+    callbacks,
+    timeoutMs: READER_DATABASE_TIMEOUT_MS,
+  });
+}
+
 interface ReaderCommand {
   answer: string;
   request: string;
