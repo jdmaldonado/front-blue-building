@@ -1,5 +1,6 @@
 import type { Door, ReaderState } from '@bb/core';
-import { Button, Dialog } from '../../../ui';
+import { Button, Dialog, Text } from '../../../ui';
+import { formatChecksum } from '../lib';
 
 export interface ReaderDatabaseDialogProps {
   door: Door | null;
@@ -30,7 +31,14 @@ export function ReaderDatabaseDialog(props: ReaderDatabaseDialogProps) {
       description={description}
       footer={footer}
     >
-      <div className="flex flex-col gap-4" />
+      <div className="flex flex-col gap-4">
+        <div className="border border-(--card-border) bg-(--surface-sunken) p-3 font-mono text-xs">
+          <Text size="body-sm" weight="medium">
+            Tarjetas locales
+          </Text>
+          <span>M: {formatChecksum(props.masterChecksum ?? props.reported?.readers?.master?.db_checksum)}</span>
+        </div>
+      </div>
     </Dialog>
   );
 }
