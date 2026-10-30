@@ -69,6 +69,8 @@ export interface ReaderTelemetry {
   slaveStatus: string | null;
   masterSpiOk: boolean | null;
   slaveSpiOk: boolean | null;
+  masterDbChecksum?: string | null;
+  slaveDbChecksum?: string | null;
   deviceType: string | null;
   reportedAt: number | null;
   state: ReaderState | null;
@@ -87,6 +89,8 @@ export function selectReaderTelemetry(statuses: DoorStatuses | undefined, doorId
     slaveStatus: event.slaveStatus ?? null,
     masterSpiOk: event.masterSpiOk ?? null,
     slaveSpiOk: event.slaveSpiOk ?? null,
+    masterDbChecksum: event.masterDbChecksum ?? event.readerState?.readers?.master?.db_checksum ?? null,
+    slaveDbChecksum: event.slaveDbChecksum ?? event.readerState?.readers?.slave?.db_checksum ?? null,
     deviceType: event.deviceType ?? null,
     reportedAt: event.lastTelemetryTimestamp ?? null,
     state: event.readerState ?? null,
