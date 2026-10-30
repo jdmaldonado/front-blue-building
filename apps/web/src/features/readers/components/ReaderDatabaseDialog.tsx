@@ -1,5 +1,5 @@
 import type { Door, ReaderState } from '@bb/core';
-import { Database, RefreshCw } from 'lucide-react';
+import { Database, RefreshCw, Trash2 } from 'lucide-react';
 import { Button, Dialog, Text } from '../../../ui';
 import { formatChecksum } from '../lib';
 
@@ -54,6 +54,11 @@ export function ReaderDatabaseDialog(props: ReaderDatabaseDialogProps) {
           <Button appearance="outline" intent="neutral" onClick={props.onRead} disabled={pending}>
             <Database size={16} />
             Consultar estado
+          </Button>
+
+          <Button appearance="outline" intent="destructive" onClick={props.onDelete} disabled={pending}>
+            <Trash2 size={16} />
+            Eliminar base de datos
           </Button>
         </div>
       </div>
