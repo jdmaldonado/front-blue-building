@@ -63,6 +63,10 @@ export function formatBytes(bytes: number): string {
   return `${Math.round(bytes / BYTES_PER_KB)} KB`;
 }
 
+export function formatChecksum(checksum: string | null | undefined): string {
+  return checksum ? checksum.slice(0, 8) : '—';
+}
+
 export function readerErrorMessage(error: DomainError): string {
   if (error.message && error.message.trim() && error.message !== 'Reader did not answer') {
     return error.message;
