@@ -7,7 +7,7 @@ import { useBuilding } from '../../app/BuildingContext';
 import { useConfirm } from '../../app/ConfirmProvider';
 import { useToast } from '../../app/ToastProvider';
 import { Alert, DataTable, DataTableToolbar, EmptyState, IconButton, Text, useDataTableFilters } from '../../ui';
-import { ReaderBoardStatus, ReaderConfigDialog, ReaderFirmwareDialog } from './components';
+import { ReaderBoardStatus, ReaderConfigDialog, ReaderDatabaseDialog, ReaderFirmwareDialog } from './components';
 import { READER_HEALTH_META, readerErrorMessage, readerSuccessMessage, resolveReaderDbChecksum } from './lib';
 
 export function ReadersPage() {
@@ -19,6 +19,7 @@ export function ReadersPage() {
   const toast = useToast();
   const [configuring, setConfiguring] = useState<Door | null>(null);
   const [updatingFirmware, setUpdatingFirmware] = useState<Door | null>(null);
+  const [managingDb, setManagingDb] = useState<Door | null>(null);
 
   const control = useReaderControl(building.id, {
     onSuccess: (command) => {
@@ -310,6 +311,16 @@ export function ReadersPage() {
         pending={control.pending !== null}
         onClose={() => setUpdatingFirmware(null)}
         onSend={(params: FirmwareUpdateParams) => void requestFirmwareUpdate(params)}
+      />
+
+      <ReaderDatabaseDialog
+        door={managingDb}
+        reported={managingDb ? (statuses.data?.[managingDb.id]?.readerState ?? null) : null}
+        pending={control.pending !== null}
+        onClose={() => setManagingDb(null)}
+        onUpdate={() => {}}
+        onRead={() => {}}
+        onDelete={() => {}}
       />
     </div>
   );
