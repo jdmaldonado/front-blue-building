@@ -29,6 +29,8 @@ export function ReaderDatabaseDialog(props: ReaderDatabaseDialogProps) {
       title="Base de datos local"
       description={description}
       footer={footer}
-    />
+    >
+      <div className="flex flex-col gap-4" />
+    </Dialog>
   );
 }
