@@ -5,6 +5,7 @@ import { io, type Socket } from 'socket.io-client';
 import { z } from 'zod';
 import {
   configureReader,
+  deleteReaderDatabase,
   readReaderDatabase,
   rebootReader,
   setupCardReader,
@@ -150,6 +151,10 @@ export class SocketClient {
 
   readReaderDatabase(input: ReaderTarget, callbacks: ReaderCallbacks): Unsubscribe {
     return readReaderDatabase(this.socket, input, callbacks);
+  }
+
+  deleteReaderDatabase(input: ReaderTarget, callbacks: ReaderCallbacks): Unsubscribe {
+    return deleteReaderDatabase(this.socket, input, callbacks);
   }
 
   subscribeDoorStatus(buildingId: string): void {
