@@ -58,7 +58,9 @@ export function isReaderTelemetry(event: DoorEventData | undefined): boolean {
     event.masterStatus !== null ||
     event.slaveStatus !== null ||
     event.masterSpiOk !== null ||
-    event.slaveSpiOk !== null
+    event.slaveSpiOk !== null ||
+    event.masterDbChecksum !== null ||
+    event.slaveDbChecksum !== null
   );
 }
 
@@ -86,6 +88,8 @@ export function mergeDoorEvent(current: DoorEventData | undefined, incoming: Doo
     slaveStatus: incoming.slaveStatus,
     masterSpiOk: incoming.masterSpiOk,
     slaveSpiOk: incoming.slaveSpiOk,
+    masterDbChecksum: incoming.masterDbChecksum,
+    slaveDbChecksum: incoming.slaveDbChecksum,
     deviceType: incoming.deviceType,
     lastTelemetryTimestamp: incoming.lastTelemetryTimestamp,
     readerState: incoming.readerState,
