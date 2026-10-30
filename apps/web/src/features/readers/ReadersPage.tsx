@@ -8,7 +8,13 @@ import { useConfirm } from '../../app/ConfirmProvider';
 import { useToast } from '../../app/ToastProvider';
 import { Alert, DataTable, DataTableToolbar, EmptyState, IconButton, Text, useDataTableFilters } from '../../ui';
 import { ReaderBoardStatus, ReaderConfigDialog, ReaderFirmwareDialog } from './components';
-import { FIRMWARE_UPDATE_SENT_MESSAGE, READER_HEALTH_META, READER_SENT_MESSAGE, readerErrorMessage } from './lib';
+import {
+  FIRMWARE_UPDATE_SENT_MESSAGE,
+  READER_HEALTH_META,
+  READER_SENT_MESSAGE,
+  readerErrorMessage,
+  resolveReaderDbChecksum,
+} from './lib';
 
 export function ReadersPage() {
   const building = useBuilding();
@@ -199,6 +205,20 @@ export function ReadersPage() {
             <span>M: {statuses.data?.[row.original.id]?.readerState?.readers?.master?.firmware_version ?? '—'}</span>
             {Boolean(row.original.readerConfig?.hasSlave) && (
               <span>E: {statuses.data?.[row.original.id]?.readerState?.readers?.slave?.firmware_version ?? '—'}</span>
+            )}
+          </Text>
+        ),
+      },
+      {
+        id: 'dbChecksum',
+        accessorFn: (door) => statuses.data?.[door.id]?.masterDbChecksum ?? '',
+        header: 'Base de datos',
+        meta: { hideOnMobile: true },
+        cell: ({ row }) => (
+          <Text as="div" size="body-sm" tone="muted" className="flex flex-col font-mono">
+            <span>M: {resolveReaderDbChecksum(statuses.data?.[row.original.id], 'master')}</span>
+            {Boolean(row.original.readerConfig?.hasSlave) && (
+              <span>E: {resolveReaderDbChecksum(statuses.data?.[row.original.id], 'slave')}</span>
             )}
           </Text>
         ),

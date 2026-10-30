@@ -47,6 +47,8 @@ export const DoorEventDataSchema = z.object({
   slaveStatus: z.string().nullish().catch(null),
   masterSpiOk: z.boolean().nullish().catch(null),
   slaveSpiOk: z.boolean().nullish().catch(null),
+  masterDbChecksum: z.string().nullish().catch(null),
+  slaveDbChecksum: z.string().nullish().catch(null),
   deviceType: z.string().nullish().catch(null),
   lastTelemetryTimestamp: z.number().nullish().catch(null),
   // The nested part: wifi, device id, firmware and hardware versions. It is the

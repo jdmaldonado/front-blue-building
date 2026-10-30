@@ -56,6 +56,8 @@ export function ReaderDiagnostics({ reported }: ReaderDiagnosticsProps) {
   );
   add('Flash maestra', master?.flash_size_mb);
   add('Flash esclava', slave?.flash_size_mb);
+  add('Base de datos maestra', master?.db_checksum);
+  add('Base de datos esclava', slave?.db_checksum);
   add('Esclava vista hace', slave?.last_seen_sec, ' s');
 
   return (

@@ -1,4 +1,4 @@
-import { LogicFieldUnit, ReaderHealth, ReaderTimeoutError, type DomainError } from '@bb/core';
+import { LogicFieldUnit, ReaderHealth, ReaderTimeoutError, type DomainError, type DoorEventData } from '@bb/core';
 import type { BadgeTone } from '../../../ui';
 
 export type ReaderHealthMeta = {
@@ -61,6 +61,18 @@ export function formatUptime(seconds: number): string {
 
 export function formatBytes(bytes: number): string {
   return `${Math.round(bytes / BYTES_PER_KB)} KB`;
+}
+
+export function formatChecksum(checksum: string | null | undefined): string {
+  return checksum ? checksum.slice(0, 8) : '—';
+}
+
+export function resolveReaderDbChecksum(event?: DoorEventData | null, target: 'master' | 'slave' = 'master'): string {
+  const checksum =
+    target === 'master'
+      ? (event?.masterDbChecksum ?? event?.readerState?.readers?.master?.db_checksum)
+      : (event?.slaveDbChecksum ?? event?.readerState?.readers?.slave?.db_checksum);
+  return formatChecksum(checksum);
 }
 
 export function readerErrorMessage(error: DomainError): string {
