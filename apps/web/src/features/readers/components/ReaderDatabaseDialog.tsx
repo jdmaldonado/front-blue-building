@@ -11,3 +11,10 @@ export interface ReaderDatabaseDialogProps {
   onRead: () => void;
   onDelete: () => void;
 }
+
+export function ReaderDatabaseDialog(props: ReaderDatabaseDialogProps) {
+  if (props.door === null) {
+    return null;
+  }
+  return null;
+}
