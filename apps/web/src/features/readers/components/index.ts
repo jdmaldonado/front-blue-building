@@ -1,4 +1,5 @@
 export { ReaderBoardStatus } from './ReaderBoardStatus';
+export { ReaderDatabaseDialog } from './ReaderDatabaseDialog';
 export { NumericField } from './NumericField';
 export { ReaderConfigDialog } from './ReaderConfigDialog';
 export { ReaderFirmwareDialog } from './ReaderFirmwareDialog';
