@@ -1,7 +1,7 @@
 import { ReaderHealth, readerHealthFromState, type Door, type FirmwareUpdateParams, type ReaderConfig } from '@bb/core';
 import { selectDoorStatus, useBuildingDoors, useDoorStatuses, useReaderControl } from '@bb/logic';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Cpu, HardDriveDownload, RotateCw, Settings2 } from 'lucide-react';
+import { Cpu, Database, HardDriveDownload, RotateCw, Settings2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useBuilding } from '../../app/BuildingContext';
 import { useConfirm } from '../../app/ConfirmProvider';
@@ -225,6 +225,14 @@ export function ReadersPage() {
         meta: { actions: true },
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
+            <IconButton
+              hintSide="left"
+              label={`Base de datos de ${row.original.name ?? 'la lectora'}`}
+              onClick={() => setManagingDb(row.original)}
+              disabled={control.pending !== null}
+            >
+              <Database size={16} />
+            </IconButton>
             <IconButton
               hintSide="left"
               label={`Actualizar firmware de ${row.original.name ?? 'la lectora'}`}
