@@ -1,5 +1,6 @@
 import {
   CardReaderError,
+  READER_DATABASE_TIMEOUT_MS,
   READER_FIRMWARE_UPDATE_TIMEOUT_MS,
   READER_REBOOT_TIMEOUT_MS,
   ReaderTimeoutError,
@@ -125,6 +126,16 @@ export function updateReaderFirmware(
     input,
     callbacks,
     timeoutMs: READER_FIRMWARE_UPDATE_TIMEOUT_MS,
+  });
+}
+
+export function updateReaderDatabase(socket: Socket, input: ReaderTarget, callbacks: ReaderCallbacks): Unsubscribe {
+  return commandReader(socket, {
+    answer: 'reader:database',
+    request: 'frontend:reader:db_update',
+    input,
+    callbacks,
+    timeoutMs: READER_DATABASE_TIMEOUT_MS,
   });
 }
 
