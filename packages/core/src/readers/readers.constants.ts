@@ -89,6 +89,16 @@ export const READER_REBOOT_TIMEOUT_MS = 15_000;
 // Timeout for firmware update dispatch acknowledgement from RPI / backend
 export const READER_FIRMWARE_UPDATE_TIMEOUT_MS = 60_000;
 
+export const READER_DATABASE_TIMEOUT_MS = 15_000;
+
+export const ReaderDatabaseAction = {
+  Update: 'SYSTEM_DB_UPDATE',
+  Read: 'SYSTEM_DB_READ',
+  Delete: 'SYSTEM_DB_DELETE',
+} as const;
+export type ReaderDatabaseAction = (typeof ReaderDatabaseAction)[keyof typeof ReaderDatabaseAction];
+export const ReaderDatabaseActionSchema = z.enum(ReaderDatabaseAction);
+
 // Which microcontrollers receive the firmware update.
 export const FirmwareTarget = {
   Master: 'master',
