@@ -25,6 +25,7 @@ export function ReadersPage() {
     onSuccess: (command) => {
       setConfiguring(null);
       setUpdatingFirmware(null);
+      setManagingDb(null);
       const message = readerSuccessMessage(command);
       toast({ tone: 'info', title: 'Orden enviada', message });
     },
@@ -94,6 +95,11 @@ export function ReadersPage() {
       intent: 'destructive',
     });
     if (confirmed) control.updateFirmware(localId, params);
+  };
+
+  const requestDbRead = (): void => {
+    const localId = managingDb?.localId;
+    if (localId !== null && localId !== undefined) control.readDatabase(localId);
   };
 
   const columns = useMemo<Array<ColumnDef<Door, unknown>>>(
@@ -327,7 +333,7 @@ export function ReadersPage() {
         pending={control.pending !== null}
         onClose={() => setManagingDb(null)}
         onUpdate={() => {}}
-        onRead={() => {}}
+        onRead={requestDbRead}
         onDelete={() => {}}
       />
     </div>
