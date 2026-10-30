@@ -1,4 +1,5 @@
 import type { Door, ReaderState } from '@bb/core';
+import { RefreshCw } from 'lucide-react';
 import { Button, Dialog, Text } from '../../../ui';
 import { formatChecksum } from '../lib';
 
@@ -42,6 +43,13 @@ export function ReaderDatabaseDialog(props: ReaderDatabaseDialogProps) {
               E: {formatChecksum(props.slaveChecksum ?? props.reported?.readers?.slave?.db_checksum)}
             </span>
           )}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Button intent="primary" onClick={props.onUpdate} disabled={pending}>
+            <RefreshCw size={16} />
+            Actualizar base de datos
+          </Button>
         </div>
       </div>
     </Dialog>
