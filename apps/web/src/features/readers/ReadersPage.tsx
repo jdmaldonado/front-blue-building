@@ -1,5 +1,5 @@
 import { ReaderHealth, readerHealthFromState, type Door, type FirmwareUpdateParams, type ReaderConfig } from '@bb/core';
-import { ReaderCommand, selectDoorStatus, useBuildingDoors, useDoorStatuses, useReaderControl } from '@bb/logic';
+import { selectDoorStatus, useBuildingDoors, useDoorStatuses, useReaderControl } from '@bb/logic';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Cpu, HardDriveDownload, RotateCw, Settings2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -8,13 +8,7 @@ import { useConfirm } from '../../app/ConfirmProvider';
 import { useToast } from '../../app/ToastProvider';
 import { Alert, DataTable, DataTableToolbar, EmptyState, IconButton, Text, useDataTableFilters } from '../../ui';
 import { ReaderBoardStatus, ReaderConfigDialog, ReaderFirmwareDialog } from './components';
-import {
-  FIRMWARE_UPDATE_SENT_MESSAGE,
-  READER_HEALTH_META,
-  READER_SENT_MESSAGE,
-  readerErrorMessage,
-  resolveReaderDbChecksum,
-} from './lib';
+import { READER_HEALTH_META, readerErrorMessage, readerSuccessMessage, resolveReaderDbChecksum } from './lib';
 
 export function ReadersPage() {
   const building = useBuilding();
@@ -30,7 +24,7 @@ export function ReadersPage() {
     onSuccess: (command) => {
       setConfiguring(null);
       setUpdatingFirmware(null);
-      const message = command === ReaderCommand.FirmwareUpdate ? FIRMWARE_UPDATE_SENT_MESSAGE : READER_SENT_MESSAGE;
+      const message = readerSuccessMessage(command);
       toast({ tone: 'info', title: 'Orden enviada', message });
     },
     onError: (_command, error) => {
