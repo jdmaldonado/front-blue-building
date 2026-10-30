@@ -113,6 +113,17 @@ export function ReadersPage() {
     if (confirmed) control.updateDatabase(localId);
   };
 
+  const requestDbDelete = async (): Promise<void> => {
+    if (!managingDb?.localId) return;
+    const ok = await confirm({
+      title: '¿Eliminar base de datos?',
+      description: `${managingDb.name ?? 'La lectora'} no validará tarjetas sin conexión.`,
+      confirmLabel: 'Eliminar',
+      intent: 'destructive',
+    });
+    if (ok) control.deleteDatabase(managingDb.localId);
+  };
+
   const columns = useMemo<Array<ColumnDef<Door, unknown>>>(
     () => [
       {
@@ -345,7 +356,7 @@ export function ReadersPage() {
         onClose={() => setManagingDb(null)}
         onUpdate={() => void requestDbUpdate()}
         onRead={requestDbRead}
-        onDelete={() => {}}
+        onDelete={() => void requestDbDelete()}
       />
     </div>
   );
